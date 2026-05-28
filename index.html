@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IpnosiApplicata — La piattaforma del Metodo | Cristian Lecca</title>
+<meta name="description" content="IpnosiApplicata è la piattaforma del Metodo creato da Cristian Lecca. Corsi, sessioni 1:1, esercizi personalizzati e mappa del tuo percorso interiore. Tutto in un unico ecosistema."/>
+<link rel="icon" type="image/png" href="/assets/favicon%201.png"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#101416",
+          "on-background": "#F5F7FA",
+          "surface": "#101416",
+          "on-surface": "#F5F7FA",
+          "primary": "#49C7A5",
+          "on-primary": "#101416",
+          "primary-container": "#49C7A5",
+          "on-primary-container": "#101416",
+          "primary-fixed-dim": "#60dbb8",
+          "secondary": "#3A63FF",
+          "on-secondary": "#FFFFFF",
+          "on-secondary-container": "#c1cbff",
+          "secondary-container": "#0543e3",
+          "tertiary": "#C9A45C",
+          "on-tertiary": "#101416",
+          "on-tertiary-container": "#5b4100",
+          "outline": "#86948e",
+          "outline-variant": "#3d4944",
+          "surface-container": "#1d2022",
+          "surface-container-low": "#191c1e",
+          "surface-container-high": "#272a2d",
+          "surface-container-highest": "#323538",
+          "surface-container-lowest": "#0b0f11",
+          "surface-dim": "#101416",
+          "surface-variant": "#323538",
+          "on-surface-variant": "#bccac3"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
+        },
+        "spacing": {
+          "section-v-desktop": "104px", "stack-sm": "8px", "container-max": "1280px",
+          "stack-lg": "32px", "stack-md": "16px", "section-v-mobile": "64px", "gutter": "24px"
+        },
+        "fontFamily": {
+          "label-md": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Manrope"],
+          "headline-md": ["Manrope"], "body-lg": ["Inter"], "display-lg": ["Manrope"],
+          "display-lg-mobile": ["Manrope"]
+        },
+        "fontSize": {
+          "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+          "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+          "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+          "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #101416; color: #F5F7FA; overflow-x: hidden; }
+  .glass-card {
+    background: rgba(29,32,34,0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245,247,250,0.1);
+    transition: all 0.3s ease-in-out;
+  }
+  .glass-card:hover {
+    border-color: rgba(73,199,165,0.3);
+    background: rgba(73,199,165,0.05);
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #49C7A5, #3A63FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .nav-logo {
+    filter: brightness(2) drop-shadow(0 0 8px rgba(73,199,165,0.25));
+    transition: filter 300ms ease;
+  }
+  .nav-logo:hover {
+    filter: brightness(2.4) drop-shadow(0 0 10px rgba(73,199,165,0.40));
+  }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 600ms ease, transform 600ms ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  #mobile-menu {
+    display: none; flex-direction: column; gap: 0;
+    background: #101416; border-top: 1px solid rgba(255,255,255,0.08); padding: 16px 24px 24px;
+  }
+  #mobile-menu.open { display: flex; }
+  #mobile-menu a {
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: #F5F7FA; font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    text-decoration: none; transition: color 180ms ease;
+  }
+  #mobile-menu a:last-child {
+    border-bottom: none; margin-top: 12px; background: #49C7A5; color: #101416;
+    text-align: center; border-radius: 12px; padding: 14px 0;
+  }
+  #mobile-menu a:hover { color: #49C7A5; }
+  #mobile-menu a:last-child:hover { color: #101416; }
+  /* Progress bar percorso */
+  .progress-track { background: #3d4944; border-radius: 9999px; height: 4px; }
+  .progress-fill { background: linear-gradient(90deg, #49C7A5, #3A63FF); border-radius: 9999px; height: 4px; }
+  /* Badge stato */
+  .badge-primary { background: rgba(73,199,165,0.12); color: #49C7A5; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; }
+  .badge-secondary { background: rgba(58,99,255,0.12); color: #3A63FF; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; }
+  .badge-tertiary { background: rgba(201,164,92,0.12); color: #C9A45C; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; }
+</style>
+</head>
+<body class="font-body-md text-body-md">
+
+<!-- HEADER -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm">
+  <div class="flex justify-between items-center px-gutter py-4 max-w-container-max mx-auto">
+    <a class="flex items-center gap-3" href="/">
+      <!-- Logo placeholder: sostituire con logo IpnosiApplicata quando disponibile -->
+      <span class="font-headline-md text-headline-md" style="font-size:20px; background: linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">IpnosiApplicata</span>
+    </a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a class="text-primary border-b-2 border-primary pb-1 font-label-md text-label-md" href="/">Home</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/metodo/">Metodo</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/corsi/">Corsi</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/sessioni/">Sessioni 1:1</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/accademia/">Accademia</a>
+      <a class="border border-outline-variant/60 hover:border-primary/40 text-on-surface px-5 py-2 rounded-full font-label-md text-label-md transition-all" href="/login/">Accedi</a>
+      <a class="bg-primary hover:bg-primary/90 text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md transition-all active:scale-95 duration-300" href="/registrazione/">Inizia il percorso</a>
+    </div>
+    <button id="hamburger-btn" class="md:hidden text-on-background p-2" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
+    </button>
+  </div>
+  <div id="mobile-menu" role="navigation" aria-label="Menu mobile">
+    <a href="/">Home</a>
+    <a href="/metodo/">Metodo</a>
+    <a href="/corsi/">Corsi</a>
+    <a href="/sessioni/">Sessioni 1:1</a>
+    <a href="/accademia/">Accademia</a>
+    <a href="/login/">Accedi</a>
+    <a href="/registrazione/">Inizia il percorso</a>
+  </div>
+</nav>
+
+<main class="mt-20">
+
+<!-- ============================================================
+     HERO
+     Messaggio: IpnosiApplicata non è un corso. È un percorso.
+============================================================ -->
+<section class="relative min-h-[88vh] flex items-center px-gutter py-section-v-mobile md:py-section-v-desktop overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle at 65% 35%, rgba(73,199,165,0.09) 0%, transparent 55%), radial-gradient(circle at 15% 75%, rgba(58,99,255,0.06) 0%, transparent 50%);"></div>
+  <div class="max-w-container-max mx-auto w-full grid md:grid-cols-2 gap-16 items-center">
+
+    <!-- Testo hero -->
+    <div class="space-y-8">
+      <div class="flex items-center gap-3 reveal">
+        <span class="badge-tertiary uppercase tracking-widest">Cristian Lecca</span>
+        <span class="text-on-surface-variant font-label-md text-label-md">× IpnosiApplicata</span>
+      </div>
+      <h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg leading-tight reveal">
+        Non impari il metodo.<br/>
+        <span class="gradient-text">Lo vivi.</span>
+      </h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl reveal">
+        IpnosiApplicata è la piattaforma del Metodo creato da Cristian Lecca. Corsi, sessioni 1:1, esercizi su misura, induzioni personalizzate. Un percorso che si adatta a te — e non ti lascia mai solo.
+      </p>
+      <div class="flex flex-wrap gap-4 reveal">
+        <a href="/registrazione/" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-lg shadow-primary/20">Inizia il percorso</a>
+        <a href="/metodo/" class="border border-outline-variant/50 text-on-surface px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Scopri il Metodo</a>
+      </div>
+      <p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2 reveal">
+        <span class="material-symbols-outlined text-primary" style="font-size:1rem;">link</span>
+        Già su cristianlecca.it? La piattaforma è la naturale evoluzione di quel percorso.
+      </p>
+    </div>
+
+    <!-- Mock dashboard -->
+    <div class="relative reveal">
+      <div class="absolute -inset-4 bg-primary/5 blur-[60px] rounded-3xl pointer-events-none"></div>
+      <div class="relative glass-card rounded-3xl p-8 border-primary/15">
+        <!-- Header mock -->
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <p class="font-label-md text-label-md text-on-surface-variant mb-1">Bentornato</p>
+            <h3 class="font-headline-md text-headline-md" style="font-size:20px;">Il tuo percorso</h3>
+          </div>
+          <div class="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary" style="font-size:1.2rem;">person</span>
+          </div>
+        </div>
+        <!-- Mappa -->
+        <div class="bg-surface-container rounded-2xl p-5 mb-4 border border-outline-variant/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-label-md text-label-md text-on-surface">La tua Mappa</span>
+            <span class="badge-primary">Aggiornata</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant text-sm">Sessione 3 — Credenza identificata: <em class="text-primary">"non sono abbastanza"</em>. Lavoro in corso.</p>
+        </div>
+        <!-- Esercizi -->
+        <div class="bg-surface-container rounded-2xl p-5 mb-4 border border-outline-variant/30">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-label-md text-label-md text-on-surface">Esercizi</span>
+            <span class="badge-secondary">2 da completare</span>
+          </div>
+          <div class="progress-track mb-2"><div class="progress-fill" style="width:40%;"></div></div>
+          <p class="font-label-md text-label-md text-on-surface-variant" style="font-size:12px;">40% completato questa settimana</p>
+        </div>
+        <!-- Prossima sessione -->
+        <div class="bg-primary/8 rounded-2xl p-5 border border-primary/20">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary">videocam</span>
+            <div>
+              <p class="font-label-md text-label-md text-on-surface">Prossima sessione</p>
+              <p class="font-body-md text-body-md text-on-surface-variant" style="font-size:13px;">Giovedì 5 giugno — ore 18:00</p>
+            </div>
+            <a href="#" class="ml-auto bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md" style="font-size:12px;">Entra</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     NON UN CORSO. UN ECOSISTEMA.
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container-low">
+  <div class="max-w-container-max mx-auto">
+    <div class="max-w-3xl mx-auto text-center mb-16 reveal">
+      <span class="badge-tertiary uppercase tracking-widest mb-6 inline-block">La differenza</span>
+      <h2 class="font-headline-lg text-headline-lg mb-6">Non ti do un videocorso.<br/>Ti do un percorso.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant">
+        La maggior parte delle piattaforme ti caricano di contenuti e ti lasciano soli. IpnosiApplicata funziona al contrario: ogni passo è guidato, ogni contenuto è sbloccato quando sei pronto, ogni sessione lascia una traccia che puoi rileggere.
+      </p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-card rounded-2xl p-8 reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">map</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-3">La tua Mappa personale</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Si aggiorna dopo ogni sessione. Mostra da dove sei partito e ogni passo che hai fatto. Il tuo territorio interiore, leggibile.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-8 reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">exercise</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-3">Esercizi su misura</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Formulati ad hoc dopo ogni sessione. Completarli sblocca il passo successivo. Non farlo genera un promemoria — non un giudizio.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-8 reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">headphones</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-3">Induzioni personalizzate</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Audio ipnotici creati per te, sul tuo blocco specifico. Non generici. Non per tutti. Solo tuoi.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-8 reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">videocam</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-3">Sessioni integrate</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Le sessioni 1:1 avvengono dentro la piattaforma. Nessun link esterno. Nessuno strumento di terzi. Il tuo percorso resta nel tuo ecosistema.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     IL METODO IN 3 PASSI
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-container-max mx-auto">
+    <div class="mb-16 reveal">
+      <h2 class="font-headline-lg text-headline-lg mb-4">La direzione non cambia.<br/>Il percorso è sempre tuo.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">IpnosiApplicata segue una sequenza precisa. Saltare un passaggio significa costruire sulla sabbia.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-12">
+      <div class="relative pl-12 border-l-2 border-primary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-primary rounded-full flex items-center justify-center font-label-md text-label-md text-primary">1</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-primary">Riconosci</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Identifichiamo la radice reale del blocco — non il sintomo che porti, ma la credenza che lo genera. La mappa inizia qui.</p>
+      </div>
+      <div class="relative pl-12 border-l-2 border-secondary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-secondary rounded-full flex items-center justify-center font-label-md text-label-md text-secondary">2</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Rileggi</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Attraverso ipnosi conversazionale, PNL e coaching, ristrutturiamo la narrativa interna. Le credenze alla radice vengono dissolte, non soppresse.</p>
+      </div>
+      <div class="relative pl-12 border-l-2 border-tertiary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-tertiary rounded-full flex items-center justify-center font-label-md text-label-md text-tertiary">3</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-tertiary">Agisci</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Il cambiamento non si dichiara — si verifica. Situazioni note, reazioni diverse. Il progresso è misurabile, inconfutabile, tuo.</p>
+      </div>
+    </div>
+    <div class="mt-12 reveal">
+      <a href="/metodo/" class="inline-flex items-center gap-2 text-primary font-label-md text-label-md hover:translate-x-1 transition-transform">
+        Approfondisci il Metodo IpnosiApplicata
+        <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     I PERCORSI — cosa puoi fare sulla piattaforma
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container-lowest">
+  <div class="max-w-container-max mx-auto">
+    <div class="mb-16 reveal">
+      <h2 class="font-headline-lg text-headline-lg mb-4">Da dove vuoi iniziare?</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Ogni porta porta allo stesso posto. Scegli quella giusta per dove sei adesso.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+
+      <!-- Quiz -->
+      <div class="glass-card rounded-2xl p-10 flex flex-col border-outline-variant/30 reveal">
+        <div class="w-14 h-14 bg-secondary/12 rounded-full flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-secondary" style="font-size:1.75rem;">quiz</span>
+        </div>
+        <span class="badge-secondary mb-4 self-start">Gratuito</span>
+        <h3 class="font-headline-md text-headline-md mb-4">Quiz del Coraggio</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Il punto di partenza. Identifica il blocco dominante e ricevi una prima lettura della tua mappa. Cinque minuti che cambiano la prospettiva.</p>
+        <a href="https://cristianlecca.it/quiz/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">
+          Fai il Quiz <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Corsi -->
+      <div class="glass-card rounded-2xl p-10 flex flex-col border-outline-variant/30 reveal">
+        <div class="w-14 h-14 bg-primary/12 rounded-full flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-primary" style="font-size:1.75rem;">school</span>
+        </div>
+        <span class="badge-primary mb-4 self-start">Accademia</span>
+        <h3 class="font-headline-md text-headline-md mb-4">Corsi del Metodo</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Percorsi formativi strutturati sul Metodo IpnosiApplicata. Ogni modulo si sblocca quando hai completato quello precedente. Niente salti.</p>
+        <a href="/corsi/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">
+          Esplora i corsi <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Sessioni -->
+      <div class="glass-card rounded-2xl p-10 flex flex-col border-primary/20 reveal" style="background: rgba(73,199,165,0.04);">
+        <div class="w-14 h-14 bg-primary/15 rounded-full flex items-center justify-center mb-6">
+          <span class="material-symbols-outlined text-primary" style="font-size:1.75rem;">center_focus_strong</span>
+        </div>
+        <span class="badge-tertiary mb-4 self-start">Alta intenzione</span>
+        <h3 class="font-headline-md text-headline-md mb-4">Sessioni 1:1</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Il lavoro individuale intensivo con Cristian. La sessione avviene dentro la piattaforma. Dopo ogni incontro, la tua mappa si aggiorna e ricevi esercizi e induzioni personalizzate.</p>
+        <a href="/sessioni/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">
+          Scopri le sessioni <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COME FUNZIONA L'AREA RISERVATA — teaser
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-container-max mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="space-y-6 reveal">
+        <span class="badge-primary uppercase tracking-widest">Area riservata</span>
+        <h2 class="font-headline-lg text-headline-lg">Il tuo percorso,<br/>tutto in un posto.</h2>
+        <div class="space-y-5 font-body-lg text-body-lg text-on-surface-variant">
+          <p>Quando entri nell'area riservata non trovi una lista di video da guardare. Trovi il tuo percorso: la mappa aggiornata, gli esercizi assegnati, le induzioni personalizzate, la data della prossima sessione.</p>
+          <p>Ogni azione che compi lascia una traccia. Ogni sessione genera contenuti su misura. Il sistema sa dove sei — e ti supporta prima che tu ti perda.</p>
+        </div>
+        <a href="/registrazione/" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block">Inizia il percorso</a>
+      </div>
+
+      <!-- Feature list -->
+      <div class="space-y-4 reveal">
+        <div class="glass-card rounded-xl p-6 flex items-start gap-5">
+          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg shrink-0">map</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Mappa personale viva</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Si aggiorna dopo ogni sessione. Sempre leggibile, mai statica.</p>
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-6 flex items-start gap-5">
+          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg shrink-0">timeline</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Storyboard del percorso</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Ogni sessione, esercizio e ascolto registrati in ordine cronologico.</p>
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-6 flex items-start gap-5">
+          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg shrink-0">notifications_active</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Supporto proattivo</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Se un esercizio non viene completato, il sistema ti ricorda — prima che tu ti perda.</p>
+          </div>
+        </div>
+        <div class="glass-card rounded-xl p-6 flex items-start gap-5">
+          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg shrink-0">lock</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Ecosistema chiuso e privato</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Sessioni, dati e contenuti restano dentro la piattaforma. Nessuno strumento esterno.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BRIDGE — collegamento a cristianlecca.it
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container">
+  <div class="max-w-4xl mx-auto reveal">
+    <div class="glass-card rounded-3xl p-10 md:p-16 border-secondary/15">
+      <div class="flex flex-col md:flex-row gap-10 items-center">
+        <div class="space-y-4 flex-1">
+          <span class="badge-secondary uppercase tracking-widest">Il brand</span>
+          <h2 class="font-headline-lg text-headline-lg">Conosci già Cristian Lecca?</h2>
+          <p class="font-body-lg text-body-lg text-on-surface-variant">
+            IpnosiApplicata è la piattaforma operativa del suo Metodo. Se sei arrivato qui da cristianlecca.it, sei nel posto giusto: qui il percorso prende forma concreta.
+          </p>
+          <a href="https://cristianlecca.it" class="inline-flex items-center gap-2 text-secondary font-label-md text-label-md hover:translate-x-1 transition-transform">
+            Visita cristianlecca.it
+            <span class="material-symbols-outlined" style="font-size:1rem;">open_in_new</span>
+          </a>
+        </div>
+        <div class="shrink-0 text-center">
+          <div class="w-24 h-24 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-primary" style="font-size:2.5rem;">link</span>
+          </div>
+          <p class="font-label-md text-label-md text-on-surface-variant">Stesso metodo.<br/>Un unico ecosistema.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL CTA
+============================================================ -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle at 50% 50%, rgba(73,199,165,0.06) 0%, transparent 60%);"></div>
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg mb-8 leading-tight">
+      Il percorso inizia quando smetti di aspettare il momento giusto.
+    </h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-12 max-w-2xl mx-auto">
+      Crea il tuo account. Il primo passo è gratuito.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+      <a href="/registrazione/" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-xl shadow-primary/15">Inizia il percorso</a>
+      <a href="https://cristianlecca.it/quiz/" class="border border-outline-variant text-on-surface px-10 py-5 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Fai prima il Quiz del Coraggio</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest w-full py-section-v-desktop px-gutter border-t border-outline-variant/30">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-stack-lg max-w-container-max mx-auto">
+    <div class="space-y-4">
+      <span class="font-headline-md" style="font-size:18px; background: linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">IpnosiApplicata</span>
+      <p class="font-body-md text-body-md text-on-surface-variant">La piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca. Percorsi di trasformazione personale guidati, concreti, misurabili.</p>
+    </div>
+    <div>
+      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Piattaforma</h4>
+      <ul class="space-y-3 font-body-md text-body-md">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/">Home</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/metodo/">Metodo</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/corsi/">Corsi</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/sessioni/">Sessioni 1:1</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/accademia/">Accademia</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Il brand</h4>
+      <ul class="space-y-3 font-body-md text-body-md">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it">cristianlecca.it</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it/quiz/">Quiz del Coraggio</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/login/">Accedi</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/registrazione/">Registrati</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Legale</h4>
+      <ul class="space-y-3 font-body-md text-body-md">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy Policy</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="max-w-container-max mx-auto mt-16 pt-8 border-t border-outline-variant/30 text-center text-on-surface-variant font-label-md text-label-md">
+    &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
+  </div>
+</footer>
+
+<script>
+  const btn = document.getElementById('hamburger-btn');
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('hamburger-icon');
+  btn.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
+    icon.textContent = isOpen ? 'close' : 'menu';
+  });
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      icon.textContent = 'menu';
+    });
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
