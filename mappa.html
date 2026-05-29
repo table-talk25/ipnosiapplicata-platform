@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>La mia Mappa | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#101416", "on-background": "#F5F7FA",
+            "surface": "#101416", "on-surface": "#F5F7FA",
+            "primary": "#49C7A5", "on-primary": "#101416",
+            "secondary": "#3A63FF", "on-secondary": "#FFFFFF",
+            "tertiary": "#C9A45C", "on-tertiary": "#101416",
+            "outline": "#86948e", "outline-variant": "#3d4944",
+            "surface-container": "#1d2022",
+            "surface-container-low": "#191c1e",
+            "surface-container-high": "#272a2d",
+            "surface-container-highest": "#323538",
+            "surface-container-lowest": "#0b0f11",
+            "surface-variant": "#323538",
+            "on-surface-variant": "#bccac3"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          fontFamily: { "label-md":["Inter"], "body-md":["Inter"], "headline-md":["Manrope"], "display-lg":["Manrope"] },
+          fontSize: {
+            "label-md": ["14px",{lineHeight:"1.2",letterSpacing:"0.05em",fontWeight:"600"}],
+            "body-md":  ["16px",{lineHeight:"1.6",fontWeight:"400"}],
+            "headline-md":["32px",{lineHeight:"1.3",fontWeight:"600"}]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color:#101416; color:#F5F7FA; font-family:'Inter',sans-serif; min-height:100vh; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; display:inline-block; vertical-align:middle; }
+
+    .dashboard-nav {
+      position:fixed; top:0; width:100%; z-index:50;
+      background:rgba(16,20,22,0.92); backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(61,73,68,0.4);
+    }
+    .sidebar {
+      position:fixed; top:65px; left:0; bottom:0; width:220px;
+      background:rgba(16,20,22,0.95); border-right:1px solid rgba(61,73,68,0.35);
+      padding:24px 12px; overflow-y:auto;
+    }
+    .sidebar-item {
+      display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px;
+      color:#bccac3; font-size:14px; font-weight:600; transition:all 0.15s;
+      cursor:pointer; text-decoration:none; margin-bottom:2px;
+    }
+    .sidebar-item:hover { background:rgba(73,199,165,0.07); color:#F5F7FA; }
+    .sidebar-item.active { background:rgba(73,199,165,0.1); color:#49C7A5; border-left:2px solid #49C7A5; padding-left:12px; }
+    .sidebar-item .material-symbols-outlined { font-size:20px; }
+    .bottom-nav {
+      position:fixed; bottom:0; left:0; right:0; z-index:40;
+      background:rgba(16,20,22,0.95); backdrop-filter:blur(20px);
+      border-top:1px solid rgba(61,73,68,0.35); display:flex;
+    }
+    .bottom-nav-item {
+      flex:1; display:flex; flex-direction:column; align-items:center;
+      padding:10px 4px 12px; color:#bccac3; font-size:10px; font-weight:600;
+      transition:color 0.2s; text-decoration:none;
+    }
+    .bottom-nav-item.active { color:#49C7A5; }
+
+    /* Mappa documento */
+    .map-section {
+      background:rgba(29,32,34,0.65);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(61,73,68,0.4);
+      border-radius:20px;
+      overflow:hidden;
+      transition:all 0.3s ease;
+    }
+    .map-section-header {
+      padding:20px 24px;
+      display:flex; align-items:center; justify-content:space-between;
+      cursor:pointer;
+      user-select:none;
+    }
+    .map-section-header:hover { background:rgba(73,199,165,0.03); }
+    .map-section-body { padding:0 24px 24px; }
+
+    /* Blocco identificato */
+    .blocco-card {
+      background:rgba(16,20,22,0.7);
+      border:1px solid rgba(255,180,171,0.15);
+      border-left:3px solid #ffb4ab;
+      border-radius:12px;
+      padding:16px;
+      margin-bottom:12px;
+    }
+    .blocco-card.lavorato {
+      border-color:rgba(73,199,165,0.2);
+      border-left-color:#49C7A5;
+    }
+
+    /* Credenza card */
+    .credenza-card {
+      background:rgba(16,20,22,0.7);
+      border-radius:12px;
+      padding:16px;
+      margin-bottom:12px;
+      position:relative; overflow:hidden;
+    }
+    .credenza-card::before {
+      content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+    }
+    .credenza-card.before::before { background:#ffb4ab; }
+    .credenza-card.after::before  { background:#49C7A5; }
+
+    /* Progress chip */
+    .progress-chip {
+      display:inline-flex; align-items:center; gap:5px;
+      padding:4px 12px; border-radius:100px;
+      font-size:12px; font-weight:600;
+    }
+    .chip-red  { background:rgba(255,180,171,0.1); color:#ffb4ab; border:1px solid rgba(255,180,171,0.2); }
+    .chip-teal { background:rgba(73,199,165,0.1);  color:#49C7A5; border:1px solid rgba(73,199,165,0.2); }
+    .chip-gold { background:rgba(201,164,92,0.1);  color:#C9A45C; border:1px solid rgba(201,164,92,0.2); }
+    .chip-blue { background:rgba(58,99,255,0.1);   color:#aab8ff; border:1px solid rgba(58,99,255,0.2); }
+
+    /* Timestamp -->
+    .ts { color:#bccac3; font-size:11px; }
+
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity 500ms ease, transform 500ms ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+  </style>
+</head>
+
+<body x-data="mappaPage()" x-init="init()">
+
+  <!-- HEADER -->
+  <nav class="dashboard-nav">
+    <div class="flex justify-between items-center px-5 py-4 max-w-6xl mx-auto">
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</a>
+        <span class="text-outline-variant text-xs">/</span>
+        <span class="text-on-surface-variant font-label-md text-label-md">La mia Mappa</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/dashboard.html" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 text-sm font-semibold">
+          <span class="material-symbols-outlined text-base">home</span>
+          <span class="hidden md:inline">Area personale</span>
+        </a>
+        <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
+          <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;" x-text="user.name?user.name[0].toUpperCase():'U'"></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR DESKTOP -->
+  <aside class="sidebar hidden lg:block">
+    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
+    <a href="/dashboard.html" class="sidebar-item"><span class="material-symbols-outlined">home</span>Area personale</a>
+    <a href="/mappa.html" class="sidebar-item active"><span class="material-symbols-outlined">map</span>La mia Mappa</a>
+    <a href="/percorso.html" class="sidebar-item"><span class="material-symbols-outlined">route</span>Il mio Percorso</a>
+    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">video_call</span>Sessioni</a>
+    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">edit_note</span>Esercizi</a>
+    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">bedtime</span>Induzioni Audio</a>
+    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">school</span>Corsi</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="pt-20 pb-24 lg:pb-12 px-5 lg:pl-[240px] max-w-6xl mx-auto">
+    <div class="max-w-3xl">
+
+      <!-- INTESTAZIONE -->
+      <div class="py-8 reveal">
+        <p class="text-tertiary font-label-md text-label-md uppercase tracking-widest mb-2">Documento vivo</p>
+        <h1 class="font-bold text-3xl md:text-4xl text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">La mia Mappa</h1>
+        <p class="text-on-surface-variant leading-relaxed max-w-xl">
+          Il tuo territorio interiore. Si aggiorna dopo ogni sessione con Cristian.
+          Non è un report — è uno specchio che evolve con te.
+        </p>
+        <div class="flex items-center gap-3 mt-4 flex-wrap">
+          <span class="progress-chip chip-gold">
+            <span class="material-symbols-outlined" style="font-size:12px">update</span>
+            Ultimo aggiornamento: <span x-text="lastUpdate"></span>
+          </span>
+          <span class="progress-chip chip-blue">
+            <span class="material-symbols-outlined" style="font-size:12px">psychiatry</span>
+            Sessione <span x-text="sessionCount"></span>
+          </span>
+        </div>
+      </div>
+
+      <!-- SEZIONE 1: PROFILO DI PARTENZA -->
+      <div class="map-section mb-6 reveal">
+        <div class="map-section-header" @click="open1 = !open1">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-secondary/12 border border-secondary/25 flex items-center justify-center">
+              <span class="material-symbols-outlined text-secondary" style="font-size:20px">person_search</span>
+            </div>
+            <div>
+              <p class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">Profilo di partenza</p>
+              <p class="text-on-surface-variant text-xs">Il punto da cui sei partito</p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                :style="open1 ? 'transform:rotate(180deg)' : ''">expand_more</span>
+        </div>
+        <div class="map-section-body" x-show="open1" x-collapse>
+          <div class="border-t border-outline-variant/30 pt-5">
+            <p class="text-on-surface-variant text-sm leading-relaxed mb-4" x-text="map.profilo"></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <template x-for="tag in map.profiloTags" :key="tag.label">
+                <div class="flex items-start gap-2 p-3 bg-surface-container rounded-xl border border-outline-variant/25">
+                  <span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:16px" x-text="tag.icon"></span>
+                  <div>
+                    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-0.5" x-text="tag.label"></p>
+                    <p class="text-on-surface text-sm" x-text="tag.value"></p>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEZIONE 2: BLOCCHI IDENTIFICATI -->
+      <div class="map-section mb-6 reveal">
+        <div class="map-section-header" @click="open2 = !open2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-red-400/10 border border-red-400/20 flex items-center justify-center">
+              <span class="material-symbols-outlined" style="font-size:20px;color:#ffb4ab">block</span>
+            </div>
+            <div>
+              <p class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">Blocchi identificati</p>
+              <p class="text-on-surface-variant text-xs" x-text="map.blocchi.length + ' blocchi — ' + map.blocchi.filter(b=>b.lavorato).length + ' lavorati'"></p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                :style="open2 ? 'transform:rotate(180deg)' : ''">expand_more</span>
+        </div>
+        <div class="map-section-body" x-show="open2" x-collapse>
+          <div class="border-t border-outline-variant/30 pt-5">
+            <template x-for="b in map.blocchi" :key="b.id">
+              <div class="blocco-card" :class="{ lavorato: b.lavorato }">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                  <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;" x-text="b.title"></p>
+                  <span class="progress-chip flex-shrink-0" :class="b.lavorato ? 'chip-teal' : 'chip-red'">
+                    <span class="material-symbols-outlined" style="font-size:11px" x-text="b.lavorato ? 'check_circle' : 'pending'"></span>
+                    <span x-text="b.lavorato ? 'Lavorato' : 'In corso'"></span>
+                  </span>
+                </div>
+                <p class="text-on-surface-variant text-sm leading-relaxed mb-2" x-text="b.desc"></p>
+                <p class="ts" x-text="'Identificato in: ' + b.session"></p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEZIONE 3: CREDENZE LAVORATE -->
+      <div class="map-section mb-6 reveal">
+        <div class="map-section-header" @click="open3 = !open3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary" style="font-size:20px">transform</span>
+            </div>
+            <div>
+              <p class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">Credenze lavorate</p>
+              <p class="text-on-surface-variant text-xs" x-text="map.credenze.length + ' trasformazioni registrate'"></p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                :style="open3 ? 'transform:rotate(180deg)' : ''">expand_more</span>
+        </div>
+        <div class="map-section-body" x-show="open3" x-collapse>
+          <div class="border-t border-outline-variant/30 pt-5 space-y-4">
+            <template x-for="c in map.credenze" :key="c.id">
+              <div class="rounded-xl overflow-hidden border border-outline-variant/25">
+                <!-- Prima -->
+                <div class="credenza-card before mb-0" style="border-radius:0;margin-bottom:0;border-bottom:1px solid rgba(61,73,68,0.35);">
+                  <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1">Credenza limitante</p>
+                  <p class="text-on-surface text-sm italic" x-text="'“' + c.before + '”'"></p>
+                </div>
+                <!-- Dopo -->
+                <div class="credenza-card after" style="border-radius:0;margin-bottom:0;">
+                  <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Nuova verità</p>
+                  <p class="text-on-surface text-sm font-semibold" x-text="'“' + c.after + '”'"></p>
+                  <p class="ts mt-2" x-text="'Sessione ' + c.session + ' — ' + c.date"></p>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEZIONE 4: PROGRESSI -->
+      <div class="map-section mb-6 reveal">
+        <div class="map-section-header" @click="open4 = !open4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-tertiary/10 border border-tertiary/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-tertiary" style="font-size:20px">trending_up</span>
+            </div>
+            <div>
+              <p class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">Progressi registrati</p>
+              <p class="text-on-surface-variant text-xs" x-text="map.progressi.length + ' osservazioni di Cristian'"></p>
+            </div>
+          </div>
+          <span class="material-symbols-outlined text-on-surface-variant transition-transform"
+                :style="open4 ? 'transform:rotate(180deg)' : ''">expand_more</span>
+        </div>
+        <div class="map-section-body" x-show="open4" x-collapse>
+          <div class="border-t border-outline-variant/30 pt-5 space-y-3">
+            <template x-for="p in map.progressi" :key="p.id">
+              <div class="flex items-start gap-3 p-4 bg-surface-container rounded-xl border border-outline-variant/25">
+                <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size:18px">star</span>
+                <div>
+                  <p class="text-on-surface text-sm leading-relaxed" x-text="p.text"></p>
+                  <p class="ts mt-1.5" x-text="'Sessione ' + p.session + ' — ' + p.date"></p>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTA FINALE -->
+      <div class="p-5 rounded-2xl border border-outline-variant/25 bg-surface-container/40 text-center reveal">
+        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:20px">info</span>
+        <p class="text-on-surface-variant text-sm mt-2">
+          Questa mappa viene aggiornata da Cristian dopo ogni sessione.
+          Non puoi modificarla — è il suo sguardo sul tuo percorso.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV MOBILE -->
+  <nav class="bottom-nav lg:hidden">
+    <a href="/dashboard.html" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
+    <a href="/mappa.html" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">map</span>Mappa</a>
+    <a href="#" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">edit_note</span>Esercizi</a>
+    <a href="#" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">bedtime</span>Audio</a>
+    <a href="/percorso.html" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
+  </nav>
+
+  <!-- FOOTER MINIMALE -->
+  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      <div class="flex gap-5 text-xs">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+
+    function mappaPage() {
+      return {
+        user: { name: 'Marco Bianchi' },
+        open1: true, open2: true, open3: true, open4: true,
+        lastUpdate: '27 maggio 2026',
+        sessionCount: 2,
+
+        // TODO: GET /api/collections/maps/records?filter=user_id=CURRENT_USER
+        map: {
+          profilo: 'Marco arriva al percorso con una storia di autosabotaggio nelle relazioni professionali e una profonda difficoltà a riconoscere il proprio valore. Presenta una struttura di pensiero orientata all’esterno (cerca validazione esterna) e una voce critica interna molto attiva.',
+          profiloTags: [
+            { icon:'psychology',      label:'Modalità prevalente', value:'Iperanalitico, cerca conferme esterne' },
+            { icon:'favorite',        label:'Bisogno primario',     value:'Riconoscimento e senso di appartenenza' },
+            { icon:'warning',         label:'Pattern ricorrente',   value:'Autosabotaggio al momento del successo' },
+            { icon:'self_improvement',label:'Risorsa identificata', value:'Alta capacità empatica e riflessiva' },
+          ],
+          blocchi: [
+            { id:1, title:'Autosabotaggio professionale', lavorato:true,
+              desc:'Tendenza a interrompere o sminuire i successi nel momento in cui si manifestano. Si esprime attraverso procrastinazione e auto-critica distruttiva.',
+              session:'Sessione 1' },
+            { id:2, title:'Conflitto con la figura di autorità', lavorato:false,
+              desc:'Pattern relazionale con i superiori che riattiva dinamiche infantili di approvazione. Identificato in sessione ma ancora in fase di elaborazione.',
+              session:'Sessione 2' },
+          ],
+          credenze: [
+            { id:1,
+              before:'Non merito di avere successo, prima o poi qualcuno se ne accorge.',
+              after: 'Il mio valore è reale e indipendente dal giudizio degli altri. Il successo è una conferma, non una minaccia.',
+              session:2, date:'24 maggio 2026' },
+            { id:2,
+              before:'Se mostro debolezza, gli altri ne approfitteranno.',
+              after: 'La vulnerabilità autentica crea connessione. La mia apertura è una forza, non un rischio.',
+              session:1, date:'17 maggio 2026' },
+          ],
+          progressi: [
+            { id:1, text:'Marco dimostra una notevole capacità di insight. Nel giro di due sessioni ha ri-inquadrato completamente il suo rapporto con il successo: da minaccia a conferma.', session:2, date:'24 maggio 2026' },
+            { id:2, text:'Primo segnale concreto di cambiamento: ha accettato un riconoscimento professionale senza minimizzarlo. Comportamento nuovo e significativo.', session:2, date:'24 maggio 2026' },
+            { id:3, text:'L’ascolto delle induzioni notturne è costante. Marco riporta sogni più vividi e un senso di leggerezza al risveglio. Il lavoro ipnotico sta attecchendo.', session:1, date:'17 maggio 2026' },
+          ]
+        },
+
+        init() {
+          // TODO: if (!pb.authStore.isValid) window.location.href = '/login.html';
+          setTimeout(() => {
+            const obs = new IntersectionObserver(entries => {
+              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, { threshold:0.06 });
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+          }, 80);
+        }
+      };
+    }
+  </script>
+</body>
+</html>
