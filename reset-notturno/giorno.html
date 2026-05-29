@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Giorno 1 — Il Risveglio | Reset Notturno | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#101416",
+            "on-background": "#F5F7FA",
+            "surface": "#101416",
+            "on-surface": "#F5F7FA",
+            "primary": "#49C7A5",
+            "on-primary": "#101416",
+            "secondary": "#3A63FF",
+            "on-secondary": "#FFFFFF",
+            "tertiary": "#C9A45C",
+            "on-tertiary": "#101416",
+            "outline": "#86948e",
+            "outline-variant": "#3d4944",
+            "surface-container": "#1d2022",
+            "surface-container-low": "#191c1e",
+            "surface-container-high": "#272a2d",
+            "surface-container-highest": "#323538",
+            "surface-container-lowest": "#0b0f11",
+            "surface-variant": "#323538",
+            "on-surface-variant": "#bccac3"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          fontFamily: {
+            "label-md": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Manrope"],
+            "headline-md": ["Manrope"], "body-lg": ["Inter"], "display-lg": ["Manrope"]
+          },
+          fontSize: {
+            "label-md": ["14px", {lineHeight:"1.2",letterSpacing:"0.05em",fontWeight:"600"}],
+            "body-md": ["16px", {lineHeight:"1.6",fontWeight:"400"}],
+            "headline-lg": ["48px", {lineHeight:"1.2",fontWeight:"600"}],
+            "headline-md": ["32px", {lineHeight:"1.3",fontWeight:"600"}],
+            "body-lg": ["20px", {lineHeight:"1.6",fontWeight:"400"}],
+            "display-lg": ["64px", {lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #101416; color: #F5F7FA; overflow-x: hidden; font-family: 'Inter', sans-serif; }
+
+    .glass-card {
+      background: rgba(29,32,34,0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(245,247,250,0.08);
+      transition: all 0.3s ease-in-out;
+    }
+    .glass-card:hover {
+      border-color: rgba(73,199,165,0.2);
+      background: rgba(73,199,165,0.03);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #49C7A5, #3A63FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Header area riservata */
+    .dashboard-nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 50;
+      background: rgba(16,20,22,0.92);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(61,73,68,0.4);
+    }
+
+    /* Progress giorni */
+    .day-dot {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+      font-family: 'Manrope', sans-serif;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      cursor: default;
+    }
+    .day-dot.completed { background: #49C7A5; color: #101416; }
+    .day-dot.active    { background: #C9A45C; color: #101416; box-shadow: 0 0 14px rgba(201,164,92,0.35); }
+    .day-dot.locked    { background: rgba(61,73,68,0.4); color: rgba(188,202,195,0.3); border: 1px solid rgba(61,73,68,0.5); }
+    .day-connector     { height: 2px; flex: 1; background: rgba(61,73,68,0.5); transition: background 0.3s; }
+    .day-connector.done { background: #49C7A5; }
+
+    /* Audio player */
+    .audio-player {
+      background: rgba(29,32,34,0.8);
+      border: 1px solid rgba(73,199,165,0.12);
+      border-radius: 16px;
+      padding: 24px;
+    }
+    .progress-track {
+      width: 100%; height: 4px;
+      background: rgba(61,73,68,0.6);
+      border-radius: 2px;
+      cursor: pointer; position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #49C7A5, #3A63FF);
+      border-radius: 2px;
+      transition: width 0.2s linear;
+      pointer-events: none;
+    }
+    .play-btn {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: #49C7A5; color: #101416;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease;
+      border: none; flex-shrink: 0;
+    }
+    .play-btn:hover { background: #60dbb8; transform: scale(1.05); }
+    .play-btn:active { transform: scale(0.96); }
+
+    /* Diario */
+    .journal-field {
+      width: 100%;
+      background: rgba(16,20,22,0.8);
+      border: 1px solid rgba(61,73,68,0.5);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #F5F7FA;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px; line-height: 1.6;
+      resize: vertical; min-height: 76px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .journal-field:focus {
+      outline: none;
+      border-color: rgba(73,199,165,0.35);
+      box-shadow: 0 0 0 3px rgba(73,199,165,0.07);
+    }
+    .journal-field::placeholder { color: rgba(188,202,195,0.35); }
+
+    .section-number {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(58,99,255,0.12);
+      border: 1px solid rgba(58,99,255,0.25);
+      color: #3A63FF;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      font-family: 'Manrope', sans-serif;
+      flex-shrink: 0;
+    }
+
+    /* Badge completato */
+    .completed-badge {
+      background: rgba(73,199,165,0.1);
+      border: 1px solid rgba(73,199,165,0.25);
+      border-radius: 100px; padding: 5px 14px;
+      color: #49C7A5; font-size: 13px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+
+    /* Save indicator */
+    .save-indicator { opacity: 0; transition: opacity 0.3s; }
+    .save-indicator.show { opacity: 1; }
+
+    /* CTA Livello 2 */
+    .cta-livello2 {
+      background: linear-gradient(135deg, rgba(201,164,92,0.1), rgba(201,164,92,0.03));
+      border: 1px solid rgba(201,164,92,0.22);
+      border-radius: 20px; padding: 40px;
+    }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 600ms ease, transform 600ms ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+
+<body x-data="learningPage()" x-init="init()">
+
+  <!-- ============================================
+       HEADER — Area riservata (design.md: header dashboard)
+  ============================================ -->
+  <nav class="dashboard-nav">
+    <div class="flex justify-between items-center px-6 py-4 max-w-4xl mx-auto">
+      <!-- Sinistra: logo + breadcrumb -->
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</a>
+        <span class="text-outline-variant text-xs">/</span>
+        <span class="text-on-surface-variant font-label-md text-label-md">Reset Notturno</span>
+        <span class="text-outline-variant text-xs hidden md:inline">/</span>
+        <span class="text-tertiary font-semibold text-sm hidden md:inline" x-text="'Giorno ' + currentDay"></span>
+      </div>
+      <!-- Destra: save indicator + avatar + logout -->
+      <div class="flex items-center gap-4">
+        <span class="save-indicator text-primary text-sm flex items-center gap-1" :class="{ show: saved }">
+          <span class="material-symbols-outlined text-base">check_circle</span>
+          <span class="hidden md:inline">Salvato</span>
+        </span>
+        <a href="/reset-notturno/dashboard.html"
+           class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-md text-label-md">
+          <span class="material-symbols-outlined text-base">grid_view</span>
+          <span class="hidden md:inline">Dashboard</span>
+        </a>
+        <!-- TODO: avatar utente da PocketBase auth -->
+        <button class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-base">account_circle</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       MAIN
+  ============================================ -->
+  <main class="pt-20 pb-24 px-6 max-w-3xl mx-auto">
+
+    <!-- PROGRESS BAR 7 GIORNI -->
+    <div class="py-8 reveal">
+      <div class="flex items-center gap-1">
+        <template x-for="(day, i) in days" :key="i">
+          <div class="contents">
+            <div class="day-dot"
+                 :class="{ completed: day.status==='completed', active: day.status==='active', locked: day.status==='locked' }"
+                 :title="'Giorno ' + day.num">
+              <span x-show="day.status==='completed'" class="material-symbols-outlined" style="font-size:14px">check</span>
+              <span x-show="day.status!=='completed'" x-text="day.num"></span>
+            </div>
+            <div x-show="i < days.length - 1"
+                 class="day-connector"
+                 :class="{ done: day.status==='completed' }"></div>
+          </div>
+        </template>
+      </div>
+      <p class="text-on-surface-variant text-sm mt-3"
+         x-text="completedCount + ' di 7 giorni completati'"></p>
+    </div>
+
+    <!-- INTESTAZIONE GIORNO -->
+    <div class="mb-10 reveal">
+      <div class="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">Reset Notturno</p>
+          <h1 class="font-bold text-3xl md:text-4xl text-on-surface" style="font-family:'Manrope',sans-serif;">
+            Giorno <span class="text-tertiary" x-text="currentDay"></span>
+            <span class="text-on-surface" x-text="' — ' + dayData.title"></span>
+          </h1>
+        </div>
+        <div x-show="dayData.completed" class="completed-badge mt-1">
+          <span class="material-symbols-outlined text-base">verified</span>
+          Completato
+        </div>
+      </div>
+      <!-- Citazione tappa -->
+      <blockquote class="mt-6 pl-4 border-l-2 border-tertiary">
+        <p class="text-on-surface-variant italic text-body-md leading-relaxed" x-text="dayData.quote"></p>
+      </blockquote>
+    </div>
+
+    <!-- SEZIONE AUDIO -->
+    <div class="audio-player mb-10 reveal">
+      <div class="flex items-center gap-3 mb-5">
+        <span class="material-symbols-outlined text-primary" style="font-size:22px">bedtime</span>
+        <div>
+          <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">
+            Induzione Audio &mdash; Da ascoltare la sera
+          </p>
+          <p class="text-on-surface-variant text-xs mt-0.5">Mettiti comodo, chiudi gli occhi, lascia andare</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="play-btn" @click="togglePlay()" :aria-label="playing ? 'Pausa' : 'Riproduci'">
+          <span class="material-symbols-outlined" style="font-size:26px" x-text="playing ? 'pause' : 'play_arrow'"></span>
+        </button>
+        <div class="flex-1">
+          <div class="progress-track" @click="seekAudio($event)">
+            <div class="progress-fill" :style="{ width: audioProgress + '%' }"></div>
+          </div>
+          <div class="flex justify-between mt-2">
+            <span class="text-on-surface-variant text-xs" x-text="formatTime(currentTime)"></span>
+            <span class="text-on-surface-variant text-xs" x-text="formatTime(duration)"></span>
+          </div>
+        </div>
+        <button @click="toggleMute()" class="text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined" x-text="muted ? 'volume_off' : 'volume_up'"></span>
+        </button>
+      </div>
+      <!-- TODO: src = signed URL da PocketBase Storage -->
+      <audio id="audio-player" x-ref="audio"
+             :src="dayData.audioUrl"
+             @timeupdate="onTimeUpdate()"
+             @ended="onAudioEnded()"
+             @loadedmetadata="onMetadataLoaded()"></audio>
+      <p class="mt-4 text-xs text-on-surface-variant opacity-50 flex items-start gap-1.5">
+        <span class="material-symbols-outlined" style="font-size:13px;flex-shrink:0;margin-top:2px">info</span>
+        Non ascoltare mentre guidi o manovri macchinari. Questo programma è un supporto di crescita e non sostituisce terapie mediche.
+      </p>
+    </div>
+
+    <!-- DIARIO DEL MATTINO -->
+    <div class="mb-10 reveal">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-secondary" style="font-size:22px">edit_note</span>
+        <div>
+          <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Diario del Mattino</p>
+          <p class="text-on-surface-variant text-xs mt-0.5">Compila a mente fresca, subito dopo il risveglio</p>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+
+        <!-- Sezione 1: Il Respiro del Risveglio -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="section-number">1</div>
+            <h3 class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">
+              Il Respiro del Risveglio
+            </h3>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-4 leading-relaxed">
+            Con che singola emozione mi sono svegliato? E dove si posa l’energia nel mio corpo ora?
+          </p>
+          <textarea class="journal-field" rows="3"
+            placeholder="Descrivi liberamente..."
+            x-model="journal.s1" @input="autosave()"></textarea>
+        </div>
+
+        <!-- Sezione 2: MENO MALE! -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="section-number">2</div>
+            <h3 class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">
+              MENO MALE! &mdash; La Riformulazione Attiva
+            </h3>
+          </div>
+          <div class="space-y-5">
+            <div>
+              <p class="text-on-surface-variant text-sm mb-3 leading-relaxed">
+                <span class="text-tertiary font-semibold">Il Vecchio Seme:</span>
+                Qual è stato il pensiero limitante che ho intercettato in azione oggi?
+              </p>
+              <textarea class="journal-field" rows="2"
+                placeholder="Il pensiero che ho notato..."
+                x-model="journal.s2a" @input="autosave()"></textarea>
+            </div>
+            <div>
+              <p class="text-on-surface-variant text-sm mb-3 leading-relaxed">
+                <span class="text-primary font-semibold">La Nuova Verità:</span>
+                In base alla mia identità, come lo riformulo in un’affermazione di crescita?
+              </p>
+              <textarea class="journal-field" rows="2"
+                placeholder="La mia nuova verità è..."
+                x-model="journal.s2b" @input="autosave()"
+                style="border-color:rgba(73,199,165,0.18);"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sezione 3: L'Evidenza del Cambiamento -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="section-number">3</div>
+            <h3 class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">
+              L’Evidenza del Cambiamento
+            </h3>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-4 leading-relaxed">
+            Qual è stata la singola azione, decisione o reazione che ho notato essere inaspettatamente facile o diversa oggi?
+            <span class="text-primary"> (La prova del tuo Reset).</span>
+          </p>
+          <textarea class="journal-field" rows="4"
+            placeholder="Ho notato che..."
+            x-model="journal.s3" @input="autosave()"></textarea>
+        </div>
+
+        <!-- Sezione 4: L'Ancoraggio e il Sigillo -->
+        <div class="glass-card rounded-xl p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="section-number">4</div>
+            <h3 class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">
+              L’Ancoraggio e il Sigillo
+            </h3>
+          </div>
+          <p class="text-on-surface-variant text-sm mb-4 leading-relaxed">
+            Se il mio valore avesse una forma o un colore, quale sarebbe e dove si trova ora?
+          </p>
+          <textarea class="journal-field" rows="2"
+            placeholder="Il mio valore ha la forma di..."
+            x-model="journal.s4" @input="autosave()"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CTA COMPLETAMENTO -->
+    <div class="reveal" x-show="!dayData.completed">
+      <button
+        @click="completeDay()"
+        :disabled="!canComplete"
+        class="w-full py-4 rounded-2xl font-bold text-base transition-all duration-300"
+        :class="canComplete
+          ? 'bg-primary text-on-primary hover:bg-primary/90 active:scale-95'
+          : 'bg-surface-container text-on-surface-variant cursor-not-allowed opacity-40'"
+        style="font-family:'Manrope',sans-serif;">
+        <span class="flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">check_circle</span>
+          <span x-text="canComplete
+            ? 'Segna Giorno ' + currentDay + ' come Completato'
+            : 'Compila almeno una sezione per completare'"></span>
+        </span>
+      </button>
+      <p class="text-center text-on-surface-variant text-xs mt-3" x-show="currentDay < 7">
+        Potrai accedere al Giorno <span x-text="currentDay + 1"></span> dopo aver completato questo.
+      </p>
+    </div>
+
+    <!-- STATO GIÀ COMPLETATO -->
+    <div x-show="dayData.completed" class="reveal">
+      <div class="text-center py-8">
+        <div class="completed-badge mx-auto mb-6">
+          <span class="material-symbols-outlined">verified</span>
+          Giorno <span x-text="currentDay"></span> Completato
+        </div>
+        <template x-if="currentDay < 7">
+          <a :href="'giorno.html?day=' + (currentDay + 1)"
+             class="inline-flex items-center gap-2 bg-secondary text-on-secondary px-8 py-3 rounded-full font-semibold transition-all hover:bg-secondary/90"
+             style="font-family:'Manrope',sans-serif;">
+            Vai al Giorno <span x-text="currentDay + 1"></span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </template>
+      </div>
+    </div>
+
+    <!-- CTA LIVELLO 2 — solo Giorno 7 completato -->
+    <div x-show="currentDay === 7 && dayData.completed" class="mt-16 reveal">
+      <div class="cta-livello2 text-center">
+        <p class="text-tertiary font-label-md text-label-md uppercase tracking-widest mb-3">Il tuo prossimo livello</p>
+        <h2 class="text-2xl font-bold text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">
+          Autostima Applicata &mdash; 21 Giorni
+        </h2>
+        <p class="text-on-surface-variant text-body-md mb-4 max-w-lg mx-auto">
+          Hai chiuso il ciclo. Hai dimostrato che il cambiamento è Facile, Semplice, Rapido.
+          Hai le fondamenta. Ora costruiamo il palazzo.
+        </p>
+        <blockquote class="text-on-surface-variant italic text-sm mb-8 max-w-md mx-auto">
+          &ldquo;Non basta essere un albero forte; devi imparare a goderti l’ombra che fai.&rdquo;
+        </blockquote>
+        <a href="#"
+           class="inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-10 py-4 rounded-full font-bold text-base transition-all hover:bg-tertiary/90 active:scale-95"
+           style="font-family:'Manrope',sans-serif;">
+          Scopri l’Offerta Esclusiva
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER MINIMALE area riservata (design.md) -->
+  <footer class="bg-surface-container-lowest w-full py-8 px-6 border-t border-outline-variant/30 mt-8">
+    <div class="max-w-3xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <span class="font-label-md text-label-md text-on-surface-variant">
+        &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
+      </span>
+      <div class="flex gap-6 font-label-md text-label-md">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================
+       ALPINE.JS — Logica pagina
+       TODO: sostituire dati mockup con chiamate PocketBase API
+       Base URL: https://api.ipnosiapplicata.it
+  ============================================ -->
+  <script>
+    const DAYS_DATA = [
+      { num:1, title:'Il Risveglio',   quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.', audioUrl:'', completed:false },
+      { num:2, title:'Le Radici',      quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.',                        audioUrl:'', completed:false },
+      { num:3, title:'Il Valore',      quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.',                              audioUrl:'', completed:false },
+      { num:4, title:'Il Flusso',      quote:'MENO MALE! Ogni emozione che scorre è informazione completata.',                                    audioUrl:'', completed:false },
+      { num:5, title:'La Leggerezza',  quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.',                        audioUrl:'', completed:false },
+      { num:6, title:'Il Futuro',      quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.',                     audioUrl:'', completed:false },
+      { num:7, title:'Il Sigillo',     quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.',              audioUrl:'', completed:false },
+    ];
+
+    function learningPage() {
+      return {
+        currentDay: 1,
+        dayData: {},
+        days: [],
+        journal: { s1:'', s2a:'', s2b:'', s3:'', s4:'' },
+        playing: false, muted: false,
+        audioProgress: 0, currentTime: 0, duration: 0,
+        saved: false, saveTimer: null,
+
+        init() {
+          const params = new URLSearchParams(window.location.search);
+          this.currentDay = Math.min(7, Math.max(1, parseInt(params.get('day') || '1')));
+
+          // TODO: GET /api/collections/progress/records?filter=user_id=CURRENT_USER
+          this.days = DAYS_DATA.map((d, i) => ({
+            ...d,
+            status: i < this.currentDay - 1 ? 'completed' : i === this.currentDay - 1 ? 'active' : 'locked'
+          }));
+          this.dayData = { ...this.days[this.currentDay - 1] };
+
+          // TODO: GET /api/collections/journal_entries/records?filter=user_id=X&&day=N
+          const cached = localStorage.getItem('ia_journal_day_' + this.currentDay);
+          if (cached) this.journal = JSON.parse(cached);
+
+          // Scroll reveal
+          setTimeout(() => {
+            const obs = new IntersectionObserver(entries => {
+              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, { threshold: 0.08 });
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+          }, 100);
+        },
+
+        get completedCount() { return this.days.filter(d => d.status === 'completed').length; },
+        get canComplete() { return this.journal.s1.trim().length > 0 || this.journal.s3.trim().length > 0; },
+
+        togglePlay() {
+          const audio = this.$refs.audio;
+          if (!audio || !audio.src) return;
+          this.playing ? audio.pause() : audio.play();
+          this.playing = !this.playing;
+        },
+        toggleMute() { this.muted = !this.muted; this.$refs.audio.muted = this.muted; },
+        onTimeUpdate() {
+          this.currentTime = this.$refs.audio.currentTime;
+          this.audioProgress = this.duration ? (this.currentTime / this.duration) * 100 : 0;
+        },
+        onMetadataLoaded() { this.duration = this.$refs.audio.duration; },
+        onAudioEnded() { this.playing = false; },
+        seekAudio(e) {
+          if (!this.duration) return;
+          const r = e.currentTarget.getBoundingClientRect();
+          this.$refs.audio.currentTime = ((e.clientX - r.left) / r.width) * this.duration;
+        },
+        formatTime(s) {
+          if (!s || isNaN(s)) return '0:00';
+          return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+        },
+
+        autosave() {
+          // Cache locale
+          localStorage.setItem('ia_journal_day_' + this.currentDay, JSON.stringify(this.journal));
+          // TODO: debounced PATCH /api/collections/journal_entries/records/RECORD_ID
+          clearTimeout(this.saveTimer);
+          this.saveTimer = setTimeout(() => {
+            this.saved = true;
+            setTimeout(() => { this.saved = false; }, 2000);
+          }, 800);
+        },
+
+        completeDay() {
+          if (!this.canComplete) return;
+          this.dayData.completed = true;
+          this.days[this.currentDay - 1].status = 'completed';
+          if (this.currentDay < 7) this.days[this.currentDay].status = 'active';
+          // TODO: PATCH /api/collections/progress/records/RECORD_ID { completed_at: new Date().toISOString() }
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
