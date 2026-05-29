@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Accedi | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <!-- PocketBase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#101416", "on-background": "#F5F7FA",
+            "surface": "#101416", "on-surface": "#F5F7FA",
+            "primary": "#49C7A5", "on-primary": "#101416",
+            "secondary": "#3A63FF", "on-secondary": "#FFFFFF",
+            "tertiary": "#C9A45C", "on-tertiary": "#101416",
+            "outline": "#86948e", "outline-variant": "#3d4944",
+            "surface-container": "#1d2022",
+            "surface-container-low": "#191c1e",
+            "surface-container-high": "#272a2d",
+            "surface-container-lowest": "#0b0f11",
+            "surface-variant": "#323538",
+            "on-surface-variant": "#bccac3"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          fontFamily: {
+            "label-md": ["Inter"], "body-md": ["Inter"],
+            "headline-md": ["Manrope"], "display-lg": ["Manrope"]
+          },
+          fontSize: {
+            "label-md": ["14px", {lineHeight:"1.2",letterSpacing:"0.05em",fontWeight:"600"}],
+            "body-md": ["16px", {lineHeight:"1.6",fontWeight:"400"}],
+            "headline-md": ["32px", {lineHeight:"1.3",fontWeight:"600"}]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #101416;
+      color: #F5F7FA;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      display: inline-block; vertical-align: middle;
+    }
+
+    /* Sfondo con pattern sottile */
+    .bg-pattern {
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(73,199,165,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(58,99,255,0.04) 0%, transparent 50%);
+    }
+
+    /* Card login */
+    .login-card {
+      background: rgba(29,32,34,0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(245,247,250,0.08);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+    }
+
+    /* Input fields */
+    .input-field {
+      width: 100%;
+      background: rgba(16,20,22,0.8);
+      border: 1px solid rgba(61,73,68,0.6);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #F5F7FA;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: rgba(73,199,165,0.4);
+      box-shadow: 0 0 0 3px rgba(73,199,165,0.08);
+    }
+    .input-field::placeholder { color: rgba(188,202,195,0.35); }
+    .input-field.error {
+      border-color: rgba(255,180,171,0.5);
+      box-shadow: 0 0 0 3px rgba(255,180,171,0.06);
+    }
+
+    /* Tab switcher */
+    .tab-btn {
+      flex: 1; padding: 10px;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      font-family: 'Manrope', sans-serif;
+      transition: all 0.2s ease;
+      border: none; cursor: pointer;
+      background: transparent;
+      color: #bccac3;
+    }
+    .tab-btn.active {
+      background: rgba(73,199,165,0.12);
+      color: #49C7A5;
+      border: 1px solid rgba(73,199,165,0.2);
+    }
+    .tab-btn:not(.active):hover { color: #F5F7FA; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: #bccac3; font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: rgba(61,73,68,0.5);
+    }
+
+    /* Alert */
+    .alert {
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .alert.error   { background: rgba(255,180,171,0.08); border: 1px solid rgba(255,180,171,0.2); color: #ffb4ab; }
+    .alert.success { background: rgba(73,199,165,0.08);  border: 1px solid rgba(73,199,165,0.2);  color: #49C7A5; }
+    .alert.info    { background: rgba(58,99,255,0.08);   border: 1px solid rgba(58,99,255,0.2);   color: #aab8ff; }
+
+    /* Password toggle */
+    .input-wrapper { position: relative; }
+    .input-wrapper .toggle-pw {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: #bccac3; cursor: pointer;
+      transition: color 0.2s;
+      background: none; border: none; padding: 0;
+    }
+    .input-wrapper .toggle-pw:hover { color: #F5F7FA; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(16,20,22,0.3);
+      border-top-color: #101416;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+
+<body class="bg-pattern" x-data="loginPage()" x-init="init()">
+
+  <!-- HEADER MINIMALE -->
+  <nav class="w-full px-6 py-5 flex justify-between items-center max-w-5xl mx-auto">
+    <a href="/" class="text-primary font-bold text-base" style="font-family:'Manrope',sans-serif;">
+      IpnosiApplicata
+    </a>
+    <a href="/" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 text-sm font-semibold">
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Torna al sito
+    </a>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="flex-1 flex items-center justify-center px-6 py-12">
+    <div class="login-card">
+
+      <!-- Logo / Brand -->
+      <div class="text-center mb-8">
+        <div class="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined text-primary" style="font-size:24px">self_improvement</span>
+        </div>
+        <h1 class="font-bold text-2xl text-on-surface mb-1" style="font-family:'Manrope',sans-serif;">
+          Accedi alla piattaforma
+        </h1>
+        <p class="text-on-surface-variant text-sm">Il tuo percorso ti aspetta</p>
+      </div>
+
+      <!-- TAB SWITCHER -->
+      <div class="flex gap-2 p-1 bg-surface-container-lowest rounded-xl mb-6">
+        <button class="tab-btn" :class="{ active: mode === 'password' }" @click="mode = 'password'; resetMessages()">
+          <span class="material-symbols-outlined text-sm mr-1" style="font-size:14px">lock</span>
+          Email e password
+        </button>
+        <button class="tab-btn" :class="{ active: mode === 'magic' }" @click="mode = 'magic'; resetMessages()">
+          <span class="material-symbols-outlined text-sm mr-1" style="font-size:14px">magic_button</span>
+          Link magico
+        </button>
+      </div>
+
+      <!-- ALERT -->
+      <div x-show="message.text" class="alert mb-5" :class="message.type" x-cloak>
+        <span class="material-symbols-outlined flex-shrink-0" style="font-size:16px"
+              x-text="message.type === 'error' ? 'error' : message.type === 'success' ? 'check_circle' : 'info'"></span>
+        <span x-text="message.text"></span>
+      </div>
+
+      <!-- ===== FORM: EMAIL + PASSWORD ===== -->
+      <form x-show="mode === 'password'" @submit.prevent="loginWithPassword()" class="space-y-4">
+
+        <div>
+          <label class="block text-xs font-semibold text-on-surface-variant mb-2 uppercase tracking-wider">Email</label>
+          <input
+            type="email"
+            class="input-field"
+            :class="{ error: errors.email }"
+            placeholder="la-tua@email.it"
+            x-model="form.email"
+            autocomplete="email"
+            required
+          />
+          <p x-show="errors.email" class="text-xs mt-1" style="color:#ffb4ab" x-text="errors.email"></p>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Password</label>
+            <button type="button" @click="mode = 'magic'; form.email = form.email"
+                    class="text-xs text-primary hover:text-primary/80 transition-colors">
+              Password dimenticata?
+            </button>
+          </div>
+          <div class="input-wrapper">
+            <input
+              :type="showPw ? 'text' : 'password'"
+              class="input-field pr-12"
+              :class="{ error: errors.password }"
+              placeholder="La tua password"
+              x-model="form.password"
+              autocomplete="current-password"
+              required
+            />
+            <button type="button" class="toggle-pw" @click="showPw = !showPw">
+              <span class="material-symbols-outlined" style="font-size:18px"
+                    x-text="showPw ? 'visibility_off' : 'visibility'"></span>
+            </button>
+          </div>
+          <p x-show="errors.password" class="text-xs mt-1" style="color:#ffb4ab" x-text="errors.password"></p>
+        </div>
+
+        <button
+          type="submit"
+          :disabled="loading"
+          class="w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+          :class="loading ? 'bg-primary/60 cursor-wait' : 'bg-primary hover:bg-primary/90 active:scale-95'"
+          style="color:#101416; font-family:'Manrope',sans-serif;">
+          <span x-show="loading" class="spinner"></span>
+          <span x-show="!loading" class="material-symbols-outlined" style="font-size:18px">login</span>
+          <span x-text="loading ? 'Accesso in corso...' : 'Accedi alla piattaforma'"></span>
+        </button>
+
+        <div class="divider text-xs">oppure</div>
+
+        <button
+          type="button"
+          @click="mode = 'magic'; resetMessages()"
+          class="w-full py-3 rounded-xl font-semibold text-sm border border-outline-variant/50 text-on-surface-variant hover:text-primary hover:border-primary/30 transition-all"
+          style="font-family:'Manrope',sans-serif;">
+          <span class="material-symbols-outlined" style="font-size:16px">magic_button</span>
+          Accedi con link magico
+        </button>
+
+      </form>
+
+      <!-- ===== FORM: MAGIC LINK ===== -->
+      <div x-show="mode === 'magic'">
+
+        <!-- Stato: link non ancora inviato -->
+        <form x-show="!magicSent" @submit.prevent="sendMagicLink()" class="space-y-4">
+          <p class="text-on-surface-variant text-sm leading-relaxed mb-4">
+            Inserisci la tua email. Ti mandiamo un link — clicchi e sei dentro.
+            Nessuna password da ricordare.
+          </p>
+
+          <div>
+            <label class="block text-xs font-semibold text-on-surface-variant mb-2 uppercase tracking-wider">Email</label>
+            <input
+              type="email"
+              class="input-field"
+              :class="{ error: errors.email }"
+              placeholder="la-tua@email.it"
+              x-model="form.email"
+              autocomplete="email"
+              required
+            />
+            <p x-show="errors.email" class="text-xs mt-1" style="color:#ffb4ab" x-text="errors.email"></p>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+            :class="loading ? 'bg-primary/60 cursor-wait' : 'bg-primary hover:bg-primary/90 active:scale-95'"
+            style="color:#101416; font-family:'Manrope',sans-serif;">
+            <span x-show="loading" class="spinner"></span>
+            <span x-show="!loading" class="material-symbols-outlined" style="font-size:18px">send</span>
+            <span x-text="loading ? 'Invio in corso...' : 'Inviami il link magico'"></span>
+          </button>
+
+          <div class="divider text-xs">oppure</div>
+
+          <button
+            type="button"
+            @click="mode = 'password'; resetMessages()"
+            class="w-full py-3 rounded-xl font-semibold text-sm border border-outline-variant/50 text-on-surface-variant hover:text-primary hover:border-primary/30 transition-all"
+            style="font-family:'Manrope',sans-serif;">
+            <span class="material-symbols-outlined" style="font-size:16px">lock</span>
+            Accedi con password
+          </button>
+        </form>
+
+        <!-- Stato: link inviato -->
+        <div x-show="magicSent" class="text-center py-4">
+          <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
+            <span class="material-symbols-outlined text-primary" style="font-size:32px">mark_email_read</span>
+          </div>
+          <h2 class="font-bold text-lg text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Controlla la tua email</h2>
+          <p class="text-on-surface-variant text-sm leading-relaxed mb-2">
+            Ti abbiamo inviato un link a
+          </p>
+          <p class="text-primary font-semibold text-sm mb-5" x-text="form.email"></p>
+          <p class="text-on-surface-variant text-xs leading-relaxed mb-6">
+            Clicca il link nell’email per accedere istantaneamente alla piattaforma.
+            Il link è valido per <span class="text-tertiary font-semibold">30 minuti</span>.
+          </p>
+          <button
+            @click="magicSent = false; resetMessages()"
+            class="text-sm text-on-surface-variant hover:text-primary transition-colors underline underline-offset-4">
+            Non hai ricevuto l’email? Riprova
+          </button>
+        </div>
+
+      </div>
+
+      <!-- FOOTER CARD -->
+      <p class="text-center text-xs text-on-surface-variant mt-6" x-show="!magicSent">
+        Non hai ancora un account?
+        <span class="text-on-surface-variant"> Riceverai le credenziali via email dopo l’acquisto.</span>
+      </p>
+
+    </div>
+  </main>
+
+  <!-- FOOTER MINIMALE -->
+  <footer class="w-full px-6 py-6 border-t border-outline-variant/20">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <span class="text-xs text-on-surface-variant">
+        &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. P.IVA IT12632010018
+      </span>
+      <div class="flex gap-5 text-xs">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================
+       ALPINE.JS + POCKETBASE SDK
+       Base URL: https://api.ipnosiapplicata.it
+  ============================================ -->
+  <script>
+    // TODO: sostituire con URL reale di PocketBase su Coolify
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+
+    function loginPage() {
+      return {
+        mode: 'password',       // 'password' | 'magic'
+        loading: false,
+        showPw: false,
+        magicSent: false,
+        form: { email: '', password: '' },
+        errors: { email: '', password: '' },
+        message: { type: '', text: '' },
+
+        init() {
+          // Se l'utente è già loggato → redirect a dashboard
+          if (pb.authStore.isValid) {
+            window.location.href = '/dashboard.html';
+            return;
+          }
+
+          // Gestione OTP callback (?token=... nell'URL dopo click magic link)
+          const params = new URLSearchParams(window.location.search);
+          const token = params.get('token');
+          if (token) this.handleOTPCallback(token);
+        },
+
+        resetMessages() {
+          this.message = { type: '', text: '' };
+          this.errors = { email: '', password: '' };
+        },
+
+        validate() {
+          this.errors = { email: '', password: '' };
+          let ok = true;
+          if (!this.form.email || !/^[^@]+@[^@]+\.[^@]+$/.test(this.form.email)) {
+            this.errors.email = 'Inserisci un indirizzo email valido.';
+            ok = false;
+          }
+          if (this.mode === 'password' && this.form.password.length < 6) {
+            this.errors.password = 'La password deve essere di almeno 6 caratteri.';
+            ok = false;
+          }
+          return ok;
+        },
+
+        async loginWithPassword() {
+          if (!this.validate()) return;
+          this.loading = true;
+          this.resetMessages();
+          try {
+            // PocketBase: autenticazione con email + password
+            await pb.collection('users').authWithPassword(this.form.email, this.form.password);
+            // Redirect alla dashboard dopo login
+            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/dashboard.html';
+            window.location.href = redirect;
+          } catch (e) {
+            this.message = {
+              type: 'error',
+              text: e.status === 400
+                ? 'Email o password non corretti. Riprova o usa il link magico.'
+                : 'Errore di connessione. Riprova tra qualche istante.'
+            };
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async sendMagicLink() {
+          if (!this.validate()) return;
+          this.loading = true;
+          this.resetMessages();
+          try {
+            // PocketBase: richiesta OTP via email
+            await pb.collection('users').requestOTP(this.form.email);
+            this.magicSent = true;
+          } catch (e) {
+            // Mostriamo sempre successo per sicurezza (non rivelare se l'email esiste)
+            this.magicSent = true;
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async handleOTPCallback(token) {
+          this.loading = true;
+          this.message = { type: 'info', text: 'Verifica del link in corso...' };
+          try {
+            // PocketBase: verifica token OTP dall'URL
+            const otpId = new URLSearchParams(window.location.search).get('otpId') || '';
+            await pb.collection('users').authWithOTP(otpId, token);
+            window.location.href = '/dashboard.html';
+          } catch (e) {
+            this.message = {
+              type: 'error',
+              text: 'Il link non è valido o è scaduto. Richiedi un nuovo link magico.'
+            };
+            this.mode = 'magic';
+            this.loading = false;
+            // Pulisce i parametri URL
+            window.history.replaceState({}, '', '/login.html');
+          }
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
