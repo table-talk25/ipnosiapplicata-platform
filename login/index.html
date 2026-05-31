@@ -58,6 +58,24 @@
       font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
       display: inline-block; vertical-align: middle;
     }
+
+    /* ── Override Tailwind forms plugin ── */
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      background-color: rgba(16,20,22,0.8) !important;
+      color: #F5F7FA !important;
+      border-color: rgba(61,73,68,0.6) !important;
+      -webkit-text-fill-color: #F5F7FA !important;
+    }
+    input[type="email"]:-webkit-autofill,
+    input[type="password"]:-webkit-autofill,
+    input[type="text"]:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px #101416 inset !important;
+      -webkit-text-fill-color: #F5F7FA !important;
+      caret-color: #F5F7FA;
+    }
+
     .bg-pattern {
       background-image:
         radial-gradient(circle at 20% 20%, rgba(73,199,165,0.04) 0%, transparent 50%),
@@ -74,23 +92,24 @@
     }
     .input-field {
       width: 100%;
-      background: rgba(16,20,22,0.8);
+      background: rgba(16,20,22,0.8) !important;
       border: 1px solid rgba(61,73,68,0.6);
       border-radius: 12px;
       padding: 14px 16px;
-      color: #F5F7FA;
+      color: #F5F7FA !important;
       font-family: 'Inter', sans-serif;
       font-size: 15px;
       transition: border-color 0.2s, box-shadow 0.2s;
       outline: none;
+      -webkit-text-fill-color: #F5F7FA !important;
     }
     .input-field:focus {
-      border-color: rgba(73,199,165,0.4);
+      border-color: rgba(73,199,165,0.4) !important;
       box-shadow: 0 0 0 3px rgba(73,199,165,0.08);
     }
     .input-field::placeholder { color: rgba(188,202,195,0.35); }
     .input-field.error {
-      border-color: rgba(255,180,171,0.5);
+      border-color: rgba(255,180,171,0.5) !important;
       box-shadow: 0 0 0 3px rgba(255,180,171,0.06);
     }
     .tab-btn {
@@ -292,7 +311,7 @@
 
         init() {
           if (pb.authStore.isValid) {
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard/';
             return;
           }
           const params = new URLSearchParams(window.location.search);
@@ -325,7 +344,7 @@
           this.resetMessages();
           try {
             await pb.collection('users').authWithPassword(this.form.email, this.form.password);
-            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/dashboard.html';
+            const redirect = new URLSearchParams(window.location.search).get('redirect') || '/dashboard/';
             window.location.href = redirect;
           } catch (e) {
             this.message = {
@@ -359,7 +378,7 @@
           try {
             const otpId = new URLSearchParams(window.location.search).get('otpId') || '';
             await pb.collection('users').authWithOTP(otpId, token);
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard/';
           } catch (e) {
             this.message = {
               type: 'error',
@@ -367,7 +386,7 @@
             };
             this.mode = 'magic';
             this.loading = false;
-            window.history.replaceState({}, '', '/login');
+            window.history.replaceState({}, '', '/login/');
           }
         }
       };
