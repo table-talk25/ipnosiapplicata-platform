@@ -170,7 +170,6 @@
     .reveal { opacity:0; transform:translateY(18px); transition:opacity 500ms ease,transform 500ms ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
 
-    /* Overlay di caricamento — sopra tutto, si nasconde appena Alpine è pronto */
     #loading-overlay {
       position:fixed; inset:0; z-index:200;
       background:#101416;
@@ -181,7 +180,6 @@
   </style>
 </head>
 
-<!-- Overlay di caricamento puro HTML — niente Alpine, visibile subito -->
 <div id="loading-overlay">
   <div style="text-align:center;">
     <div style="width:44px;height:44px;border:2px solid rgba(73,199,165,0.25);border-top-color:#49C7A5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
@@ -261,13 +259,11 @@
   <main class="pt-20 pb-24 lg:pb-10 px-5 lg:pl-[240px] max-w-6xl mx-auto">
     <div class="max-w-3xl">
 
-      <!-- Errore generico -->
       <div x-show="fetchError" class="mt-8 mb-4 p-4 rounded-xl border border-red-400/20 bg-red-400/5 text-red-400 text-sm flex items-center gap-3">
         <span class="material-symbols-outlined" style="font-size:18px">error</span>
         <span>Impossibile caricare alcuni dati. Ricarica la pagina o riprova tra poco.</span>
       </div>
 
-      <!-- Intestazione -->
       <div class="py-8 reveal">
         <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">Area personale</p>
         <h1 class="font-bold text-3xl md:text-4xl text-on-surface" style="font-family:'Manrope',sans-serif;">
@@ -276,7 +272,6 @@
         <p class="text-on-surface-variant mt-2" x-text="greeting"></p>
       </div>
 
-      <!-- Prossima sessione -->
       <div class="sessione-card p-6 mb-8 reveal" x-show="nextSession">
         <div class="flex items-start justify-between gap-4 flex-wrap">
           <div class="flex items-start gap-4">
@@ -299,7 +294,6 @@
         </div>
       </div>
 
-      <!-- Esercizi da completare -->
       <div class="mb-10 reveal" x-show="pendingExercises.length > 0" id="esercizi">
         <div class="flex items-center justify-between mb-4">
           <h2 class="font-bold text-lg text-on-surface" style="font-family:'Manrope',sans-serif;">Da completare</h2>
@@ -326,7 +320,6 @@
         </div>
       </div>
 
-      <!-- Nessun esercizio -->
       <div class="mb-10 reveal" x-show="pendingExercises.length === 0 && !loading">
         <div class="esercizio-row p-5 flex items-center gap-4 opacity-60">
           <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px">edit_note</span>
@@ -334,7 +327,6 @@
         </div>
       </div>
 
-      <!-- I miei percorsi -->
       <div id="corsi" class="mb-10 reveal">
         <h2 class="font-bold text-lg text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">I miei percorsi</h2>
         <div class="space-y-4">
@@ -404,7 +396,6 @@
         </div>
       </div>
 
-      <!-- La mia Mappa -->
       <div id="mappa" class="glass-card rounded-2xl p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
           <div class="w-11 h-11 rounded-2xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
@@ -430,7 +421,6 @@
         </div>
       </div>
 
-      <!-- Il mio Percorso -->
       <div id="percorso" class="glass-card rounded-2xl p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
           <div class="w-11 h-11 rounded-2xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
@@ -594,11 +584,20 @@
             return;
           }
 
-          // Refresh silenzioso del token
-          try { await pb.collection('users').authRefresh(); } catch(e) {
-            pb.authStore.clear();
-            window.location.href = '/login/';
-            return;
+          // Refresh silenzioso del token — se fallisce, si continua comunque
+          // (il token è già valido, non serve mandare via l'utente)
+          try {
+            await pb.collection('users').authRefresh();
+          } catch(e) {
+            // Se il refresh fallisce con 401 (token veramente scaduto), allora redirect
+            // Altrimenti (errore di rete, timeout, ecc.) si continua con il token esistente
+            if (e.status === 401) {
+              pb.authStore.clear();
+              window.location.href = '/login/';
+              return;
+            }
+            // Errore non critico — si procede con il token locale
+            console.warn('authRefresh non riuscito (non critico):', e.message);
           }
 
           this.user = pb.authStore.model;
@@ -628,18 +627,15 @@
               pb.collection('maps').getFirstListItem(`user="${uid}"`, {}).catch(() => null),
             ]);
 
-            // Acquisti attivi
             const activePurchases = purchasesRes.status === 'fulfilled'
               ? purchasesRes.value.items.map(p => p.product_id)
               : [];
 
-            // Progress map
             const progressMap = {};
             if (progressRes.status === 'fulfilled') {
               progressRes.value.items.forEach(p => { progressMap[p.product_id] = p; });
             }
 
-            // Corsi
             this.corsi = CATALOG.map(c => {
               const purchased = activePurchases.includes(c.id);
               const prog = progressMap[c.id];
@@ -665,13 +661,11 @@
               };
             });
 
-            // Prossima sessione
             if (sessionsRes.status === 'fulfilled' && sessionsRes.value.items.length > 0) {
               const s = sessionsRes.value.items[0];
               this.nextSession = { ...s, dateFormatted: formatDate(s.scheduled_at) };
             }
 
-            // Esercizi in sospeso
             if (exercisesRes.status === 'fulfilled') {
               this.pendingExercises = exercisesRes.value.items.map(ex => ({
                 ...ex,
@@ -682,7 +676,6 @@
               }));
             }
 
-            // Journey
             if (journeyRes.status === 'fulfilled') {
               this.journey = journeyRes.value.items.map(j => ({
                 ...j,
@@ -690,7 +683,6 @@
               }));
             }
 
-            // Mappa
             if (mapRes.status === 'fulfilled' && mapRes.value) {
               const m = mapRes.value;
               this.mapPreview = m.profilo
