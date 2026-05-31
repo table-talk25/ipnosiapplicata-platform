@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Area Personale | IpnosiApplicata</title>
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -192,9 +192,10 @@
 
   <nav class="dashboard-nav">
     <div class="flex justify-between items-center px-5 py-4 max-w-6xl mx-auto">
-      <div class="flex items-center gap-3">
-        <a href="/" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</a>
-      </div>
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto">
+        <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+      </a>
       <div class="flex items-center gap-3 relative">
         <button class="relative w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
           <span class="material-symbols-outlined" style="font-size:20px">notifications</span>
@@ -486,9 +487,10 @@
 
   <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-      <span class="text-xs text-on-surface-variant">
-        &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
-      </span>
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-6 w-auto opacity-70">
+        <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      </a>
       <div class="flex gap-5 text-xs">
         <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
         <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
@@ -578,25 +580,18 @@
         },
 
         async init() {
-          // Guard: redirect se non autenticato
           if (!pb.authStore.isValid) {
             window.location.href = '/login/';
             return;
           }
-
-          // Refresh silenzioso del token — se fallisce, si continua comunque
-          // (il token è già valido, non serve mandare via l'utente)
           try {
             await pb.collection('users').authRefresh();
           } catch(e) {
-            // Se il refresh fallisce con 401 (token veramente scaduto), allora redirect
-            // Altrimenti (errore di rete, timeout, ecc.) si continua con il token esistente
             if (e.status === 401) {
               pb.authStore.clear();
               window.location.href = '/login/';
               return;
             }
-            // Errore non critico — si procede con il token locale
             console.warn('authRefresh non riuscito (non critico):', e.message);
           }
 
