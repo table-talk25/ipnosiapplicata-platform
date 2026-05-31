@@ -338,13 +338,13 @@
           </p>
           <p class="text-primary font-semibold text-sm mb-5" x-text="form.email"></p>
           <p class="text-on-surface-variant text-xs leading-relaxed mb-6">
-            Clicca il link nell’email per accedere istantaneamente alla piattaforma.
+            Clicca il link nell'email per accedere istantaneamente alla piattaforma.
             Il link è valido per <span class="text-tertiary font-semibold">30 minuti</span>.
           </p>
           <button
             @click="magicSent = false; resetMessages()"
             class="text-sm text-on-surface-variant hover:text-primary transition-colors underline underline-offset-4">
-            Non hai ricevuto l’email? Riprova
+            Non hai ricevuto l'email? Riprova
           </button>
         </div>
 
@@ -353,7 +353,7 @@
       <!-- FOOTER CARD -->
       <p class="text-center text-xs text-on-surface-variant mt-6" x-show="!magicSent">
         Non hai ancora un account?
-        <span class="text-on-surface-variant"> Riceverai le credenziali via email dopo l’acquisto.</span>
+        <span class="text-on-surface-variant"> Riceverai le credenziali via email dopo l'acquisto.</span>
       </p>
 
     </div>
@@ -377,13 +377,12 @@
        Base URL: https://api.ipnosiapplicata.it
   ============================================ -->
   <script>
-    // TODO: sostituire con URL reale di PocketBase su Coolify
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
 
     function loginPage() {
       return {
-        mode: 'password',       // 'password' | 'magic'
+        mode: 'password',
         loading: false,
         showPw: false,
         magicSent: false,
@@ -392,13 +391,11 @@
         message: { type: '', text: '' },
 
         init() {
-          // Se l'utente è già loggato → redirect a dashboard
           if (pb.authStore.isValid) {
             window.location.href = '/dashboard.html';
             return;
           }
 
-          // Gestione OTP callback (?token=... nell'URL dopo click magic link)
           const params = new URLSearchParams(window.location.search);
           const token = params.get('token');
           if (token) this.handleOTPCallback(token);
@@ -428,9 +425,7 @@
           this.loading = true;
           this.resetMessages();
           try {
-            // PocketBase: autenticazione con email + password
             await pb.collection('users').authWithPassword(this.form.email, this.form.password);
-            // Redirect alla dashboard dopo login
             const redirect = new URLSearchParams(window.location.search).get('redirect') || '/dashboard.html';
             window.location.href = redirect;
           } catch (e) {
@@ -450,11 +445,9 @@
           this.loading = true;
           this.resetMessages();
           try {
-            // PocketBase: richiesta OTP via email
             await pb.collection('users').requestOTP(this.form.email);
             this.magicSent = true;
           } catch (e) {
-            // Mostriamo sempre successo per sicurezza (non rivelare se l'email esiste)
             this.magicSent = true;
           } finally {
             this.loading = false;
@@ -465,7 +458,6 @@
           this.loading = true;
           this.message = { type: 'info', text: 'Verifica del link in corso...' };
           try {
-            // PocketBase: verifica token OTP dall'URL
             const otpId = new URLSearchParams(window.location.search).get('otpId') || '';
             await pb.collection('users').authWithOTP(otpId, token);
             window.location.href = '/dashboard.html';
@@ -476,8 +468,7 @@
             };
             this.mode = 'magic';
             this.loading = false;
-            // Pulisce i parametri URL
-            window.history.replaceState({}, '', '/login.html');
+            window.history.replaceState({}, '', '/login');
           }
         }
       };
