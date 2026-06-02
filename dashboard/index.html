@@ -291,6 +291,7 @@
   <script>
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
 
     const CATALOG = [
       {
@@ -393,8 +394,7 @@
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
               filter: `user.id='${uid}'`,
-              sort: '-created',
-              '$autoCancel': false
+              sort: '-created'
             });
             if (purchasesRes?.items) {
               activePurchases = purchasesRes.items
@@ -411,8 +411,7 @@
           const progressMap = {};
           try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: `user.id='${uid}'`,
-              '$autoCancel': false
+              filter: `user.id='${uid}'`
             });
             if (progressRes?.items) {
               progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
@@ -424,8 +423,7 @@
           try {
             const journeyRes = await pb.collection('journey').getList(1, 20, {
               filter: `user.id='${uid}'`,
-              sort: '-created',
-              '$autoCancel': false
+              sort: '-created'
             });
             if (journeyRes?.items) {
               this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
