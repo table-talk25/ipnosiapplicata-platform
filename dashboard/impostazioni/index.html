@@ -61,45 +61,46 @@
     #loading-overlay { position:fixed; inset:0; z-index:200; background:#101416; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s ease; }
     #loading-overlay.hidden { opacity:0; pointer-events:none; }
 
-    /* ── INPUT FIELDS ── */
-    /* Reset esplicito per battere qualunque browser default */
     .field-input {
-      display: block;
-      width: 100%;
+      display: block; width: 100%;
       background-color: #1d2022 !important;
       color: #F5F7FA !important;
       border: 1px solid rgba(61,73,68,0.6);
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      -webkit-appearance: none;
-      appearance: none;
-      box-sizing: border-box;
+      border-radius: 10px; padding: 10px 14px;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none; appearance: none; box-sizing: border-box;
     }
-    .field-input:focus {
-      border-color: #49C7A5;
-      box-shadow: 0 0 0 3px rgba(73,199,165,0.12);
-    }
+    .field-input:focus { border-color: #49C7A5; box-shadow: 0 0 0 3px rgba(73,199,165,0.12); }
     .field-input::placeholder { color: #86948e !important; }
-    .field-input:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      background-color: #191c1e !important;
-    }
-    /* Autofill fix (Chrome ricoloura lo sfondo) */
+    .field-input:disabled { opacity: 0.45; cursor: not-allowed; background-color: #191c1e !important; }
     .field-input:-webkit-autofill,
     .field-input:-webkit-autofill:hover,
     .field-input:-webkit-autofill:focus {
       -webkit-box-shadow: 0 0 0 1000px #1d2022 inset !important;
-      -webkit-text-fill-color: #F5F7FA !important;
-      caret-color: #F5F7FA;
+      -webkit-text-fill-color: #F5F7FA !important; caret-color: #F5F7FA;
     }
 
-    .avatar-ring { width:80px; height:80px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
-    .avatar-initials { width:80px; height:80px; border-radius:50%; background:rgba(73,199,165,0.12); border:2px solid rgba(73,199,165,0.3); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#49C7A5; font-family:'Manrope',sans-serif; }
+    /* Avatar wrapper: mostra immagine O iniziali, mai entrambi */
+    .avatar-wrap { position:relative; width:80px; height:80px; flex-shrink:0; }
+    .avatar-wrap img {
+      width:80px; height:80px; border-radius:50%;
+      border:2px solid rgba(73,199,165,0.3); object-fit:cover;
+      display:block;
+    }
+    .avatar-initials {
+      width:80px; height:80px; border-radius:50%;
+      background:rgba(73,199,165,0.12); border:2px solid rgba(73,199,165,0.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px; font-weight:700; color:#49C7A5; font-family:'Manrope',sans-serif;
+    }
+    .avatar-overlay {
+      position:absolute; inset:0; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.2s; cursor:pointer;
+    }
+    .avatar-wrap:hover .avatar-overlay { opacity:1; }
+
     .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); padding:12px 20px; border-radius:12px; font-size:13px; font-weight:600; opacity:0; transition:all 0.3s ease; z-index:300; white-space:nowrap; pointer-events:none; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
     .toast.success { background:#1d2022; border:1px solid rgba(73,199,165,0.35); color:#49C7A5; }
@@ -119,6 +120,9 @@
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <div id="toast" class="toast"></div>
+
+<!-- Avatar preview element usato da JS puro (fuori Alpine per max controllo) -->
+<img id="avatar-img" style="display:none;" alt="Avatar" class="" />
 
 <body x-data="impostazioniPage()" x-init="init()">
 
@@ -174,7 +178,6 @@
   <main class="pt-20 pb-24 lg:pb-10 px-5 lg:pl-[240px] max-w-6xl mx-auto">
     <div class="max-w-2xl">
 
-      <!-- Header -->
       <div class="py-6 reveal">
         <div class="flex items-center gap-2 text-xs text-on-surface-variant mb-4">
           <a href="/dashboard/" class="hover:text-primary transition-colors">Area personale</a>
@@ -189,19 +192,12 @@
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Foto profilo</h2>
         <div class="flex items-center gap-5">
-          <div class="relative flex-shrink-0">
-            <!-- avatar con foto (preview o salvata) -->
-            <img x-show="avatarPreview || currentAvatarUrl"
-                 :src="avatarPreview || currentAvatarUrl"
-                 alt="Avatar" class="avatar-ring">
-            <!-- iniziali se nessuna foto -->
-            <div x-show="!avatarPreview && !currentAvatarUrl"
-                 class="avatar-initials"
-                 x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></div>
-            <label for="avatar-input" class="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
-              <span class="material-symbols-outlined text-white" style="font-size:20px">photo_camera</span>
-            </label>
+
+          <!-- Avatar: gestito interamente da JS, non da Alpine -->
+          <div class="avatar-wrap" id="avatar-wrap">
+            <!-- img e iniziali iniettati da renderAvatar() -->
           </div>
+
           <div class="flex-1">
             <p class="text-sm text-on-surface-variant mb-3">JPG, PNG o WebP &mdash; max 10 MB. Consigliato 400&times;400 px.</p>
             <div class="flex flex-wrap gap-2">
@@ -210,13 +206,13 @@
                 <span class="material-symbols-outlined" style="font-size:16px">upload</span>
                 Scegli immagine
               </label>
-              <button x-show="avatarPreview" @click="saveAvatar()"
+              <button id="btn-save-avatar" style="display:none" @click="saveAvatar()"
                       :disabled="savingAvatar"
                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary text-on-primary text-sm font-bold transition-all hover:opacity-90 disabled:opacity-50">
                 <span class="material-symbols-outlined" style="font-size:16px">save</span>
                 <span x-text="savingAvatar ? 'Salvataggio…' : 'Salva foto'"></span>
               </button>
-              <button x-show="currentAvatarUrl && !avatarPreview" @click="removeAvatar()"
+              <button id="btn-remove-avatar" style="display:none" @click="removeAvatar()"
                       :disabled="savingAvatar"
                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-400/30 text-red-400 text-sm font-semibold hover:bg-red-400/5 transition-all disabled:opacity-50">
                 <span class="material-symbols-outlined" style="font-size:16px">delete</span>
@@ -320,7 +316,6 @@
     </div>
   </main>
 
-  <!-- BOTTOM NAV mobile -->
   <nav class="bottom-nav lg:hidden">
     <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
     <a href="/dashboard/#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
@@ -328,7 +323,6 @@
     <a href="/dashboard/profilo-quiz/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
   </nav>
 
-  <!-- MODAL CONFERMA ELIMINAZIONE -->
   <div x-show="showDeleteModal" class="modal-backdrop" @click.self="showDeleteModal = false">
     <div class="modal-box">
       <div class="flex items-center gap-3 mb-4">
@@ -341,9 +335,7 @@
       <input type="text" x-model="deleteConfirmText" placeholder="ELIMINA" class="field-input mb-5">
       <div class="flex gap-3">
         <button @click="showDeleteModal = false; deleteConfirmText = ''"
-                class="flex-1 px-4 py-2.5 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm hover:border-primary/30 transition-all">
-          Annulla
-        </button>
+                class="flex-1 px-4 py-2.5 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm hover:border-primary/30 transition-all">Annulla</button>
         <button @click="deleteAccount()"
                 :disabled="deleteConfirmText !== 'ELIMINA' || deletingAccount"
                 class="flex-1 px-4 py-2.5 rounded-full bg-red-400/80 text-white font-bold text-sm hover:bg-red-400 transition-all disabled:opacity-40">
@@ -371,9 +363,47 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    function buildAvatarUrl(userId, avatarFilename) {
-      if (!userId || !avatarFilename) return '';
-      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + avatarFilename + '?t=' + Date.now();
+    /* ── Avatar DOM helpers ──
+       Gestione completamente imperativa: nessun x-show/x-if sull'avatar.
+       renderAvatar(src, initial) aggiorna il DOM direttamente.
+    */
+    function renderAvatar(src, initial) {
+      var wrap = document.getElementById('avatar-wrap');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+
+      // overlay camera
+      var overlay = document.createElement('label');
+      overlay.htmlFor = 'avatar-input';
+      overlay.className = 'avatar-overlay';
+      overlay.innerHTML = '<span class="material-symbols-outlined" style="color:#fff;font-size:20px">photo_camera</span>';
+
+      if (src) {
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Avatar';
+        img.style.cssText = 'width:80px;height:80px;border-radius:50%;border:2px solid rgba(73,199,165,0.3);object-fit:cover;display:block;';
+        img.onerror = function() {
+          // se l'immagine fallisce mostra iniziali
+          renderAvatar(null, initial);
+        };
+        wrap.appendChild(img);
+      } else {
+        var ini = document.createElement('div');
+        ini.className = 'avatar-initials';
+        ini.textContent = initial || 'U';
+        wrap.appendChild(ini);
+      }
+      wrap.appendChild(overlay);
+
+      // aggiorna visibilità pulsanti
+      var btnSave   = document.getElementById('btn-save-avatar');
+      var btnRemove = document.getElementById('btn-remove-avatar');
+      // btn-save: visibile solo se c'è una preview locale (gestito da Alpine)
+      // btn-remove: visibile solo se c'è un avatar salvato (src non-blob)
+      if (btnRemove) {
+        btnRemove.style.display = (src && src.indexOf('blob:') !== 0) ? 'inline-flex' : 'none';
+      }
     }
 
     function hideOverlay() {
@@ -397,7 +427,6 @@
         pw: { old: '', new: '', confirm: '' },
         showOld: false, showNew: false, showConfirm: false,
         avatarPreview: null, avatarFile: null,
-        currentAvatarUrl: '',
         savingProfile: false, savingPw: false, savingAvatar: false,
         showDeleteModal: false, deleteConfirmText: '', deletingAccount: false,
 
@@ -405,22 +434,24 @@
           if (this._loaded) return;
           this._loaded = true;
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
-          try {
-            await pb.collection('users').authRefresh();
-          } catch(e) {
-            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
-          }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) { if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; } }
+
           this.user = Object.assign({}, pb.authStore.model);
           this.form.first_name = this.user.first_name || '';
           this.form.last_name  = this.user.last_name  || '';
-          this.currentAvatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
+
+          var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
+          var avatarSrc = this.user.avatar
+            ? pb.files.getUrl(this.user, this.user.avatar, { thumb: '200x200' })
+            : null;
+          renderAvatar(avatarSrc, initial);
+
           hideOverlay();
           this.$nextTick(function() {
             setTimeout(function() {
               var obs = new IntersectionObserver(function(entries) {
-                entries.forEach(function(e) {
-                  if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-                });
+                entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
               }, { threshold: 0.06 });
               document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
             }, 80);
@@ -437,6 +468,14 @@
           }
           this.avatarFile = file;
           this.avatarPreview = URL.createObjectURL(file);
+          // mostra preview subito nel DOM
+          var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
+          renderAvatar(this.avatarPreview, initial);
+          // mostra pulsante Salva
+          var btnSave = document.getElementById('btn-save-avatar');
+          if (btnSave) btnSave.style.display = 'inline-flex';
+          var btnRemove = document.getElementById('btn-remove-avatar');
+          if (btnRemove) btnRemove.style.display = 'none';
         },
 
         async saveAvatar() {
@@ -446,19 +485,26 @@
             var formData = new FormData();
             formData.append('avatar', this.avatarFile);
             var updated = await pb.collection('users').update(this.user.id, formData);
-            // aggiorna user reattivo e URL avatar
             this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
-            this.currentAvatarUrl = buildAvatarUrl(updated.id, updated.avatar);
+
+            // Usa pb.files.getUrl per avere l'URL corretto con thumb + cache-bust
+            var newSrc = pb.files.getUrl(updated, updated.avatar, { thumb: '200x200' })
+                         + '&nocache=' + Date.now();
+            var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
+            renderAvatar(newSrc, initial);
+
             this.avatarPreview = null;
             this.avatarFile = null;
-            // reset input file
             var inp = document.getElementById('avatar-input');
             if (inp) inp.value = '';
+            var btnSave = document.getElementById('btn-save-avatar');
+            if (btnSave) btnSave.style.display = 'none';
+
             showToast('Foto aggiornata!', 'success');
           } catch(e) {
-            console.error('saveAvatar error:', e);
-            showToast('Errore durante il salvataggio.', 'error');
+            console.error('saveAvatar:', e);
+            showToast('Errore durante il salvataggio: ' + (e.message || ''), 'error');
           } finally {
             this.savingAvatar = false;
           }
@@ -467,10 +513,11 @@
         async removeAvatar() {
           this.savingAvatar = true;
           try {
-            var updated = await pb.collection('users').update(this.user.id, { 'avatar': null });
+            var updated = await pb.collection('users').update(this.user.id, { avatar: null });
             this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
-            this.currentAvatarUrl = '';
+            var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
+            renderAvatar(null, initial);
             showToast('Foto rimossa.', 'success');
           } catch(e) {
             showToast('Errore durante la rimozione.', 'error');
@@ -480,10 +527,7 @@
         },
 
         async saveProfile() {
-          if (!this.form.first_name.trim()) {
-            showToast('Il nome non pu\u00f2 essere vuoto.', 'error');
-            return;
-          }
+          if (!this.form.first_name.trim()) { showToast('Il nome non pu\u00f2 essere vuoto.', 'error'); return; }
           this.savingProfile = true;
           try {
             var updated = await pb.collection('users').update(this.user.id, {
@@ -495,30 +539,17 @@
             showToast('Profilo aggiornato!', 'success');
           } catch(e) {
             showToast('Errore durante il salvataggio.', 'error');
-          } finally {
-            this.savingProfile = false;
-          }
+          } finally { this.savingProfile = false; }
         },
 
         async changePassword() {
-          if (!this.pw.old || !this.pw.new || !this.pw.confirm) {
-            showToast('Compila tutti i campi password.', 'error');
-            return;
-          }
-          if (this.pw.new.length < 8) {
-            showToast('La nuova password deve avere almeno 8 caratteri.', 'error');
-            return;
-          }
-          if (this.pw.new !== this.pw.confirm) {
-            showToast('Le password non coincidono.', 'error');
-            return;
-          }
+          if (!this.pw.old || !this.pw.new || !this.pw.confirm) { showToast('Compila tutti i campi password.', 'error'); return; }
+          if (this.pw.new.length < 8) { showToast('La nuova password deve avere almeno 8 caratteri.', 'error'); return; }
+          if (this.pw.new !== this.pw.confirm) { showToast('Le password non coincidono.', 'error'); return; }
           this.savingPw = true;
           try {
             await pb.collection('users').update(this.user.id, {
-              oldPassword:     this.pw.old,
-              password:        this.pw.new,
-              passwordConfirm: this.pw.confirm
+              oldPassword: this.pw.old, password: this.pw.new, passwordConfirm: this.pw.confirm
             });
             this.pw = { old: '', new: '', confirm: '' };
             showToast('Password aggiornata! Verrai reindirizzato al login.', 'success');
@@ -526,9 +557,7 @@
           } catch(e) {
             var msg = (e.data && e.data.oldPassword) ? 'Password attuale non corretta.' : 'Errore durante l\'aggiornamento.';
             showToast(msg, 'error');
-          } finally {
-            this.savingPw = false;
-          }
+          } finally { this.savingPw = false; }
         },
 
         async deleteAccount() {
