@@ -387,17 +387,17 @@
         },
 
         async loadAll() {
-          const userEmail = this.user.email;
+          // uid usato da tutti i fetch — non più email per purchases
+          const uid = this.user.id;
 
-          // Filtro per email (il campo user in purchases contiene l'email, non l'ID)
           let activePurchases = [];
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user="${userEmail}"`,
+              filter: `user="${uid}"`,
               sort: '-created',
               '$autoCancel': false
             });
-            if (purchasesRes && purchasesRes.items) {
+            if (purchasesRes?.items) {
               activePurchases = purchasesRes.items
                 .filter(p => p.status === 'completed')
                 .map(p => p.product)
@@ -409,15 +409,14 @@
             this.fetchError = true;
           }
 
-          // Progressi (filtro per ID utente — collection progress usa ID standard)
-          const uid = this.user.id;
+          // Progressi
           const progressMap = {};
           try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
               filter: `user="${uid}"`,
               '$autoCancel': false
             });
-            if (progressRes && progressRes.items) {
+            if (progressRes?.items) {
               progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
             }
           } catch(e) {
@@ -431,7 +430,7 @@
               sort: '-created',
               '$autoCancel': false
             });
-            if (journeyRes && journeyRes.items) {
+            if (journeyRes?.items) {
               this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
             }
           } catch(e) {
