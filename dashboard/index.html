@@ -97,15 +97,15 @@
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
           <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
             <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
-                  x-text="user.name ? user.name[0].toUpperCase() : 'U'"></span>
+                  x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
           </div>
-          <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.name || 'Il tuo account'"></span>
+          <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
           <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">expand_more</span>
         </div>
         <div x-show="showUserMenu" @click.away="showUserMenu = false"
              class="absolute right-0 top-12 bg-surface-container-high border border-outline-variant/50 rounded-xl shadow-2xl py-2 w-48 z-50">
           <div class="px-4 py-2 border-b border-outline-variant/30 mb-1">
-            <p class="text-sm font-semibold text-on-surface truncate" x-text="user.name"></p>
+            <p class="text-sm font-semibold text-on-surface truncate" x-text="user.first_name"></p>
             <p class="text-xs text-on-surface-variant truncate" x-text="user.email"></p>
           </div>
           <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors">
@@ -150,7 +150,7 @@
       <div class="py-8 reveal">
         <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">Area personale</p>
         <h1 class="font-bold text-3xl md:text-4xl text-on-surface" style="font-family:'Manrope',sans-serif;">
-          Bentornato, <span class="gradient-text" x-text="user.name ? user.name.split(' ')[0] : 'amico'"></span>
+          Bentornato, <span class="gradient-text" x-text="user.first_name || 'amico'"></span>
         </h1>
         <p class="text-on-surface-variant mt-2" x-text="greeting"></p>
       </div>
@@ -387,7 +387,6 @@
         },
 
         async loadAll() {
-          // uid usato da tutti i fetch — non più email per purchases
           const uid = this.user.id;
 
           let activePurchases = [];
@@ -409,7 +408,6 @@
             this.fetchError = true;
           }
 
-          // Progressi
           const progressMap = {};
           try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
@@ -423,7 +421,6 @@
             console.warn('[progress] errore:', e.message);
           }
 
-          // Journey (opzionale)
           try {
             const journeyRes = await pb.collection('journey').getList(1, 20, {
               filter: `user="${uid}"`,
@@ -437,7 +434,6 @@
             this.journey = [];
           }
 
-          // Costruisce stato corsi
           this.corsi = CATALOG.map(c => {
             const purchased = activePurchases.includes(c.id);
             const prog = progressMap[c.id];
