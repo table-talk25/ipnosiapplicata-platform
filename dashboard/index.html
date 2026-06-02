@@ -80,7 +80,7 @@
 <div id="loading-overlay">
   <div style="text-align:center;">
     <div style="width:44px;height:44px;border:2px solid rgba(73,199,165,0.25);border-top-color:#49C7A5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
-    <p style="color:#bccac3;font-size:14px;font-family:'Inter',sans-serif;">Caricamento in corso…</p>
+    <p style="color:#bccac3;font-size:14px;font-family:'Inter',sans-serif;">Caricamento in corso&hellip;</p>
   </div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
@@ -224,7 +224,7 @@
       <!-- Percorso -->
       <div id="percorso" class="glass-card rounded-2xl p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
-          <div class="w-11 h-11 rounded-2xl bg-secondary/12 border bg-secondary/25 flex items-center justify-center flex-shrink-0">
+          <div class="w-11 h-11 rounded-2xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-secondary" style="font-size:22px">route</span>
           </div>
           <div class="flex-1">
@@ -289,11 +289,11 @@
   </footer>
 
   <script>
-    const PB_URL = 'https://api.ipnosiapplicata.it';
-    const pb = new PocketBase(PB_URL);
+    var PB_URL = 'https://api.ipnosiapplicata.it';
+    var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    const CATALOG = [
+    var CATALOG = [
       {
         id: 'reset-notturno',
         title: 'Reset Notturno',
@@ -323,24 +323,31 @@
         link: '#',
         lockedMsg: 'Prenota la Sessione di Svolta per iniziare.',
         unlockLink: 'https://cristianlecca.it/sessione-di-svolta/'
-      },
+      }
     ];
 
     function timeAgo(iso) {
       if (!iso) return '';
-      const diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+      var diff = Math.floor((Date.now() - new Date(iso)) / 1000);
       if (diff < 60)    return 'Pochi secondi fa';
       if (diff < 3600)  return Math.floor(diff/60) + ' minuti fa';
       if (diff < 86400) return Math.floor(diff/3600) + ' ore fa';
-      const days = Math.floor(diff/86400);
+      var days = Math.floor(diff/86400);
       if (days === 1)   return 'Ieri';
       if (days < 7)     return days + ' giorni fa';
       return new Date(iso).toLocaleDateString('it-IT', { day:'numeric', month:'short' });
     }
 
     function hideOverlay() {
-      const el = document.getElementById('loading-overlay');
-      if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 350); }
+      var el = document.getElementById('loading-overlay');
+      if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
+    }
+
+    function buildProgressLabel(purchased, totalSteps, currentStep) {
+      if (!purchased) return '';
+      if (totalSteps === 7) return 'Giorno ' + currentStep + ' di ' + totalSteps;
+      if (totalSteps === 6) return 'Sessione ' + currentStep + ' di ' + totalSteps;
+      return 'Step ' + currentStep + ' di ' + totalSteps;
     }
 
     function dashboardPage() {
@@ -351,7 +358,7 @@
         corsi: [], journey: [],
 
         get greeting() {
-          const h = new Date().getHours();
+          var h = new Date().getHours();
           if (h < 12) return 'Buongiorno. Come ti sei svegliato oggi?';
           if (h < 18) return 'Buon pomeriggio. Il tuo percorso è in corso.';
           return 'Buonasera. Un buon momento per l\'induzione di stasera.';
@@ -377,29 +384,32 @@
           this.loading = false;
           hideOverlay();
 
-          this.$nextTick(() => {
-            setTimeout(() => {
-              const obs = new IntersectionObserver(entries => {
-                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+          this.$nextTick(function() {
+            setTimeout(function() {
+              var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                  if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
               }, { threshold: 0.06 });
-              document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+              document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
             }, 80);
           });
         },
 
         async loadAll() {
-          const uid = this.user.id;
+          var uid = this.user.id;
+          var filterUser = "user='" + uid + "'";
 
-          let activePurchases = [];
+          var activePurchases = [];
           try {
-            const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user='${uid}'`,
+            var purchasesRes = await pb.collection('purchases').getList(1, 50, {
+              filter: filterUser,
               sort: '-created'
             });
-            if (purchasesRes?.items) {
+            if (purchasesRes && purchasesRes.items) {
               activePurchases = purchasesRes.items
-                .filter(p => p.status === 'completed')
-                .map(p => p.product)
+                .filter(function(p) { return p.status === 'completed'; })
+                .map(function(p) { return p.product; })
                 .filter(Boolean);
               console.log('[DEBUG] purchases OK, prodotti attivi:', activePurchases);
             }
@@ -408,57 +418,55 @@
             this.fetchError = true;
           }
 
-          const progressMap = {};
+          var progressMap = {};
           try {
-            const progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: `user='${uid}'`
+            var progressRes = await pb.collection('progress').getList(1, 50, {
+              filter: filterUser
             });
-            if (progressRes?.items) {
-              progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
+            if (progressRes && progressRes.items) {
+              progressRes.items.forEach(function(p) { progressMap[p.product_id] = p; });
             }
           } catch(e) {
             console.warn('[progress] errore:', e.message);
           }
 
           try {
-            const journeyRes = await pb.collection('journey').getList(1, 20, {
-              filter: `user='${uid}'`,
+            var journeyRes = await pb.collection('journey').getList(1, 20, {
+              filter: filterUser,
               sort: '-created'
             });
-            if (journeyRes?.items) {
-              this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
+            if (journeyRes && journeyRes.items) {
+              this.journey = journeyRes.items.map(function(j) {
+                return Object.assign({}, j, { dateFormatted: timeAgo(j.created) });
+              });
             }
           } catch(e) {
             this.journey = [];
           }
 
-          this.corsi = CATALOG.map(c => {
-            const purchased = activePurchases.includes(c.id);
-            const prog = progressMap[c.id];
-            const completedSteps = prog ? (prog.completed_steps || []).length : 0;
-            const currentStep = prog ? (prog.current_step || 0) : 0;
-            const pct = c.totalSteps > 0 ? Math.round((completedSteps / c.totalSteps) * 100) : 0;
-            const statusLabel = !purchased ? 'Bloccato'
+          var self = this;
+          this.corsi = CATALOG.map(function(c) {
+            var purchased = activePurchases.indexOf(c.id) !== -1;
+            var prog = progressMap[c.id];
+            var completedSteps = prog && prog.completed_steps ? prog.completed_steps.length : 0;
+            var currentStep = prog && prog.current_step ? prog.current_step : 0;
+            var pct = c.totalSteps > 0 ? Math.round((completedSteps / c.totalSteps) * 100) : 0;
+            var statusLabel = !purchased ? 'Bloccato'
               : pct === 100 ? 'Completato'
               : currentStep > 0 ? 'In corso'
               : 'Disponibile';
-            const badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
-            return {
-              ...c,
+            var badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
+            return Object.assign({}, c, {
               unlocked: purchased,
               progress: pct,
-              progressLabel: purchased
-                ? (c.totalSteps === 7 ? `Giorno ${currentStep} di ${c.totalSteps}`
-                 : c.totalSteps === 6 ? `Sessione ${currentStep} di ${c.totalSteps}`
-                 : `Step ${currentStep} di ${c.totalSteps}`)
-                : '',
+              progressLabel: buildProgressLabel(purchased, c.totalSteps, currentStep),
               badgeLabel: statusLabel,
-              badgeClass,
-            };
+              badgeClass: badgeClass
+            });
           });
         },
 
-        logout() {
+        logout: function() {
           pb.authStore.clear();
           window.location.href = '/login/';
         }
