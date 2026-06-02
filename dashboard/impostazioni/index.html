@@ -5,7 +5,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Impostazioni | IpnosiApplicata</title>
   <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png">
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -60,17 +60,51 @@
     .reveal.visible { opacity:1; transform:translateY(0); }
     #loading-overlay { position:fixed; inset:0; z-index:200; background:#101416; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s ease; }
     #loading-overlay.hidden { opacity:0; pointer-events:none; }
-    .field-input { width:100%; background:rgba(29,32,34,0.8); border:1px solid rgba(61,73,68,0.5); border-radius:10px; padding:10px 14px; color:#F5F7FA; font-size:14px; font-family:'Inter',sans-serif; outline:none; transition:border-color 0.2s; }
-    .field-input:focus { border-color:#49C7A5; }
-    .field-input::placeholder { color:#86948e; }
-    .avatar-ring { width:80px; height:80px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; }
+
+    /* ── INPUT FIELDS ── */
+    /* Reset esplicito per battere qualunque browser default */
+    .field-input {
+      display: block;
+      width: 100%;
+      background-color: #1d2022 !important;
+      color: #F5F7FA !important;
+      border: 1px solid rgba(61,73,68,0.6);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+    }
+    .field-input:focus {
+      border-color: #49C7A5;
+      box-shadow: 0 0 0 3px rgba(73,199,165,0.12);
+    }
+    .field-input::placeholder { color: #86948e !important; }
+    .field-input:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background-color: #191c1e !important;
+    }
+    /* Autofill fix (Chrome ricoloura lo sfondo) */
+    .field-input:-webkit-autofill,
+    .field-input:-webkit-autofill:hover,
+    .field-input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px #1d2022 inset !important;
+      -webkit-text-fill-color: #F5F7FA !important;
+      caret-color: #F5F7FA;
+    }
+
+    .avatar-ring { width:80px; height:80px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
     .avatar-initials { width:80px; height:80px; border-radius:50%; background:rgba(73,199,165,0.12); border:2px solid rgba(73,199,165,0.3); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#49C7A5; font-family:'Manrope',sans-serif; }
     .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); padding:12px 20px; border-radius:12px; font-size:13px; font-weight:600; opacity:0; transition:all 0.3s ease; z-index:300; white-space:nowrap; pointer-events:none; }
     .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
     .toast.success { background:#1d2022; border:1px solid rgba(73,199,165,0.35); color:#49C7A5; }
     .toast.error   { background:#1d2022; border:1px solid rgba(255,180,171,0.35); color:#ffb4ab; }
     .danger-zone { background:rgba(255,180,171,0.04); border:1px solid rgba(255,180,171,0.15); border-radius:16px; }
-    /* modal */
     .modal-backdrop { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px; }
     .modal-box { background:#1d2022; border:1px solid rgba(61,73,68,0.5); border-radius:20px; padding:28px; max-width:380px; width:100%; }
   </style>
@@ -84,7 +118,6 @@
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
-<!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <body x-data="impostazioniPage()" x-init="init()">
@@ -128,25 +161,13 @@
   <!-- SIDEBAR -->
   <aside class="sidebar hidden lg:block">
     <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
-    <a href="/dashboard/" class="sidebar-item">
-      <span class="material-symbols-outlined">home</span> Area personale
-    </a>
-    <a href="/percorso/" class="sidebar-item">
-      <span class="material-symbols-outlined">route</span> Il mio Percorso
-    </a>
-    <a href="/dashboard/#corsi" class="sidebar-item">
-      <span class="material-symbols-outlined">school</span> Corsi
-    </a>
-    <a href="/dashboard/profilo-quiz/" class="sidebar-item">
-      <span class="material-symbols-outlined">psychology</span> Profilo Quiz
-    </a>
+    <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span> Area personale</a>
+    <a href="/percorso/" class="sidebar-item"><span class="material-symbols-outlined">route</span> Il mio Percorso</a>
+    <a href="/dashboard/#corsi" class="sidebar-item"><span class="material-symbols-outlined">school</span> Corsi</a>
+    <a href="/dashboard/profilo-quiz/" class="sidebar-item"><span class="material-symbols-outlined">psychology</span> Profilo Quiz</a>
     <div class="border-t border-outline-variant/30 my-3"></div>
-    <a href="/dashboard/impostazioni/" class="sidebar-item active">
-      <span class="material-symbols-outlined">manage_accounts</span> Impostazioni
-    </a>
-    <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400">
-      <span class="material-symbols-outlined">logout</span> Esci
-    </button>
+    <a href="/dashboard/impostazioni/" class="sidebar-item active"><span class="material-symbols-outlined">manage_accounts</span> Impostazioni</a>
+    <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400"><span class="material-symbols-outlined">logout</span> Esci</button>
   </aside>
 
   <!-- MAIN -->
@@ -164,25 +185,25 @@
         <p class="text-on-surface-variant mt-1 text-sm">Gestisci il tuo profilo e la sicurezza dell&rsquo;account.</p>
       </div>
 
-      <!-- ── FOTO PROFILO ── -->
+      <!-- FOTO PROFILO -->
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Foto profilo</h2>
         <div class="flex items-center gap-5">
-          <!-- Avatar attuale -->
           <div class="relative flex-shrink-0">
-            <template x-if="avatarPreview || user.avatar">
-              <img :src="avatarPreview || avatarUrl" alt="Avatar" class="avatar-ring">
-            </template>
-            <template x-if="!avatarPreview && !user.avatar">
-              <div class="avatar-initials" x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></div>
-            </template>
-            <!-- overlay click -->
+            <!-- avatar con foto (preview o salvata) -->
+            <img x-show="avatarPreview || currentAvatarUrl"
+                 :src="avatarPreview || currentAvatarUrl"
+                 alt="Avatar" class="avatar-ring">
+            <!-- iniziali se nessuna foto -->
+            <div x-show="!avatarPreview && !currentAvatarUrl"
+                 class="avatar-initials"
+                 x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></div>
             <label for="avatar-input" class="absolute inset-0 rounded-full flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
               <span class="material-symbols-outlined text-white" style="font-size:20px">photo_camera</span>
             </label>
           </div>
           <div class="flex-1">
-            <p class="text-sm text-on-surface-variant mb-3">JPG o PNG, max 2 MB. Consigliato 400&times;400 px.</p>
+            <p class="text-sm text-on-surface-variant mb-3">JPG, PNG o WebP &mdash; max 10 MB. Consigliato 400&times;400 px.</p>
             <div class="flex flex-wrap gap-2">
               <label for="avatar-input"
                      class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant/50 text-on-surface-variant text-sm font-semibold cursor-pointer hover:border-primary/40 hover:text-primary transition-all">
@@ -195,7 +216,7 @@
                 <span class="material-symbols-outlined" style="font-size:16px">save</span>
                 <span x-text="savingAvatar ? 'Salvataggio…' : 'Salva foto'"></span>
               </button>
-              <button x-show="user.avatar && !avatarPreview" @click="removeAvatar()"
+              <button x-show="currentAvatarUrl && !avatarPreview" @click="removeAvatar()"
                       :disabled="savingAvatar"
                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-400/30 text-red-400 text-sm font-semibold hover:bg-red-400/5 transition-all disabled:opacity-50">
                 <span class="material-symbols-outlined" style="font-size:16px">delete</span>
@@ -207,7 +228,7 @@
         </div>
       </div>
 
-      <!-- ── DATI PERSONALI ── -->
+      <!-- DATI PERSONALI -->
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Dati personali</h2>
         <div class="space-y-4">
@@ -223,11 +244,11 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">Email</label>
-            <input type="email" :value="user.email" disabled class="field-input opacity-50 cursor-not-allowed">
+            <input type="email" :value="user.email" disabled class="field-input">
             <p class="text-on-surface-variant text-xs mt-1">L&rsquo;email non pu&ograve; essere modificata da qui. Contatta il supporto se necessario.</p>
           </div>
         </div>
-        <div class="mt-5 flex items-center gap-3">
+        <div class="mt-5">
           <button @click="saveProfile()" :disabled="savingProfile"
                   class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
             <span class="material-symbols-outlined" style="font-size:16px">save</span>
@@ -236,7 +257,7 @@
         </div>
       </div>
 
-      <!-- ── PASSWORD ── -->
+      <!-- PASSWORD -->
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-1" style="font-family:'Manrope',sans-serif;">Cambia password</h2>
         <p class="text-on-surface-variant text-sm mb-5">Scegli una password di almeno 8 caratteri.</p>
@@ -244,7 +265,7 @@
           <div>
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">Password attuale</label>
             <div class="relative">
-              <input :type="showOld ? 'text' : 'password'" x-model="pw.old" placeholder="••••••••" class="field-input pr-10">
+              <input :type="showOld ? 'text' : 'password'" x-model="pw.old" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" class="field-input pr-10">
               <button type="button" @click="showOld = !showOld" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
                 <span class="material-symbols-outlined" style="font-size:18px" x-text="showOld ? 'visibility_off' : 'visibility'"></span>
               </button>
@@ -253,7 +274,7 @@
           <div>
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">Nuova password</label>
             <div class="relative">
-              <input :type="showNew ? 'text' : 'password'" x-model="pw.new" placeholder="••••••••" class="field-input pr-10">
+              <input :type="showNew ? 'text' : 'password'" x-model="pw.new" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" class="field-input pr-10">
               <button type="button" @click="showNew = !showNew" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
                 <span class="material-symbols-outlined" style="font-size:18px" x-text="showNew ? 'visibility_off' : 'visibility'"></span>
               </button>
@@ -262,7 +283,7 @@
           <div>
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-1.5">Conferma nuova password</label>
             <div class="relative">
-              <input :type="showConfirm ? 'text' : 'password'" x-model="pw.confirm" placeholder="••••••••" class="field-input pr-10">
+              <input :type="showConfirm ? 'text' : 'password'" x-model="pw.confirm" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" class="field-input pr-10">
               <button type="button" @click="showConfirm = !showConfirm" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
                 <span class="material-symbols-outlined" style="font-size:18px" x-text="showConfirm ? 'visibility_off' : 'visibility'"></span>
               </button>
@@ -278,7 +299,7 @@
         </div>
       </div>
 
-      <!-- ── ZONA PERICOLOSA ── -->
+      <!-- ZONA PERICOLOSA -->
       <div class="danger-zone p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
           <div class="w-10 h-10 rounded-xl bg-red-400/10 border border-red-400/20 flex items-center justify-center flex-shrink-0">
@@ -288,7 +309,7 @@
             <h3 class="font-bold text-on-surface mb-1" style="font-family:'Manrope',sans-serif;">Elimina account</h3>
             <p class="text-on-surface-variant text-sm mb-4">Questa azione &egrave; <strong class="text-red-400">irreversibile</strong>. Tutti i tuoi dati, acquisti e progressi verranno eliminati definitivamente.</p>
             <button @click="showDeleteModal = true"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-400/40 text-red-400 font-semibold text-sm hover:bg-red-400/8 transition-all">
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-400/40 text-red-400 font-semibold text-sm hover:bg-red-400/5 transition-all">
               <span class="material-symbols-outlined" style="font-size:16px">delete_forever</span>
               Elimina il mio account
             </button>
@@ -301,22 +322,10 @@
 
   <!-- BOTTOM NAV mobile -->
   <nav class="bottom-nav lg:hidden">
-    <a href="/dashboard/" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">home</span>
-      Home
-    </a>
-    <a href="/dashboard/#corsi" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">school</span>
-      Corsi
-    </a>
-    <a href="/percorso/" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">route</span>
-      Percorso
-    </a>
-    <a href="/dashboard/profilo-quiz/" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">psychology</span>
-      Profilo
-    </a>
+    <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
+    <a href="/dashboard/#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
+    <a href="/percorso/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
+    <a href="/dashboard/profilo-quiz/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
   </nav>
 
   <!-- MODAL CONFERMA ELIMINAZIONE -->
@@ -362,6 +371,11 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
+    function buildAvatarUrl(userId, avatarFilename) {
+      if (!userId || !avatarFilename) return '';
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + avatarFilename + '?t=' + Date.now();
+    }
+
     function hideOverlay() {
       var el = document.getElementById('loading-overlay');
       if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
@@ -383,33 +397,24 @@
         pw: { old: '', new: '', confirm: '' },
         showOld: false, showNew: false, showConfirm: false,
         avatarPreview: null, avatarFile: null,
+        currentAvatarUrl: '',
         savingProfile: false, savingPw: false, savingAvatar: false,
         showDeleteModal: false, deleteConfirmText: '', deletingAccount: false,
-
-        get avatarUrl() {
-          if (!this.user.avatar) return '';
-          return PB_URL + '/api/files/_pb_users_auth_/' + this.user.id + '/' + this.user.avatar;
-        },
 
         async init() {
           if (this._loaded) return;
           this._loaded = true;
-
-          if (!pb.authStore.isValid) {
-            window.location.href = '/login/';
-            return;
-          }
+          if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
           try {
             await pb.collection('users').authRefresh();
           } catch(e) {
             if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
           }
-
-          this.user = pb.authStore.model;
+          this.user = Object.assign({}, pb.authStore.model);
           this.form.first_name = this.user.first_name || '';
           this.form.last_name  = this.user.last_name  || '';
+          this.currentAvatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
           hideOverlay();
-
           this.$nextTick(function() {
             setTimeout(function() {
               var obs = new IntersectionObserver(function(entries) {
@@ -425,8 +430,9 @@
         onAvatarSelected(event) {
           var file = event.target.files[0];
           if (!file) return;
-          if (file.size > 2 * 1024 * 1024) {
-            showToast('Immagine troppo grande. Max 2 MB.', 'error');
+          if (file.size > 10 * 1024 * 1024) {
+            showToast('Immagine troppo grande. Max 10 MB.', 'error');
+            event.target.value = '';
             return;
           }
           this.avatarFile = file;
@@ -440,12 +446,18 @@
             var formData = new FormData();
             formData.append('avatar', this.avatarFile);
             var updated = await pb.collection('users').update(this.user.id, formData);
-            this.user = updated;
+            // aggiorna user reattivo e URL avatar
+            this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
+            this.currentAvatarUrl = buildAvatarUrl(updated.id, updated.avatar);
             this.avatarPreview = null;
             this.avatarFile = null;
+            // reset input file
+            var inp = document.getElementById('avatar-input');
+            if (inp) inp.value = '';
             showToast('Foto aggiornata!', 'success');
           } catch(e) {
+            console.error('saveAvatar error:', e);
             showToast('Errore durante il salvataggio.', 'error');
           } finally {
             this.savingAvatar = false;
@@ -455,9 +467,10 @@
         async removeAvatar() {
           this.savingAvatar = true;
           try {
-            var updated = await pb.collection('users').update(this.user.id, { avatar: null });
-            this.user = updated;
+            var updated = await pb.collection('users').update(this.user.id, { 'avatar': null });
+            this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
+            this.currentAvatarUrl = '';
             showToast('Foto rimossa.', 'success');
           } catch(e) {
             showToast('Errore durante la rimozione.', 'error');
@@ -477,7 +490,7 @@
               first_name: this.form.first_name.trim(),
               last_name:  this.form.last_name.trim()
             });
-            this.user = updated;
+            this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
             showToast('Profilo aggiornato!', 'success');
           } catch(e) {
@@ -508,11 +521,8 @@
               passwordConfirm: this.pw.confirm
             });
             this.pw = { old: '', new: '', confirm: '' };
-            showToast('Password aggiornata! Effettua di nuovo il login.', 'success');
-            setTimeout(function() {
-              pb.authStore.clear();
-              window.location.href = '/login/';
-            }, 2200);
+            showToast('Password aggiornata! Verrai reindirizzato al login.', 'success');
+            setTimeout(function() { pb.authStore.clear(); window.location.href = '/login/'; }, 2200);
           } catch(e) {
             var msg = (e.data && e.data.oldPassword) ? 'Password attuale non corretta.' : 'Errore durante l\'aggiornamento.';
             showToast(msg, 'error');
@@ -525,8 +535,7 @@
           if (this.deleteConfirmText !== 'ELIMINA') return;
           this.deletingAccount = true;
           try {
-            var uid = this.user.id;
-            await pb.collection('users').delete(uid);
+            await pb.collection('users').delete(this.user.id);
             pb.authStore.clear();
             window.location.href = '/?account=deleted';
           } catch(e) {
@@ -535,10 +544,7 @@
           }
         },
 
-        logout() {
-          pb.authStore.clear();
-          window.location.href = '/login/';
-        }
+        logout() { pb.authStore.clear(); window.location.href = '/login/'; }
       };
     }
   </script>
