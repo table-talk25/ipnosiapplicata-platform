@@ -130,9 +130,6 @@
     <a href="/dashboard/" class="sidebar-item active">
       <span class="material-symbols-outlined">home</span> Area personale
     </a>
-    <a href="/mappa/" class="sidebar-item">
-      <span class="material-symbols-outlined">map</span> La mia Mappa
-    </a>
     <a href="/percorso/" class="sidebar-item">
       <span class="material-symbols-outlined">route</span> Il mio Percorso
     </a>
@@ -286,30 +283,6 @@
         </div>
       </div>
 
-      <!-- Mappa -->
-      <div id="mappa" class="glass-card rounded-2xl p-6 mb-8 reveal">
-        <div class="flex items-start gap-4">
-          <div class="w-11 h-11 rounded-2xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-tertiary" style="font-size:22px">map</span>
-          </div>
-          <div class="flex-1">
-            <div class="flex items-center justify-between gap-3 flex-wrap">
-              <h2 class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">La mia Mappa</h2>
-              <span class="badge gold" x-show="mapLastUpdate">
-                <span class="material-symbols-outlined" style="font-size:11px">update</span>
-                <span x-text="'Aggiornata ' + mapLastUpdate"></span>
-              </span>
-            </div>
-            <p class="text-on-surface-variant text-sm mt-2 leading-relaxed"
-               x-text="mapPreview || 'La tua mappa personale viene aggiornata dopo ogni sessione con Cristian.'"></p>
-            <a href="/mappa/" class="inline-flex items-center gap-1.5 mt-4 text-tertiary font-semibold text-sm hover:text-tertiary/80 transition-colors">
-              Vai alla mappa completa
-              <span class="material-symbols-outlined" style="font-size:17px">arrow_forward</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
       <!-- Percorso -->
       <div id="percorso" class="glass-card rounded-2xl p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
@@ -354,10 +327,6 @@
       <span class="material-symbols-outlined" style="font-size:22px">home</span>
       Home
     </a>
-    <a href="/mappa/" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">map</span>
-      Mappa
-    </a>
     <a href="#esercizi" class="bottom-nav-item">
       <span class="material-symbols-outlined" style="font-size:22px">edit_note</span>
       Esercizi
@@ -389,7 +358,6 @@
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
 
-    // CATALOG: id deve corrispondere al valore del campo product_id in PocketBase
     const CATALOG = [
       {
         id: 'reset-notturno',
@@ -452,7 +420,7 @@
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
         nextSession: null, pendingExercises: [],
-        corsi: [], mapPreview: '', mapLastUpdate: '', journey: [],
+        corsi: [], journey: [],
 
         get greeting() {
           const h = new Date().getHours();
@@ -491,8 +459,7 @@
         async loadAll() {
           const uid = this.user.id;
           try {
-            const [purchasesRes, progressRes, sessionsRes, exercisesRes, journeyRes, mapRes] = await Promise.allSettled([
-              // Status: completed = acquisto riuscito
+            const [purchasesRes, progressRes, sessionsRes, exercisesRes, journeyRes] = await Promise.allSettled([
               pb.collection('purchases').getList(1, 50, {
                 filter: `user="${uid}" && status="completed"`,
                 sort: '-created'
@@ -512,22 +479,25 @@
                 filter: `user="${uid}"`,
                 sort: '-created'
               }),
-              pb.collection('maps').getFirstListItem(`user="${uid}"`, {}).catch(() => null),
             ]);
 
-            // Raccogli tutti i product_id acquistati
-            // Il campo si chiama 'product' nella collection e può essere una relation o una stringa
-            // Gestiamo entrambi i casi
+            // DEBUG: mostra struttura raw di purchases in console
+            if (purchasesRes.status === 'fulfilled') {
+              console.log('[DEBUG purchases] items:', JSON.stringify(purchasesRes.value.items, null, 2));
+            } else {
+              console.warn('[DEBUG purchases] errore:', purchasesRes.reason);
+            }
+
+            // Estrai product_id acquistati — gestiamo sia stringa che relation
             let activePurchases = [];
             if (purchasesRes.status === 'fulfilled') {
               activePurchases = purchasesRes.value.items.map(p => {
-                // Se product è un oggetto (relation espansa), prendi p.expand?.product?.slug o p.expand?.product?.id
-                // Se product è una stringa, usala direttamente
                 if (typeof p.product === 'string') return p.product;
                 if (p.expand?.product?.slug) return p.expand.product.slug;
                 if (p.expand?.product?.name) return p.expand.product.name;
                 return p.product;
               }).filter(Boolean);
+              console.log('[DEBUG] activePurchases estratti:', activePurchases);
             }
 
             // Mappa progresso per product_id
@@ -536,12 +506,12 @@
               progressRes.value.items.forEach(p => { progressMap[p.product_id] = p; });
             }
 
-            // Costruisci i corsi con stato reale
+            // Costruisci corsi con stato reale
             this.corsi = CATALOG.map(c => {
               const purchased = activePurchases.some(pid =>
                 pid === c.id ||
-                pid?.toLowerCase?.().includes(c.id) ||
-                c.id.includes(pid?.toLowerCase?.() || '')
+                (typeof pid === 'string' && pid.toLowerCase().includes(c.id)) ||
+                (typeof pid === 'string' && c.id.includes(pid.toLowerCase()))
               );
               const prog = progressMap[c.id];
               const completedSteps = prog ? (prog.completed_steps || []).length : 0;
@@ -552,6 +522,7 @@
                 : currentStep > 0 ? 'In corso'
                 : 'Disponibile';
               const badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
+              console.log(`[DEBUG corso] ${c.id} → purchased:${purchased}, pct:${pct}%`);
               return {
                 ...c,
                 unlocked: purchased,
@@ -583,12 +554,6 @@
 
             if (journeyRes.status === 'fulfilled') {
               this.journey = journeyRes.value.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
-            }
-
-            if (mapRes.status === 'fulfilled' && mapRes.value) {
-              const m = mapRes.value;
-              this.mapPreview = m.profilo ? m.profilo.substring(0, 180) + (m.profilo.length > 180 ? '…' : '') : '';
-              this.mapLastUpdate = timeAgo(m.updated);
             }
 
           } catch(e) {
