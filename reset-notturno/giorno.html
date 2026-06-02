@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -68,8 +69,10 @@
     .undo-btn:hover{border-color:rgba(201,164,92,0.4);color:#C9A45C;}
     .security-box{background:rgba(201,164,92,0.05);border:1px solid rgba(201,164,92,0.18);border-radius:12px;padding:16px 20px;}
     .progress-hint{font-size:12px;color:#bccac3;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:10px;}
-    .profile-btn{width:36px;height:36px;border-radius:50%;background:rgba(39,42,45,0.9);border:1px solid rgba(61,73,68,0.5);color:#bccac3;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;text-decoration:none;flex-shrink:0;}
-    .profile-btn:hover{border-color:rgba(73,199,165,0.4);color:#49C7A5;}
+    .sync-badge{font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:100px;}
+    .sync-badge.ok{background:rgba(73,199,165,0.1);color:#49C7A5;}
+    .sync-badge.err{background:rgba(255,180,171,0.1);color:#ffb4ab;}
+    .sync-badge.saving{background:rgba(61,73,68,0.3);color:#bccac3;}
   </style>
 </head>
 
@@ -87,15 +90,10 @@
         <span class="text-[#3d4944] text-xs">/</span>
         <span class="text-[#F5F7FA] font-semibold text-sm" style="font-family:'Manrope',sans-serif;" x-text="'Giorno ' + day.num"></span>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="/reset-notturno/dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1 text-sm font-semibold">
-          <span class="material-symbols-outlined text-base">grid_view</span>
-          <span class="hidden md:inline">Dashboard</span>
-        </a>
-        <a href="/area-riservata/" class="profile-btn" title="Il mio profilo">
-          <span class="material-symbols-outlined" style="font-size:20px">account_circle</span>
-        </a>
-      </div>
+      <a href="/dashboard/" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1.5 text-sm font-semibold">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Area personale
+      </a>
     </div>
   </nav>
 
@@ -193,22 +191,30 @@
         <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="journal.p4" rows="3"></textarea></div>
       </div>
 
-      <!-- BARRA PROGRESSO PROMPT -->
       <div class="progress-hint mb-6" x-show="!allDone && !isSaved">
         <span class="material-symbols-outlined text-[#3d4944]" style="font-size:16px">pending</span>
         <span x-text="promptsDone + ' di 4 esercizi completati — compila tutto per sbloccare il completamento'"></span>
       </div>
 
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="!allDone || isSaved">
-            <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : 'check_circle'"></span>
-            <span x-text="isSaved ? 'Giorno completato!' : 'Completa il Giorno ' + day.num"></span>
+        <div class="flex items-center gap-3 flex-wrap">
+          <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="!allDone || isSaved || saving">
+            <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : (saving ? 'hourglass_top' : 'check_circle')"></span>
+            <span x-text="isSaved ? 'Giorno completato!' : (saving ? 'Salvataggio…' : 'Completa il Giorno ' + day.num)"></span>
           </button>
           <button x-show="isSaved" x-transition class="undo-btn" @click="undoDay()">
             <span class="material-symbols-outlined" style="font-size:15px">undo</span>
             Annulla
           </button>
+          <!-- Badge sync stato -->
+          <span x-show="syncStatus === 'ok'" class="sync-badge ok">
+            <span class="material-symbols-outlined" style="font-size:13px">cloud_done</span>
+            Salvato
+          </span>
+          <span x-show="syncStatus === 'offline'" class="sync-badge err">
+            <span class="material-symbols-outlined" style="font-size:13px">cloud_off</span>
+            Solo locale
+          </span>
         </div>
         <a x-show="isSaved && day.num < 7" :href="'giorno.html?day=' + (day.num + 1)" class="day-nav-pill">
           Vai al Giorno <span x-text="day.num + 1" class="ml-1"></span>
@@ -233,6 +239,11 @@
   </footer>
 
   <script>
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+    const PRODUCT_ID = 'reset-notturno';
+    const TOTAL_STEPS = 7;
+
     const DAYS_DATA = [
       {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
       {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
@@ -242,10 +253,14 @@
       {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
       {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
     ];
+
     function giornoApp() {
       return {
         day: {}, journal: {p1:'',p2a:'',p2b:'',p3:'',p4:''},
-        isPlaying: false, audioProgress: 0, currentTime: 0, duration: 0, volume: 0.9, audioLoaded: false, isSaved: false,
+        isPlaying: false, audioProgress: 0, currentTime: 0, duration: 0, volume: 0.9, audioLoaded: false,
+        isSaved: false, saving: false, syncStatus: null, // null | 'ok' | 'offline'
+        pbProgressId: null, // ID record PocketBase se esiste già
+
         get promptsDone() {
           let n = 0;
           if (this.journal.p1?.trim()) n++;
@@ -255,58 +270,162 @@
           return n;
         },
         get allDone() { return this.promptsDone === 4; },
-        init() {
+
+        async init() {
+          // Auth guard
+          if (!pb.authStore.isValid) {
+            window.location.href = '/login/?redirect=' + encodeURIComponent(window.location.href);
+            return;
+          }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) {
+            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+          }
+
           const params = new URLSearchParams(window.location.search);
           const num = parseInt(params.get('day')) || 1;
           this.day = DAYS_DATA.find(d => d.num === num) || DAYS_DATA[0];
           document.title = `Giorno ${this.day.num} — ${this.day.title} | IpnosiApplicata`;
-          const saved = JSON.parse(localStorage.getItem(`rn_journal_${this.day.num}`) || 'null');
-          if (saved) { this.journal = saved; }
-          const completed = parseInt(localStorage.getItem('rn_completed') || '0');
-          this.isSaved = this.day.num <= completed;
+
+          // Carica stato: prima da PocketBase, fallback localStorage
+          await this.loadProgress();
+
           this.$nextTick(() => {
             if (this.$refs.audio) { this.$refs.audio.volume = this.volume; }
-            const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, {threshold: 0.08});
+            const obs = new IntersectionObserver(entries => {
+              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, {threshold: 0.08});
             document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
           });
         },
+
+        // Carica progresso da PocketBase (fonte di verità) con fallback localStorage
+        async loadProgress() {
+          const uid = pb.authStore.model.id;
+          try {
+            const rec = await pb.collection('progress').getFirstListItem(
+              `user="${uid}" && product_id="${PRODUCT_ID}"`
+            );
+            this.pbProgressId = rec.id;
+            const completedSteps = rec.completed_steps || [];
+            const maxCompleted = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
+            this.isSaved = completedSteps.includes(this.day.num);
+            // Aggiorna localStorage come cache locale
+            localStorage.setItem('rn_completed', maxCompleted);
+          } catch(e) {
+            // Nessun record PB ancora — usa localStorage come fallback
+            const completed = parseInt(localStorage.getItem('rn_completed') || '0');
+            this.isSaved = this.day.num <= completed;
+          }
+
+          // Carica bozza diario da localStorage
+          const saved = JSON.parse(localStorage.getItem(`rn_journal_${this.day.num}`) || 'null');
+          if (saved) { this.journal = saved; }
+        },
+
+        // Salva completamento: PocketBase (primario) + localStorage (cache)
+        async saveDay() {
+          if (!this.allDone || this.isSaved || this.saving) return;
+          this.saving = true;
+
+          // Salva bozza diario in localStorage
+          localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
+
+          const uid = pb.authStore.model.id;
+          try {
+            let completedSteps = [];
+            let currentRec = null;
+
+            // Prova a recuperare il record esistente
+            try {
+              currentRec = await pb.collection('progress').getFirstListItem(
+                `user="${uid}" && product_id="${PRODUCT_ID}"`
+              );
+              completedSteps = currentRec.completed_steps || [];
+              this.pbProgressId = currentRec.id;
+            } catch(_) { /* nessun record ancora */ }
+
+            // Aggiungi questo giorno se non già presente
+            if (!completedSteps.includes(this.day.num)) {
+              completedSteps.push(this.day.num);
+            }
+            const currentStep = Math.max(...completedSteps);
+
+            const payload = {
+              user: uid,
+              product_id: PRODUCT_ID,
+              current_step: currentStep,
+              completed_steps: completedSteps,
+            };
+
+            if (this.pbProgressId) {
+              await pb.collection('progress').update(this.pbProgressId, payload);
+            } else {
+              const newRec = await pb.collection('progress').create(payload);
+              this.pbProgressId = newRec.id;
+            }
+
+            // Aggiorna localStorage come cache
+            localStorage.setItem('rn_completed', currentStep);
+            this.syncStatus = 'ok';
+
+          } catch(e) {
+            console.warn('Sync PocketBase fallita, salvato solo in locale:', e.message);
+            // Salva comunque in locale
+            const prev = parseInt(localStorage.getItem('rn_completed') || '0');
+            if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
+            this.syncStatus = 'offline';
+          }
+
+          this.isSaved = true;
+          this.saving = false;
+        },
+
+        // Annulla: rimuove da PocketBase e localStorage
+        async undoDay() {
+          const uid = pb.authStore.model.id;
+          try {
+            if (this.pbProgressId) {
+              const rec = await pb.collection('progress').getOne(this.pbProgressId);
+              let completedSteps = (rec.completed_steps || []).filter(s => s !== this.day.num);
+              const currentStep = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
+              await pb.collection('progress').update(this.pbProgressId, {
+                completed_steps: completedSteps,
+                current_step: currentStep,
+              });
+              localStorage.setItem('rn_completed', currentStep);
+            } else {
+              const prev = parseInt(localStorage.getItem('rn_completed') || '0');
+              if (prev >= this.day.num) localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
+            }
+          } catch(e) {
+            const prev = parseInt(localStorage.getItem('rn_completed') || '0');
+            if (prev >= this.day.num) localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
+          }
+          this.isSaved = false;
+          this.syncStatus = null;
+        },
+
+        // Audio
         togglePlay() {
-          const a = this.$refs.audio;
-          if (!a) return;
+          const a = this.$refs.audio; if (!a) return;
           if (this.isPlaying) { a.pause(); this.isPlaying = false; }
           else { a.play(); this.isPlaying = true; }
         },
         updateProgress() {
-          const a = this.$refs.audio;
-          if (!a) return;
+          const a = this.$refs.audio; if (!a) return;
           this.currentTime = a.currentTime;
           this.audioProgress = a.duration ? (a.currentTime / a.duration) * 100 : 0;
         },
         onMetadata() { if (this.$refs.audio) { this.duration = this.$refs.audio.duration; this.audioLoaded = true; } },
         onEnded() { this.isPlaying = false; this.audioProgress = 0; this.$refs.audio.currentTime = 0; },
         seekAudio(e) {
-          const a = this.$refs.audio;
-          if (!a || !a.duration) return;
+          const a = this.$refs.audio; if (!a || !a.duration) return;
           const rect = e.currentTarget.getBoundingClientRect();
-          const pct = (e.clientX - rect.left) / rect.width;
-          a.currentTime = pct * a.duration;
+          a.currentTime = ((e.clientX - rect.left) / rect.width) * a.duration;
         },
         setVolume() { if (this.$refs.audio) this.$refs.audio.volume = this.volume; },
         formatTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); },
-        saveDay() {
-          if (!this.allDone) return;
-          localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
-          const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-          if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
-          this.isSaved = true;
-        },
-        undoDay() {
-          const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-          if (prev >= this.day.num) {
-            localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
-          }
-          this.isSaved = false;
-        }
       };
     }
   </script>
