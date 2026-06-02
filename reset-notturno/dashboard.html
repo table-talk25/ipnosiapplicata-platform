@@ -4,10 +4,12 @@
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>Diario del Reset — Dashboard | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -60,8 +62,18 @@
     .disclaimer-mini-fill{background:#bccac3;border-radius:100px;height:4px;transition:width 0.1s linear;pointer-events:none;}
     .mini-play-btn{width:36px;height:36px;border-radius:50%;background:rgba(245,247,250,0.1);border:1px solid rgba(245,247,250,0.15);color:#bccac3;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;flex-shrink:0;}
     .mini-play-btn:hover{background:rgba(245,247,250,0.18);color:#F5F7FA;}
+    #loading-overlay{position:fixed;inset:0;z-index:200;background:#101416;display:flex;align-items:center;justify-content:center;transition:opacity 0.3s ease;}
+    #loading-overlay.hidden{opacity:0;pointer-events:none;}
   </style>
 </head>
+
+<div id="loading-overlay">
+  <div style="text-align:center;">
+    <div style="width:44px;height:44px;border:2px solid rgba(73,199,165,0.25);border-top-color:#49C7A5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+    <p style="color:#bccac3;font-size:14px;font-family:'Inter',sans-serif;">Verifica accesso…</p>
+  </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <body x-data="dashboard()" x-init="init()">
 
@@ -241,6 +253,10 @@
   </footer>
 
   <script>
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+    const PRODUCT_ID = 'reset-notturno';
+
     const DAYS_DATA = [
       {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
       {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
@@ -250,21 +266,88 @@
       {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
       {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
     ];
+
+    function hideOverlay() {
+      const el = document.getElementById('loading-overlay');
+      if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 350); }
+    }
+
     function dashboard() {
       return {
         days: [],
-        init() {
-          const saved = parseInt(localStorage.getItem('rn_completed') || '0');
-          this.days = DAYS_DATA.map((d, i) => ({...d, status: i < saved ? 'completed' : i === saved ? 'active' : 'locked'}));
-          setTimeout(() => {
-            const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, {threshold: 0.08});
-            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-          }, 100);
-        },
+        completedSteps: [],
+
         get completedCount() { return this.days.filter(d => d.status === 'completed').length; },
-        get activeDay() { return this.days.find(d => d.status === 'active') || null; }
+        get activeDay() { return this.days.find(d => d.status === 'active') || null; },
+
+        async init() {
+          // 1. Auth guard
+          if (!pb.authStore.isValid) {
+            window.location.href = '/login/?redirect=' + encodeURIComponent(window.location.href);
+            return;
+          }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) {
+            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+          }
+
+          const uid = pb.authStore.model.id;
+
+          // 2. Verifica acquisto
+          let hasPurchased = false;
+          try {
+            const purchasesRes = await pb.collection('purchases').getList(1, 50, {
+              filter: `user="${uid}" && product="${PRODUCT_ID}"`,
+              '$autoCancel': false
+            });
+            hasPurchased = purchasesRes.totalItems > 0;
+          } catch(e) {
+            console.warn('Errore verifica acquisto:', e.message);
+          }
+
+          if (!hasPurchased) {
+            window.location.href = '/reset-notturno/';
+            return;
+          }
+
+          // 3. Carica progressi da PocketBase
+          let completedSteps = [];
+          try {
+            const prog = await pb.collection('progress').getFirstListItem(
+              `user="${uid}" && product_id="${PRODUCT_ID}"`
+            );
+            completedSteps = prog.completed_steps || [];
+            // Sincronizza localStorage come cache
+            const maxStep = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
+            localStorage.setItem('rn_completed', maxStep);
+          } catch(e) {
+            // Nessun record progress ancora — usa localStorage come fallback
+            const saved = parseInt(localStorage.getItem('rn_completed') || '0');
+            for (let i = 1; i <= saved; i++) completedSteps.push(i);
+          }
+
+          // 4. Costruisce stato giorni
+          this.days = DAYS_DATA.map((d, i) => {
+            const isDone = completedSteps.includes(d.num);
+            const maxDone = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
+            const isActive = !isDone && d.num === maxDone + 1;
+            return { ...d, status: isDone ? 'completed' : isActive ? 'active' : 'locked' };
+          });
+
+          hideOverlay();
+
+          this.$nextTick(() => {
+            setTimeout(() => {
+              const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+              }, { threshold: 0.08 });
+              document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+            }, 100);
+          });
+        }
       };
     }
+
     function disclaimerPlayer() {
       return {
         open: false, isPlaying: false, progress: 0, currentTime: 0, duration: 0, volume: 0.9,
