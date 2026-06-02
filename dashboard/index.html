@@ -463,32 +463,31 @@
         async loadAll() {
           const uid = this.user.id;
           try {
-            // user è un campo relation: il filtro corretto NON usa le virgolette attorno all'ID
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user=${uid} && status="completed"`,
+              filter: `user="${uid}" && status="completed"`,
               sort: '-created',
               '$autoCancel': false
             }).catch(e => { console.warn('[purchases] errore:', e.message); return null; });
 
             const progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: `user=${uid}`,
+              filter: `user="${uid}"`,
               '$autoCancel': false
             }).catch(e => { console.warn('[progress] errore:', e.message); return null; });
 
             const sessionsRes = await pb.collection('sessions').getList(1, 10, {
-              filter: `user=${uid} && (status="scheduled" || status="live")`,
+              filter: `user="${uid}" && (status="scheduled" || status="live")`,
               sort: 'scheduled_at',
               '$autoCancel': false
             }).catch(() => null);
 
             const exercisesRes = await pb.collection('exercises').getList(1, 20, {
-              filter: `user=${uid} && completed=false`,
+              filter: `user="${uid}" && completed=false`,
               sort: 'due_at',
               '$autoCancel': false
             }).catch(() => null);
 
             const journeyRes = await pb.collection('journey').getList(1, 20, {
-              filter: `user=${uid}`,
+              filter: `user="${uid}"`,
               sort: '-created',
               '$autoCancel': false
             }).catch(() => null);
