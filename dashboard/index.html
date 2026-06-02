@@ -456,18 +456,24 @@
           var uid = this.user.id;
           var filterUser = "user='" + uid + "'";
 
-          // Quiz profile
+          // Quiz profile — getList senza sort per evitare 400
           try {
-            var quizRes = await pb.collection('quiz_responses').getFirstListItem(
-              filterUser, { sort: '-created' }
-            );
-            if (quizRes && quizRes.profile_result) {
-              var letter = quizRes.profile_result.trim().toUpperCase();
-              this.quizProfileLetter = letter;
-              this.quizProfile = PROFILES[letter] || null;
+            var quizRes = await pb.collection('quiz_responses').getList(1, 50, {
+              filter: filterUser
+            });
+            if (quizRes && quizRes.items && quizRes.items.length > 0) {
+              var items = quizRes.items.slice().sort(function(a, b) {
+                return new Date(b.created) - new Date(a.created);
+              });
+              var record = items[0];
+              if (record.profile_result) {
+                var letter = record.profile_result.trim().toUpperCase();
+                this.quizProfileLetter = letter;
+                this.quizProfile = PROFILES[letter] || null;
+              }
             }
           } catch(e) {
-            if (e.status !== 404) console.warn('[quiz_responses] errore:', e.message);
+            console.warn('[quiz_responses] errore:', e.message);
           }
 
           // Purchases
