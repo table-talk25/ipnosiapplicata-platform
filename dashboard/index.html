@@ -417,6 +417,7 @@
 
     function dashboardPage() {
       return {
+        _loaded: false,
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
         nextSession: null, pendingExercises: [],
@@ -430,6 +431,10 @@
         },
 
         async init() {
+          // Evita doppia inizializzazione da Alpine
+          if (this._loaded) return;
+          this._loaded = true;
+
           if (!pb.authStore.isValid) {
             window.location.href = '/login/';
             return;
@@ -459,54 +464,57 @@
         async loadAll() {
           const uid = this.user.id;
           try {
-            const [purchasesRes, progressRes, sessionsRes, exercisesRes, journeyRes] = await Promise.allSettled([
-              pb.collection('purchases').getList(1, 50, {
-                filter: `user="${uid}" && status="completed"`,
-                sort: '-created'
-              }),
-              pb.collection('progress').getList(1, 50, {
-                filter: `user="${uid}"`
-              }),
-              pb.collection('sessions').getList(1, 10, {
-                filter: `user="${uid}" && (status="scheduled" || status="live")`,
-                sort: 'scheduled_at'
-              }),
-              pb.collection('exercises').getList(1, 20, {
-                filter: `user="${uid}" && completed=false`,
-                sort: 'due_at'
-              }),
-              pb.collection('journey').getList(1, 20, {
-                filter: `user="${uid}"`,
-                sort: '-created'
-              }),
-            ]);
+            // Usiamo $autoCancel: false per evitare che la SDK cancelli le richieste
+            const purchasesRes = await pb.collection('purchases').getList(1, 50, {
+              filter: `user="${uid}" && status="completed"`,
+              sort: '-created',
+              '$autoCancel': false
+            }).catch(e => { console.warn('[purchases] errore:', e.message); return null; });
 
-            // DEBUG: mostra struttura raw di purchases in console
-            if (purchasesRes.status === 'fulfilled') {
-              console.log('[DEBUG purchases] items:', JSON.stringify(purchasesRes.value.items, null, 2));
-            } else {
-              console.warn('[DEBUG purchases] errore:', purchasesRes.reason);
-            }
+            const progressRes = await pb.collection('progress').getList(1, 50, {
+              filter: `user="${uid}"`,
+              '$autoCancel': false
+            }).catch(e => { console.warn('[progress] errore:', e.message); return null; });
 
-            // Estrai product_id acquistati — gestiamo sia stringa che relation
+            // Sessioni ed esercizi: collezioni opzionali, non blocca se non esistono
+            const sessionsRes = await pb.collection('sessions').getList(1, 10, {
+              filter: `user="${uid}" && (status="scheduled" || status="live")`,
+              sort: 'scheduled_at',
+              '$autoCancel': false
+            }).catch(() => null);
+
+            const exercisesRes = await pb.collection('exercises').getList(1, 20, {
+              filter: `user="${uid}" && completed=false`,
+              sort: 'due_at',
+              '$autoCancel': false
+            }).catch(() => null);
+
+            const journeyRes = await pb.collection('journey').getList(1, 20, {
+              filter: `user="${uid}"`,
+              sort: '-created',
+              '$autoCancel': false
+            }).catch(() => null);
+
+            // Estrai product acquistati
             let activePurchases = [];
-            if (purchasesRes.status === 'fulfilled') {
-              activePurchases = purchasesRes.value.items.map(p => {
-                if (typeof p.product === 'string') return p.product;
+            if (purchasesRes && purchasesRes.items) {
+              console.log('[DEBUG purchases] items:', JSON.stringify(purchasesRes.items, null, 2));
+              activePurchases = purchasesRes.items.map(p => {
+                if (typeof p.product === 'string' && p.product) return p.product;
                 if (p.expand?.product?.slug) return p.expand.product.slug;
                 if (p.expand?.product?.name) return p.expand.product.name;
-                return p.product;
+                return null;
               }).filter(Boolean);
-              console.log('[DEBUG] activePurchases estratti:', activePurchases);
+              console.log('[DEBUG] activePurchases:', activePurchases);
             }
 
             // Mappa progresso per product_id
             const progressMap = {};
-            if (progressRes.status === 'fulfilled') {
-              progressRes.value.items.forEach(p => { progressMap[p.product_id] = p; });
+            if (progressRes && progressRes.items) {
+              progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
             }
 
-            // Costruisci corsi con stato reale
+            // Costruisci corsi
             this.corsi = CATALOG.map(c => {
               const purchased = activePurchases.some(pid =>
                 pid === c.id ||
@@ -522,7 +530,7 @@
                 : currentStep > 0 ? 'In corso'
                 : 'Disponibile';
               const badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
-              console.log(`[DEBUG corso] ${c.id} → purchased:${purchased}, pct:${pct}%`);
+              console.log(`[DEBUG corso] ${c.id} → purchased:${purchased}`);
               return {
                 ...c,
                 unlocked: purchased,
@@ -537,13 +545,13 @@
               };
             });
 
-            if (sessionsRes.status === 'fulfilled' && sessionsRes.value.items.length > 0) {
-              const s = sessionsRes.value.items[0];
+            if (sessionsRes && sessionsRes.items.length > 0) {
+              const s = sessionsRes.items[0];
               this.nextSession = { ...s, dateFormatted: formatDate(s.scheduled_at) };
             }
 
-            if (exercisesRes.status === 'fulfilled') {
-              this.pendingExercises = exercisesRes.value.items.map(ex => ({
+            if (exercisesRes && exercisesRes.items) {
+              this.pendingExercises = exercisesRes.items.map(ex => ({
                 ...ex,
                 overdue: ex.due_at && new Date(ex.due_at) < new Date(),
                 dueLabel: ex.due_at
@@ -552,8 +560,8 @@
               }));
             }
 
-            if (journeyRes.status === 'fulfilled') {
-              this.journey = journeyRes.value.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
+            if (journeyRes && journeyRes.items) {
+              this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
             }
 
           } catch(e) {
