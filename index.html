@@ -9,6 +9,7 @@
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -118,19 +119,19 @@
 
 <!-- HEADER -->
 <nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm">
-  <div class="flex justify-between items-center px-gutter py-4 max-w-container-max mx-auto">
+  <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
     <a class="flex items-center gap-3" href="/">
       <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto">
-      <span class="font-headline-md" style="font-size:18px; background: linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+      <span class="font-bold" style="font-size:18px; background: linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
     </a>
-    <div class="hidden md:flex gap-8 items-center">
-      <a class="text-primary border-b-2 border-primary pb-1 font-label-md text-label-md" href="/">Home</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/metodo/">Metodo</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/corsi/">Corsi</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/sessioni/">Sessioni 1:1</a>
-      <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="/accademia/">Accademia</a>
-      <a class="border border-outline-variant/60 hover:border-primary/40 text-on-surface px-5 py-2 rounded-full font-label-md text-label-md transition-all" href="/login/">Accedi</a>
-      <a class="bg-primary hover:bg-primary/90 text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md transition-all active:scale-95 duration-300" href="/registrazione/">Inizia il percorso</a>
+    <div class="hidden md:flex gap-8 items-center" id="nav-desktop">
+      <a class="text-primary border-b-2 border-primary pb-1 font-semibold text-sm" href="/">Home</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/metodo/">Metodo</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/corsi/">Corsi</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/sessioni/">Sessioni 1:1</a>
+      <span id="nav-auth-area">
+        <a href="/login/" class="border border-outline-variant/60 hover:border-primary/40 text-on-surface px-5 py-2 rounded-full font-semibold text-sm transition-all">Accedi</a>
+      </span>
     </div>
     <button id="hamburger-btn" class="md:hidden text-on-background p-2" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
       <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
@@ -141,9 +142,7 @@
     <a href="/metodo/">Metodo</a>
     <a href="/corsi/">Corsi</a>
     <a href="/sessioni/">Sessioni 1:1</a>
-    <a href="/accademia/">Accademia</a>
     <a href="/login/">Accedi</a>
-    <a href="/registrazione/">Inizia il percorso</a>
   </div>
 </nav>
 
@@ -307,7 +306,7 @@
         <div class="w-14 h-14 bg-primary/12 rounded-full flex items-center justify-center mb-6">
           <span class="material-symbols-outlined text-primary" style="font-size:1.75rem;">school</span>
         </div>
-        <span class="badge-primary mb-4 self-start">Accademia</span>
+        <span class="badge-primary mb-4 self-start">Percorsi</span>
         <h3 class="font-headline-md text-headline-md mb-4">Corsi del Metodo</h3>
         <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Percorsi formativi strutturati sul Metodo IpnosiApplicata. Ogni modulo si sblocca quando hai completato quello precedente. Niente salti.</p>
         <a href="/corsi/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">
@@ -423,53 +422,62 @@
 </main>
 
 <!-- FOOTER -->
-<footer class="bg-surface-container-lowest w-full py-section-v-desktop px-gutter border-t border-outline-variant/30">
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-stack-lg max-w-container-max mx-auto">
+<footer class="bg-surface-container-lowest w-full py-16 px-6 border-t border-outline-variant/25">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
     <div class="space-y-4">
       <a href="/" class="flex items-center gap-2">
         <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-7 w-auto">
-        <span class="font-headline-md" style="font-size:16px; background: linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+        <span class="font-bold" style="font-size:16px; background:linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
       </a>
-      <p class="font-body-md text-body-md text-on-surface-variant">La piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca. Percorsi di trasformazione personale guidati, concreti, misurabili.</p>
+      <p class="text-on-surface-variant text-sm leading-relaxed">La piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca. Percorsi di trasformazione personale guidati, concreti, misurabili.</p>
     </div>
     <div>
-      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Piattaforma</h4>
-      <ul class="space-y-3 font-body-md text-body-md">
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Piattaforma</h4>
+      <ul class="space-y-3 text-sm">
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/">Home</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/metodo/">Metodo</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/corsi/">Corsi</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/sessioni/">Sessioni 1:1</a></li>
-        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/accademia/">Accademia</a></li>
       </ul>
     </div>
     <div>
-      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Il brand</h4>
-      <ul class="space-y-3 font-body-md text-body-md">
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Il brand</h4>
+      <ul class="space-y-3 text-sm">
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it">cristianlecca.it</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it/quiz/">Quiz del Coraggio</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/login/">Accedi</a></li>
-        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/registrazione/">Registrati</a></li>
       </ul>
     </div>
     <div>
-      <h4 class="font-label-md text-label-md text-on-surface mb-6 uppercase tracking-wider">Legale</h4>
-      <ul class="space-y-3 font-body-md text-body-md">
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Legale</h4>
+      <ul class="space-y-3 text-sm">
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy Policy</a></li>
         <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie Policy</a></li>
       </ul>
     </div>
   </div>
-  <div class="max-w-container-max mx-auto mt-16 pt-8 border-t border-outline-variant/30 flex flex-col md:flex-row items-center justify-between gap-3">
+  <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-outline-variant/25 flex flex-col md:flex-row items-center justify-between gap-3">
     <a href="/" class="flex items-center gap-2 opacity-50 hover:opacity-80 transition-opacity">
-      <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-5 w-auto">
+      <img src="/assets/logoIpnoApp.png" alt="" class="h-5 w-auto">
     </a>
-    <span class="text-on-surface-variant font-label-md text-label-md text-center">
+    <span class="text-on-surface-variant text-xs text-center">
       &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
     </span>
   </div>
 </footer>
 
 <script>
+  // Auth check: se loggato mostra link area personale al posto di "Accedi"
+  const PB_URL = 'https://api.ipnosiapplicata.it';
+  const pb = new PocketBase(PB_URL);
+  if (pb.authStore.isValid) {
+    const area = document.getElementById('nav-auth-area');
+    if (area) {
+      area.innerHTML = `<a href="/dashboard/" class="border border-primary/40 text-primary px-5 py-2 rounded-full font-semibold text-sm transition-all hover:bg-primary/10 flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:16px">person</span>Area personale</a>`;
+    }
+  }
+
+  // Menu mobile
   const btn = document.getElementById('hamburger-btn');
   const menu = document.getElementById('mobile-menu');
   const icon = document.getElementById('hamburger-icon');
@@ -485,6 +493,8 @@
       icon.textContent = 'menu';
     });
   });
+
+  // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
