@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -47,6 +48,8 @@
     #mobile-menu.open{display:flex;}
     #mobile-menu a{padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.06);color:#F5F7FA;font-size:14px;font-weight:600;letter-spacing:0.03em;text-decoration:none;transition:color 180ms ease;}
     #mobile-menu a:last-child{border-bottom:none;margin-top:12px;background:#49C7A5;color:#101416;text-align:center;border-radius:12px;padding:14px 0;}
+    #mobile-menu a:hover{color:#49C7A5;}
+    #mobile-menu a:last-child:hover{color:#101416;}
     .hero-glow{position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(73,199,165,0.07) 0%,transparent 70%);pointer-events:none;}
     .day-pill{background:rgba(29,32,34,0.6);border:1px solid rgba(61,73,68,0.4);border-radius:12px;transition:all 0.2s ease;}
     .day-pill:hover{border-color:rgba(73,199,165,0.3);background:rgba(73,199,165,0.05);transform:translateY(-2px);}
@@ -55,26 +58,32 @@
 </head>
 <body>
 
+  <!-- HEADER CANONICO -->
   <nav class="fixed top-0 w-full z-50 bg-[#101416]/80 backdrop-blur-xl border-b border-[#3d4944]/20 shadow-sm">
     <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
       <a class="flex items-center gap-3" href="/">
         <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto" loading="lazy"/>
         <span class="font-bold" style="font-size:18px;background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
       </a>
-      <div class="hidden md:flex gap-8 items-center">
+      <div class="hidden md:flex gap-8 items-center" id="nav-desktop">
         <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/">Home</a>
         <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/metodo/">Metodo</a>
-        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/formazione/">Formazione</a>
-        <a class="text-[#49C7A5] border-b-2 border-[#49C7A5] pb-1 font-semibold text-sm" href="/reset-notturno/">Reset Notturno</a>
-        <a class="bg-[#49C7A5] hover:bg-[#49C7A5]/90 text-[#101416] px-6 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95" href="/quiz/">Fai il Quiz del Coraggio</a>
+        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/corsi/">Corsi</a>
+        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/sessioni/">Sessioni 1:1</a>
+        <span id="nav-auth-area">
+          <a href="/login/" class="border border-[#3d4944]/60 hover:border-[#49C7A5]/40 text-[#F5F7FA] px-5 py-2 rounded-full font-semibold text-sm transition-all">Accedi</a>
+        </span>
       </div>
-      <button id="hamburger-btn" class="md:hidden text-[#F5F7FA] p-2" aria-label="Apri menu">
+      <button id="hamburger-btn" class="md:hidden text-[#F5F7FA] p-2" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
         <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
       </button>
     </div>
-    <div id="mobile-menu" role="navigation">
-      <a href="/">Home</a><a href="/metodo/">Metodo</a><a href="/formazione/">Formazione</a>
-      <a href="/reset-notturno/">Reset Notturno</a><a href="/quiz/">Fai il Quiz del Coraggio</a>
+    <div id="mobile-menu" role="navigation" aria-label="Menu mobile">
+      <a href="/">Home</a>
+      <a href="/metodo/">Metodo</a>
+      <a href="/corsi/">Corsi</a>
+      <a href="/sessioni/">Sessioni 1:1</a>
+      <a href="/login/">Accedi</a>
     </div>
   </nav>
 
@@ -191,28 +200,31 @@
 
   </main>
 
-  <footer class="bg-[#0b0f11] w-full py-16 px-6 border-t border-[#3d4944]/30">
+  <!-- FOOTER CANONICO -->
+  <footer class="bg-[#0b0f11] w-full py-16 px-6 border-t border-[#3d4944]/25">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto mb-12">
       <div class="space-y-4">
         <a href="/" class="flex items-center gap-2">
           <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-7 w-auto" loading="lazy"/>
           <span class="font-bold" style="font-size:16px;background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
         </a>
-        <p class="text-[#bccac3] text-sm leading-relaxed">Il Metodo IpnosiApplicata per la trasformazione mentale.</p>
+        <p class="text-[#bccac3] text-sm leading-relaxed">La piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca. Percorsi di trasformazione personale guidati, concreti, misurabili.</p>
       </div>
       <div>
-        <h4 class="text-[#F5F7FA] font-bold text-xs uppercase tracking-wider mb-5">Navigazione</h4>
+        <h4 class="text-[#F5F7FA] font-bold text-xs uppercase tracking-wider mb-5">Piattaforma</h4>
         <ul class="space-y-3 text-sm">
           <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/">Home</a></li>
           <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/metodo/">Metodo</a></li>
-          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/formazione/">Formazione</a></li>
+          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/corsi/">Corsi</a></li>
+          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/sessioni/">Sessioni 1:1</a></li>
         </ul>
       </div>
       <div>
-        <h4 class="text-[#F5F7FA] font-bold text-xs uppercase tracking-wider mb-5">Percorso</h4>
+        <h4 class="text-[#F5F7FA] font-bold text-xs uppercase tracking-wider mb-5">Il brand</h4>
         <ul class="space-y-3 text-sm">
-          <li><a class="text-[#49C7A5] font-semibold hover:text-[#49C7A5]/80 transition-colors" href="/quiz/">Quiz del Coraggio</a></li>
-          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/reset-notturno/">Reset Notturno</a></li>
+          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="https://cristianlecca.it">cristianlecca.it</a></li>
+          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="https://cristianlecca.it/quiz/">Quiz del Coraggio</a></li>
+          <li><a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/login/">Accedi</a></li>
         </ul>
       </div>
       <div>
@@ -223,20 +235,44 @@
         </ul>
       </div>
     </div>
-    <div class="max-w-6xl mx-auto pt-8 border-t border-[#3d4944]/30 flex flex-col md:flex-row items-center justify-between gap-3">
+    <div class="max-w-6xl mx-auto pt-8 border-t border-[#3d4944]/25 flex flex-col md:flex-row items-center justify-between gap-3">
       <a href="/" class="flex items-center gap-2 opacity-50 hover:opacity-80 transition-opacity">
         <img src="/assets/logoIpnoApp.png" alt="" class="h-5 w-auto"/>
       </a>
-      <span class="text-[#bccac3] text-xs text-center font-semibold">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      <span class="text-[#bccac3] text-xs text-center">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
     </div>
   </footer>
 
   <script>
+    // Auth check
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+    if (pb.authStore.isValid) {
+      const area = document.getElementById('nav-auth-area');
+      if (area) {
+        area.innerHTML = `<a href="/dashboard/" class="border border-[#49C7A5]/40 text-[#49C7A5] px-5 py-2 rounded-full font-semibold text-sm transition-all hover:bg-[#49C7A5]/10 flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:16px">person</span>Area personale</a>`;
+      }
+    }
+    // Menu mobile
     const btn = document.getElementById('hamburger-btn');
     const menu = document.getElementById('mobile-menu');
     const icon = document.getElementById('hamburger-icon');
-    if(btn) btn.addEventListener('click', () => { const isOpen = menu.classList.toggle('open'); btn.setAttribute('aria-expanded', isOpen); icon.textContent = isOpen ? 'close' : 'menu'; });
-    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.08 });
+    btn.addEventListener('click', () => {
+      const isOpen = menu.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen);
+      icon.textContent = isOpen ? 'close' : 'menu';
+    });
+    menu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+        icon.textContent = 'menu';
+      });
+    });
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+    }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
