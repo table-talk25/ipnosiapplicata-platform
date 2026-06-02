@@ -68,6 +68,8 @@
     .undo-btn:hover{border-color:rgba(201,164,92,0.4);color:#C9A45C;}
     .security-box{background:rgba(201,164,92,0.05);border:1px solid rgba(201,164,92,0.18);border-radius:12px;padding:16px 20px;}
     .progress-hint{font-size:12px;color:#bccac3;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:10px;}
+    .profile-btn{width:36px;height:36px;border-radius:50%;background:rgba(39,42,45,0.9);border:1px solid rgba(61,73,68,0.5);color:#bccac3;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;text-decoration:none;flex-shrink:0;}
+    .profile-btn:hover{border-color:rgba(73,199,165,0.4);color:#49C7A5;}
   </style>
 </head>
 
@@ -85,10 +87,15 @@
         <span class="text-[#3d4944] text-xs">/</span>
         <span class="text-[#F5F7FA] font-semibold text-sm" style="font-family:'Manrope',sans-serif;" x-text="'Giorno ' + day.num"></span>
       </div>
-      <a href="/reset-notturno/dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1 text-sm font-semibold">
-        <span class="material-symbols-outlined text-base">grid_view</span>
-        <span class="hidden md:inline">Dashboard</span>
-      </a>
+      <div class="flex items-center gap-3">
+        <a href="/reset-notturno/dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1 text-sm font-semibold">
+          <span class="material-symbols-outlined text-base">grid_view</span>
+          <span class="hidden md:inline">Dashboard</span>
+        </a>
+        <a href="/area-riservata/" class="profile-btn" title="Il mio profilo">
+          <span class="material-symbols-outlined" style="font-size:20px">account_circle</span>
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -198,7 +205,6 @@
             <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : 'check_circle'"></span>
             <span x-text="isSaved ? 'Giorno completato!' : 'Completa il Giorno ' + day.num"></span>
           </button>
-          <!-- TASTO ANNULLA visibile solo se salvato -->
           <button x-show="isSaved" x-transition class="undo-btn" @click="undoDay()">
             <span class="material-symbols-outlined" style="font-size:15px">undo</span>
             Annulla
