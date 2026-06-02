@@ -133,12 +133,6 @@
     <a href="/percorso/" class="sidebar-item">
       <span class="material-symbols-outlined">route</span> Il mio Percorso
     </a>
-    <a href="#sessioni" class="sidebar-item">
-      <span class="material-symbols-outlined">video_call</span> Sessioni
-    </a>
-    <a href="#esercizi" class="sidebar-item">
-      <span class="material-symbols-outlined">edit_note</span> Esercizi
-    </a>
     <a href="#corsi" class="sidebar-item">
       <span class="material-symbols-outlined">school</span> Corsi
     </a>
@@ -162,59 +156,6 @@
           Bentornato, <span class="gradient-text" x-text="user.name ? user.name.split(' ')[0] : 'amico'"></span>
         </h1>
         <p class="text-on-surface-variant mt-2" x-text="greeting"></p>
-      </div>
-
-      <!-- Prossima sessione -->
-      <div class="sessione-card p-6 mb-8 reveal" x-show="nextSession">
-        <div class="flex items-start justify-between gap-4 flex-wrap">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-secondary/15 border border-secondary/25 flex items-center justify-center flex-shrink-0">
-              <span class="material-symbols-outlined text-secondary" style="font-size:24px">video_call</span>
-            </div>
-            <div>
-              <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-1">Prossima sessione 1:1</p>
-              <p class="font-bold text-on-surface text-lg" style="font-family:'Manrope',sans-serif;" x-text="nextSession?.title"></p>
-              <p class="text-on-surface-variant text-sm mt-1" x-text="nextSession?.dateFormatted"></p>
-            </div>
-          </div>
-          <a :href="nextSession?.video_link || '#'"
-             class="flex-shrink-0 inline-flex items-center gap-2 bg-secondary text-on-secondary px-5 py-2.5 rounded-full font-semibold text-sm transition-all hover:bg-secondary/90">
-            <span class="material-symbols-outlined" style="font-size:17px">play_circle</span>
-            Entra nella sessione
-          </a>
-        </div>
-      </div>
-
-      <!-- Esercizi in sospeso -->
-      <div class="mb-10 reveal" x-show="pendingExercises.length > 0" id="esercizi">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="font-bold text-lg text-on-surface" style="font-family:'Manrope',sans-serif;">Da completare</h2>
-          <span class="text-on-surface-variant text-sm" x-text="pendingExercises.length + ' esercizi'"></span>
-        </div>
-        <div class="space-y-3">
-          <template x-for="ex in pendingExercises" :key="ex.id">
-            <div class="esercizio-row p-4 flex items-center justify-between gap-4">
-              <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                     :class="ex.overdue ? 'bg-tertiary/12 text-tertiary' : 'bg-primary/10 text-primary'">
-                  <span class="material-symbols-outlined" style="font-size:18px" x-text="ex.icon || 'edit_note'"></span>
-                </div>
-                <div>
-                  <p class="font-semibold text-on-surface text-sm" x-text="ex.title"></p>
-                  <p class="text-on-surface-variant text-xs mt-0.5" x-text="ex.dueLabel"></p>
-                </div>
-              </div>
-              <span class="badge" :class="ex.overdue ? 'red' : 'teal'" x-text="ex.overdue ? 'Scaduto' : 'In corso'"></span>
-            </div>
-          </template>
-        </div>
-      </div>
-
-      <div class="mb-10 reveal" x-show="pendingExercises.length === 0 && !loading">
-        <div class="esercizio-row p-5 flex items-center gap-4 opacity-60">
-          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px">edit_note</span>
-          <p class="text-on-surface-variant text-sm">Nessun esercizio assegnato al momento.</p>
-        </div>
       </div>
 
       <!-- I miei percorsi -->
@@ -327,10 +268,6 @@
       <span class="material-symbols-outlined" style="font-size:22px">home</span>
       Home
     </a>
-    <a href="#esercizi" class="bottom-nav-item">
-      <span class="material-symbols-outlined" style="font-size:22px">edit_note</span>
-      Esercizi
-    </a>
     <a href="#corsi" class="bottom-nav-item">
       <span class="material-symbols-outlined" style="font-size:22px">school</span>
       Corsi
@@ -385,18 +322,11 @@
         subtitle: 'Percorso individuale — 6 sessioni',
         icon: 'video_call', color: '#3A63FF',
         totalSteps: 6,
-        link: '#sessioni',
+        link: '#',
         lockedMsg: 'Prenota la Sessione di Svolta per iniziare.',
         unlockLink: 'https://cristianlecca.it/sessione-di-svolta/'
       },
     ];
-
-    function formatDate(iso) {
-      if (!iso) return '';
-      return new Date(iso).toLocaleDateString('it-IT', {
-        weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'
-      });
-    }
 
     function timeAgo(iso) {
       if (!iso) return '';
@@ -420,7 +350,6 @@
         _loaded: false,
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
-        nextSession: null, pendingExercises: [],
         corsi: [], journey: [],
 
         get greeting() {
@@ -462,107 +391,83 @@
 
         async loadAll() {
           const uid = this.user.id;
+
+          // Carica acquisti: filtro solo per user, poi filtra status lato JS
+          // (evita 400 da PocketBase su campi select in filter con List Rule restrittiva)
+          let activePurchases = [];
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user="${uid}" && status="completed"`,
+              filter: `user="${uid}"`,
               sort: '-created',
               '$autoCancel': false
-            }).catch(e => { console.warn('[purchases] errore:', e.message); return null; });
+            });
+            if (purchasesRes && purchasesRes.items) {
+              // Filtra lato JS: solo status=completed
+              activePurchases = purchasesRes.items
+                .filter(p => p.status === 'completed')
+                .map(p => p.product)
+                .filter(Boolean);
+              console.log('[DEBUG] purchases loaded, activePurchases:', activePurchases);
+            }
+          } catch(e) {
+            console.warn('[purchases] errore:', e.message);
+            this.fetchError = true;
+          }
 
+          // Carica progressi
+          const progressMap = {};
+          try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
               filter: `user="${uid}"`,
               '$autoCancel': false
-            }).catch(e => { console.warn('[progress] errore:', e.message); return null; });
+            });
+            if (progressRes && progressRes.items) {
+              progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
+            }
+          } catch(e) {
+            console.warn('[progress] errore:', e.message);
+          }
 
-            const sessionsRes = await pb.collection('sessions').getList(1, 10, {
-              filter: `user="${uid}" && (status="scheduled" || status="live")`,
-              sort: 'scheduled_at',
-              '$autoCancel': false
-            }).catch(() => null);
-
-            const exercisesRes = await pb.collection('exercises').getList(1, 20, {
-              filter: `user="${uid}" && completed=false`,
-              sort: 'due_at',
-              '$autoCancel': false
-            }).catch(() => null);
-
+          // Carica journey (opzionale, non blocca se manca)
+          try {
             const journeyRes = await pb.collection('journey').getList(1, 20, {
               filter: `user="${uid}"`,
               sort: '-created',
               '$autoCancel': false
-            }).catch(() => null);
-
-            // Estrai product acquistati
-            let activePurchases = [];
-            if (purchasesRes && purchasesRes.items) {
-              console.log('[DEBUG purchases] items:', JSON.stringify(purchasesRes.items, null, 2));
-              activePurchases = purchasesRes.items.map(p => {
-                if (typeof p.product === 'string' && p.product) return p.product;
-                if (p.expand?.product?.slug) return p.expand.product.slug;
-                if (p.expand?.product?.name) return p.expand.product.name;
-                return null;
-              }).filter(Boolean);
-              console.log('[DEBUG] activePurchases:', activePurchases);
-            }
-
-            const progressMap = {};
-            if (progressRes && progressRes.items) {
-              progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
-            }
-
-            this.corsi = CATALOG.map(c => {
-              const purchased = activePurchases.some(pid =>
-                pid === c.id ||
-                (typeof pid === 'string' && pid.toLowerCase().includes(c.id)) ||
-                (typeof pid === 'string' && c.id.includes(pid.toLowerCase()))
-              );
-              const prog = progressMap[c.id];
-              const completedSteps = prog ? (prog.completed_steps || []).length : 0;
-              const currentStep = prog ? (prog.current_step || 0) : 0;
-              const pct = c.totalSteps > 0 ? Math.round((completedSteps / c.totalSteps) * 100) : 0;
-              const statusLabel = !purchased ? 'Bloccato'
-                : pct === 100 ? 'Completato'
-                : currentStep > 0 ? 'In corso'
-                : 'Disponibile';
-              const badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
-              console.log(`[DEBUG corso] ${c.id} → purchased:${purchased}`);
-              return {
-                ...c,
-                unlocked: purchased,
-                progress: pct,
-                progressLabel: purchased
-                  ? (c.totalSteps === 7 ? `Giorno ${currentStep} di ${c.totalSteps}`
-                   : c.totalSteps === 6 ? `Sessione ${currentStep} di ${c.totalSteps}`
-                   : `Step ${currentStep} di ${c.totalSteps}`)
-                  : '',
-                badgeLabel: statusLabel,
-                badgeClass,
-              };
             });
-
-            if (sessionsRes && sessionsRes.items && sessionsRes.items.length > 0) {
-              const s = sessionsRes.items[0];
-              this.nextSession = { ...s, dateFormatted: formatDate(s.scheduled_at) };
-            }
-
-            if (exercisesRes && exercisesRes.items) {
-              this.pendingExercises = exercisesRes.items.map(ex => ({
-                ...ex,
-                overdue: ex.due_at && new Date(ex.due_at) < new Date(),
-                dueLabel: ex.due_at
-                  ? 'Scadenza: ' + new Date(ex.due_at).toLocaleDateString('it-IT', {day:'numeric', month:'short'})
-                  : 'Nessuna scadenza',
-              }));
-            }
-
             if (journeyRes && journeyRes.items) {
               this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
             }
-
           } catch(e) {
-            console.error('Errore caricamento dashboard:', e);
-            this.fetchError = true;
+            // journey non ancora creata o permessi mancanti: silenzioso
+            this.journey = [];
           }
+
+          // Costruisce stato corsi
+          this.corsi = CATALOG.map(c => {
+            const purchased = activePurchases.includes(c.id);
+            const prog = progressMap[c.id];
+            const completedSteps = prog ? (prog.completed_steps || []).length : 0;
+            const currentStep = prog ? (prog.current_step || 0) : 0;
+            const pct = c.totalSteps > 0 ? Math.round((completedSteps / c.totalSteps) * 100) : 0;
+            const statusLabel = !purchased ? 'Bloccato'
+              : pct === 100 ? 'Completato'
+              : currentStep > 0 ? 'In corso'
+              : 'Disponibile';
+            const badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
+            return {
+              ...c,
+              unlocked: purchased,
+              progress: pct,
+              progressLabel: purchased
+                ? (c.totalSteps === 7 ? `Giorno ${currentStep} di ${c.totalSteps}`
+                 : c.totalSteps === 6 ? `Sessione ${currentStep} di ${c.totalSteps}`
+                 : `Step ${currentStep} di ${c.totalSteps}`)
+                : '',
+              badgeLabel: statusLabel,
+              badgeClass,
+            };
+          });
         },
 
         logout() {

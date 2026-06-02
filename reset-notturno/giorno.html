@@ -90,9 +90,9 @@
         <span class="text-[#3d4944] text-xs">/</span>
         <span class="text-[#F5F7FA] font-semibold text-sm" style="font-family:'Manrope',sans-serif;" x-text="'Giorno ' + day.num"></span>
       </div>
-      <a href="/dashboard/" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1.5 text-sm font-semibold">
+      <a href="/reset-notturno/dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1.5 text-sm font-semibold">
         <span class="material-symbols-outlined text-base">arrow_back</span>
-        Area personale
+        I miei giorni
       </a>
     </div>
   </nav>
@@ -206,7 +206,6 @@
             <span class="material-symbols-outlined" style="font-size:15px">undo</span>
             Annulla
           </button>
-          <!-- Badge sync stato -->
           <span x-show="syncStatus === 'ok'" class="sync-badge ok">
             <span class="material-symbols-outlined" style="font-size:13px">cloud_done</span>
             Salvato
@@ -258,8 +257,8 @@
       return {
         day: {}, journal: {p1:'',p2a:'',p2b:'',p3:'',p4:''},
         isPlaying: false, audioProgress: 0, currentTime: 0, duration: 0, volume: 0.9, audioLoaded: false,
-        isSaved: false, saving: false, syncStatus: null, // null | 'ok' | 'offline'
-        pbProgressId: null, // ID record PocketBase se esiste già
+        isSaved: false, saving: false, syncStatus: null,
+        pbProgressId: null,
 
         get promptsDone() {
           let n = 0;
@@ -272,7 +271,6 @@
         get allDone() { return this.promptsDone === 4; },
 
         async init() {
-          // Auth guard
           if (!pb.authStore.isValid) {
             window.location.href = '/login/?redirect=' + encodeURIComponent(window.location.href);
             return;
@@ -287,7 +285,6 @@
           this.day = DAYS_DATA.find(d => d.num === num) || DAYS_DATA[0];
           document.title = `Giorno ${this.day.num} — ${this.day.title} | IpnosiApplicata`;
 
-          // Carica stato: prima da PocketBase, fallback localStorage
           await this.loadProgress();
 
           this.$nextTick(() => {
@@ -299,7 +296,6 @@
           });
         },
 
-        // Carica progresso da PocketBase (fonte di verità) con fallback localStorage
         async loadProgress() {
           const uid = pb.authStore.model.id;
           try {
@@ -310,25 +306,20 @@
             const completedSteps = rec.completed_steps || [];
             const maxCompleted = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
             this.isSaved = completedSteps.includes(this.day.num);
-            // Aggiorna localStorage come cache locale
             localStorage.setItem('rn_completed', maxCompleted);
           } catch(e) {
-            // Nessun record PB ancora — usa localStorage come fallback
             const completed = parseInt(localStorage.getItem('rn_completed') || '0');
             this.isSaved = this.day.num <= completed;
           }
 
-          // Carica bozza diario da localStorage
           const saved = JSON.parse(localStorage.getItem(`rn_journal_${this.day.num}`) || 'null');
           if (saved) { this.journal = saved; }
         },
 
-        // Salva completamento: PocketBase (primario) + localStorage (cache)
         async saveDay() {
           if (!this.allDone || this.isSaved || this.saving) return;
           this.saving = true;
 
-          // Salva bozza diario in localStorage
           localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
 
           const uid = pb.authStore.model.id;
@@ -336,16 +327,14 @@
             let completedSteps = [];
             let currentRec = null;
 
-            // Prova a recuperare il record esistente
             try {
               currentRec = await pb.collection('progress').getFirstListItem(
                 `user="${uid}" && product_id="${PRODUCT_ID}"`
               );
               completedSteps = currentRec.completed_steps || [];
               this.pbProgressId = currentRec.id;
-            } catch(_) { /* nessun record ancora */ }
+            } catch(_) { }
 
-            // Aggiungi questo giorno se non già presente
             if (!completedSteps.includes(this.day.num)) {
               completedSteps.push(this.day.num);
             }
@@ -365,13 +354,11 @@
               this.pbProgressId = newRec.id;
             }
 
-            // Aggiorna localStorage come cache
             localStorage.setItem('rn_completed', currentStep);
             this.syncStatus = 'ok';
 
           } catch(e) {
-            console.warn('Sync PocketBase fallita, salvato solo in locale:', e.message);
-            // Salva comunque in locale
+            console.warn('Sync PocketBase fallita:', e.message);
             const prev = parseInt(localStorage.getItem('rn_completed') || '0');
             if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
             this.syncStatus = 'offline';
@@ -381,7 +368,6 @@
           this.saving = false;
         },
 
-        // Annulla: rimuove da PocketBase e localStorage
         async undoDay() {
           const uid = pb.authStore.model.id;
           try {
@@ -406,7 +392,6 @@
           this.syncStatus = null;
         },
 
-        // Audio
         togglePlay() {
           const a = this.$refs.audio; if (!a) return;
           if (this.isPlaying) { a.pause(); this.isPlaying = false; }
