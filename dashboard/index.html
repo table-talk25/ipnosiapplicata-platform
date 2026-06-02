@@ -286,7 +286,7 @@
       <!-- Percorso -->
       <div id="percorso" class="glass-card rounded-2xl p-6 mb-8 reveal">
         <div class="flex items-start gap-4">
-          <div class="w-11 h-11 rounded-2xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
+          <div class="w-11 h-11 rounded-2xl bg-secondary/12 border bg-secondary/25 flex items-center justify-center flex-shrink-0">
             <span class="material-symbols-outlined text-secondary" style="font-size:22px">route</span>
           </div>
           <div class="flex-1">
@@ -431,7 +431,6 @@
         },
 
         async init() {
-          // Evita doppia inizializzazione da Alpine
           if (this._loaded) return;
           this._loaded = true;
 
@@ -464,33 +463,32 @@
         async loadAll() {
           const uid = this.user.id;
           try {
-            // Usiamo $autoCancel: false per evitare che la SDK cancelli le richieste
+            // user è un campo relation: il filtro corretto NON usa le virgolette attorno all'ID
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user="${uid}" && status="completed"`,
+              filter: `user=${uid} && status="completed"`,
               sort: '-created',
               '$autoCancel': false
             }).catch(e => { console.warn('[purchases] errore:', e.message); return null; });
 
             const progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: `user="${uid}"`,
+              filter: `user=${uid}`,
               '$autoCancel': false
             }).catch(e => { console.warn('[progress] errore:', e.message); return null; });
 
-            // Sessioni ed esercizi: collezioni opzionali, non blocca se non esistono
             const sessionsRes = await pb.collection('sessions').getList(1, 10, {
-              filter: `user="${uid}" && (status="scheduled" || status="live")`,
+              filter: `user=${uid} && (status="scheduled" || status="live")`,
               sort: 'scheduled_at',
               '$autoCancel': false
             }).catch(() => null);
 
             const exercisesRes = await pb.collection('exercises').getList(1, 20, {
-              filter: `user="${uid}" && completed=false`,
+              filter: `user=${uid} && completed=false`,
               sort: 'due_at',
               '$autoCancel': false
             }).catch(() => null);
 
             const journeyRes = await pb.collection('journey').getList(1, 20, {
-              filter: `user="${uid}"`,
+              filter: `user=${uid}`,
               sort: '-created',
               '$autoCancel': false
             }).catch(() => null);
@@ -508,13 +506,11 @@
               console.log('[DEBUG] activePurchases:', activePurchases);
             }
 
-            // Mappa progresso per product_id
             const progressMap = {};
             if (progressRes && progressRes.items) {
               progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
             }
 
-            // Costruisci corsi
             this.corsi = CATALOG.map(c => {
               const purchased = activePurchases.some(pid =>
                 pid === c.id ||
@@ -545,7 +541,7 @@
               };
             });
 
-            if (sessionsRes && sessionsRes.items.length > 0) {
+            if (sessionsRes && sessionsRes.items && sessionsRes.items.length > 0) {
               const s = sessionsRes.items[0];
               this.nextSession = { ...s, dateFormatted: formatDate(s.scheduled_at) };
             }
