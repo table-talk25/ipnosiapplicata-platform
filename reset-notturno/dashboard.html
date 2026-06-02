@@ -3,263 +3,142 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Dashboard — Reset Notturno | IpnosiApplicata</title>
-  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="icon" type="image/png" href="/assets/favicon%201.png">
+  <title>Diario del Reset — Dashboard | IpnosiApplicata</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
       theme: {
         extend: {
           colors: {
-            "background": "#101416", "on-background": "#F5F7FA",
-            "surface": "#101416", "on-surface": "#F5F7FA",
-            "primary": "#49C7A5", "on-primary": "#101416",
-            "secondary": "#3A63FF", "on-secondary": "#FFFFFF",
-            "tertiary": "#C9A45C", "on-tertiary": "#101416",
-            "outline": "#86948e", "outline-variant": "#3d4944",
-            "surface-container": "#1d2022",
-            "surface-container-low": "#191c1e",
-            "surface-container-high": "#272a2d",
-            "surface-container-highest": "#323538",
-            "surface-container-lowest": "#0b0f11",
-            "surface-variant": "#323538",
-            "on-surface-variant": "#bccac3"
+            "background":"#101416","on-background":"#F5F7FA","surface":"#101416","on-surface":"#F5F7FA",
+            "primary":"#49C7A5","on-primary":"#101416","secondary":"#3A63FF","on-secondary":"#FFFFFF",
+            "tertiary":"#C9A45C","on-tertiary":"#101416","outline":"#86948e","outline-variant":"#3d4944",
+            "surface-container":"#1d2022","surface-container-low":"#191c1e","surface-container-high":"#272a2d",
+            "surface-container-highest":"#323538","surface-container-lowest":"#0b0f11",
+            "surface-variant":"#323538","on-surface-variant":"#bccac3"
           },
-          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
-          fontFamily: {
-            "label-md": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Manrope"],
-            "headline-md": ["Manrope"], "body-lg": ["Inter"], "display-lg": ["Manrope"]
-          },
-          fontSize: {
-            "label-md": ["14px", {lineHeight:"1.2",letterSpacing:"0.05em",fontWeight:"600"}],
-            "body-md": ["16px", {lineHeight:"1.6",fontWeight:"400"}],
-            "headline-lg": ["48px", {lineHeight:"1.2",fontWeight:"600"}],
-            "headline-md": ["32px", {lineHeight:"1.3",fontWeight:"600"}],
-            "body-lg": ["20px", {lineHeight:"1.6",fontWeight:"400"}],
-            "display-lg": ["64px", {lineHeight:"1.1",letterSpacing:"-0.02em",fontWeight:"700"}]
+          borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},
+          fontFamily:{"label-md":["Inter"],"body-md":["Inter"],"headline-lg":["Manrope"],"headline-md":["Manrope"],"body-lg":["Inter"],"display-lg":["Manrope"]},
+          fontSize:{
+            "label-md":["14px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],
+            "body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],
+            "headline-lg":["48px",{"lineHeight":"1.2","fontWeight":"600"}],
+            "headline-md":["32px",{"lineHeight":"1.3","fontWeight":"600"}],
+            "body-lg":["20px",{"lineHeight":"1.6","fontWeight":"400"}],
+            "display-lg":["64px",{"lineHeight":"1.1","letterSpacing":"-0.02em","fontWeight":"700"}]
           }
         }
       }
     }
   </script>
-
   <style>
-    body { background-color: #101416; color: #F5F7FA; overflow-x: hidden; font-family: 'Inter', sans-serif; }
-
-    .glass-card {
-      background: rgba(29,32,34,0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(245,247,250,0.08);
-      transition: all 0.3s ease-in-out;
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-      display: inline-block; vertical-align: middle;
-    }
-
-    /* Header dashboard */
-    .dashboard-nav {
-      position: fixed; top: 0; width: 100%; z-index: 50;
-      background: rgba(16,20,22,0.92);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(61,73,68,0.4);
-    }
-
-    /* Progress ring SVG */
-    .progress-ring-circle {
-      transition: stroke-dashoffset 1s ease;
-      transform: rotate(-90deg);
-      transform-origin: 50% 50%;
-    }
-
-    /* Card giorno */
-    .day-card {
-      background: rgba(29,32,34,0.6);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      border: 1px solid rgba(61,73,68,0.4);
-      transition: all 0.25s ease;
-      overflow: hidden;
-      position: relative;
-    }
-    .day-card.completed {
-      border-color: rgba(73,199,165,0.2);
-      background: rgba(73,199,165,0.04);
-    }
-    .day-card.active {
-      border-color: rgba(201,164,92,0.3);
-      background: rgba(201,164,92,0.04);
-      box-shadow: 0 0 20px rgba(201,164,92,0.08);
-    }
-    .day-card.locked {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .day-card:not(.locked):hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    /* Status badge */
-    .status-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 12px; border-radius: 100px;
-      font-size: 12px; font-weight: 600;
-    }
-    .status-badge.completed { background: rgba(73,199,165,0.12); color: #49C7A5; border: 1px solid rgba(73,199,165,0.2); }
-    .status-badge.active    { background: rgba(201,164,92,0.12); color: #C9A45C; border: 1px solid rgba(201,164,92,0.2); }
-    .status-badge.locked    { background: rgba(61,73,68,0.3);    color: #bccac3; border: 1px solid rgba(61,73,68,0.4); }
-
-    /* Stat card */
-    .stat-card {
-      background: rgba(29,32,34,0.8);
-      border: 1px solid rgba(61,73,68,0.4);
-      border-radius: 16px;
-      padding: 20px 24px;
-    }
-
-    /* Motivational banner */
-    .motivation-banner {
-      background: linear-gradient(135deg, rgba(73,199,165,0.08), rgba(58,99,255,0.06));
-      border: 1px solid rgba(73,199,165,0.15);
-      border-radius: 16px;
-      padding: 24px;
-    }
-
-    /* CTA Livello 2 (giorno 7 completato) */
-    .cta-livello2 {
-      background: linear-gradient(135deg, rgba(201,164,92,0.1), rgba(201,164,92,0.03));
-      border: 1px solid rgba(201,164,92,0.22);
-      border-radius: 20px;
-    }
-
-    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 600ms ease, transform 600ms ease; }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-
-    /* Gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, #49C7A5, #3A63FF);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+    body{background-color:#101416;color:#F5F7FA;overflow-x:hidden;font-family:'Inter',sans-serif;}
+    .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
+    .nav-logo{filter:brightness(2) drop-shadow(0 0 8px rgba(73,199,165,0.25));transition:filter 300ms ease;}
+    .glass-card{background:rgba(29,32,34,0.4);backdrop-filter:blur(12px);border:1px solid rgba(245,247,250,0.1);}
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 600ms ease,transform 600ms ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .progress-ring-circle{transition:stroke-dashoffset 1s ease;transform:rotate(-90deg);transform-origin:50% 50%;}
+    .day-card{background:rgba(29,32,34,0.6);backdrop-filter:blur(12px);border-radius:16px;border:1px solid rgba(61,73,68,0.4);transition:all 0.25s ease;overflow:hidden;position:relative;}
+    .day-card.completed{border-color:rgba(73,199,165,0.25);background:rgba(73,199,165,0.04);}
+    .day-card.active{border-color:rgba(201,164,92,0.35);background:rgba(201,164,92,0.05);box-shadow:0 0 24px rgba(201,164,92,0.1);}
+    .day-card.locked{opacity:0.45;cursor:not-allowed;}
+    .day-card:not(.locked):hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(0,0,0,0.35);}
+    .stat-card{background:rgba(29,32,34,0.8);border:1px solid rgba(61,73,68,0.4);border-radius:16px;padding:20px 24px;}
+    .status-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;}
+    .status-badge.completed{background:rgba(73,199,165,0.12);color:#49C7A5;border:1px solid rgba(73,199,165,0.2);}
+    .status-badge.active{background:rgba(201,164,92,0.12);color:#C9A45C;border:1px solid rgba(201,164,92,0.2);}
+    .status-badge.locked{background:rgba(61,73,68,0.3);color:#bccac3;border:1px solid rgba(61,73,68,0.4);}
+    .motivation-banner{background:linear-gradient(135deg,rgba(73,199,165,0.08),rgba(58,99,255,0.06));border:1px solid rgba(73,199,165,0.15);border-radius:16px;padding:28px;}
+    .cta-livello2{background:linear-gradient(135deg,rgba(201,164,92,0.1),rgba(201,164,92,0.03));border:1px solid rgba(201,164,92,0.22);border-radius:20px;}
+    .gradient-text{background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
   </style>
 </head>
 
 <body x-data="dashboard()" x-init="init()">
 
-  <!-- ============================================
-       HEADER — Area riservata
-  ============================================ -->
-  <nav class="dashboard-nav">
+  <!-- HEADER AREA RISERVATA -->
+  <nav class="fixed top-0 w-full z-50 bg-[#101416]/92 backdrop-blur-xl border-b border-[#3d4944]/40">
     <div class="flex justify-between items-center px-6 py-4 max-w-5xl mx-auto">
       <div class="flex items-center gap-3">
-        <a href="/" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</a>
-        <span class="text-outline-variant text-xs">/</span>
-        <span class="text-on-surface-variant font-label-md text-label-md">Reset Notturno</span>
+        <a href="/" class="flex items-center gap-2">
+          <img src="/assets/Logo Lungo.png" alt="IpnosiApplicata" class="h-8 w-auto nav-logo" loading="lazy"/>
+        </a>
+        <span class="text-[#3d4944] text-xs">/</span>
+        <span class="text-[#bccac3] font-semibold text-sm" style="font-family:'Manrope',sans-serif;">Reset Notturno</span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="/dashboard"
-           class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5 font-label-md text-label-md">
-          <span class="material-symbols-outlined text-base">home</span>
-          <span class="hidden md:inline">Area personale</span>
+        <a href="/reset-notturno/" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1.5 text-sm font-semibold">
+          <span class="material-symbols-outlined text-base">arrow_back</span>
+          <span class="hidden md:inline">Panoramica</span>
         </a>
-        <button class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+        <div class="w-8 h-8 rounded-full bg-[#272a2d] flex items-center justify-center text-[#bccac3]">
           <span class="material-symbols-outlined text-base">account_circle</span>
-        </button>
+        </div>
       </div>
     </div>
   </nav>
 
-  <!-- ============================================
-       MAIN
-  ============================================ -->
   <main class="pt-24 pb-24 px-6 max-w-5xl mx-auto">
 
-    <!-- HERO INTESTAZIONE -->
+    <!-- HERO -->
     <div class="mb-10 reveal">
-      <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-3">Il tuo percorso</p>
-      <h1 class="font-bold text-4xl md:text-5xl text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">
-        Diario del Reset
-      </h1>
-      <p class="text-on-surface-variant text-body-lg max-w-xl">
-        7 giorni di autostima applicata. Ogni giorno un audio, ogni mattina un diario.
-        Il cambiamento è già in corso.
-      </p>
+      <p class="text-[#3A63FF] font-bold text-xs uppercase tracking-widest mb-3">Il tuo percorso</p>
+      <h1 class="font-extrabold text-4xl md:text-5xl text-[#F5F7FA] mb-3" style="font-family:'Manrope',sans-serif;">Diario del Reset</h1>
+      <p class="text-[#bccac3] text-lg max-w-xl leading-relaxed">7 giorni di autostima applicata. Ogni notte un audio, ogni mattina il tuo diario. Il cambiamento è già in corso.</p>
     </div>
 
-    <!-- STATS ROW -->
+    <!-- STATS -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 reveal">
-
-      <!-- Progress ring -->
       <div class="stat-card col-span-2 md:col-span-1 flex items-center gap-4">
         <div class="relative flex-shrink-0" style="width:64px;height:64px;">
           <svg width="64" height="64" viewBox="0 0 64 64">
             <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(61,73,68,0.5)" stroke-width="5"/>
-            <circle
-              class="progress-ring-circle"
-              cx="32" cy="32" r="26"
-              fill="none" stroke="#49C7A5" stroke-width="5"
-              stroke-linecap="round"
-              :stroke-dasharray="163.4"
-              :stroke-dashoffset="163.4 - (163.4 * completedCount / 7)"
-            />
+            <circle class="progress-ring-circle" cx="32" cy="32" r="26" fill="none" stroke="#49C7A5" stroke-width="5" stroke-linecap="round"
+              :stroke-dasharray="163.4" :stroke-dashoffset="163.4 - (163.4 * completedCount / 7)"/>
           </svg>
           <div class="absolute inset-0 flex items-center justify-center">
-            <span class="font-bold text-sm text-on-surface" style="font-family:'Manrope',sans-serif;"
-                  x-text="completedCount + '/7'"></span>
+            <span class="font-extrabold text-sm text-[#F5F7FA]" style="font-family:'Manrope',sans-serif;" x-text="completedCount + '/7'"></span>
           </div>
         </div>
         <div>
-          <p class="text-on-surface-variant text-xs mb-0.5">Completati</p>
-          <p class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;"
-             x-text="Math.round(completedCount/7*100) + '%'"></p>
+          <p class="text-[#bccac3] text-xs mb-0.5">Completati</p>
+          <p class="font-extrabold text-[#F5F7FA]" style="font-family:'Manrope',sans-serif;" x-text="Math.round(completedCount/7*100) + '%'"></p>
         </div>
       </div>
-
-      <!-- Giorno corrente -->
       <div class="stat-card flex flex-col justify-between">
-        <p class="text-on-surface-variant text-xs mb-1">Giorno attivo</p>
-        <p class="font-bold text-2xl text-tertiary" style="font-family:'Manrope',sans-serif;"
-           x-text="activeDay ? activeDay.num : '—'"></p>
-        <p class="text-on-surface-variant text-xs mt-1" x-text="activeDay ? activeDay.title : 'Percorso completato'"></p>
+        <p class="text-[#bccac3] text-xs mb-1">Giorno attivo</p>
+        <p class="font-extrabold text-2xl text-[#C9A45C]" style="font-family:'Manrope',sans-serif;" x-text="activeDay ? activeDay.num : '✓'"></p>
+        <p class="text-[#bccac3] text-xs mt-1" x-text="activeDay ? activeDay.title : 'Percorso completato'"></p>
       </div>
-
-      <!-- Streak -->
       <div class="stat-card flex flex-col justify-between">
-        <p class="text-on-surface-variant text-xs mb-1">Giorni di fila</p>
-        <p class="font-bold text-2xl text-primary" style="font-family:'Manrope',sans-serif;"
-           x-text="completedCount"></p>
-        <p class="text-on-surface-variant text-xs mt-1">streak attuale</p>
+        <p class="text-[#bccac3] text-xs mb-1">Giorni di fila</p>
+        <p class="font-extrabold text-2xl text-[#49C7A5]" style="font-family:'Manrope',sans-serif;" x-text="completedCount"></p>
+        <p class="text-[#bccac3] text-xs mt-1">streak attuale</p>
       </div>
-
-      <!-- Giorni rimanenti -->
       <div class="stat-card flex flex-col justify-between">
-        <p class="text-on-surface-variant text-xs mb-1">Rimanenti</p>
-        <p class="font-bold text-2xl text-on-surface" style="font-family:'Manrope',sans-serif;"
-           x-text="7 - completedCount"></p>
-        <p class="text-on-surface-variant text-xs mt-1" x-text="(7 - completedCount) === 0 ? 'Percorso finito!' : 'giorni al traguardo'"></p>
+        <p class="text-[#bccac3] text-xs mb-1">Rimanenti</p>
+        <p class="font-extrabold text-2xl text-[#F5F7FA]" style="font-family:'Manrope',sans-serif;" x-text="7 - completedCount"></p>
+        <p class="text-[#bccac3] text-xs mt-1" x-text="(7 - completedCount) === 0 ? 'Percorso finito!' : 'giorni al traguardo'"></p>
       </div>
-
     </div>
 
     <!-- BANNER MOTIVAZIONALE -->
-    <div class="motivation-banner mb-10 reveal" x-show="activeDay">
+    <div class="motivation-banner mb-10 reveal" x-show="activeDay" x-transition>
       <div class="flex items-start gap-4">
-        <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size:28px">auto_awesome</span>
-        <div>
-          <p class="font-semibold text-on-surface mb-1" style="font-family:'Manrope',sans-serif;">
+        <span class="material-symbols-outlined text-[#49C7A5] flex-shrink-0" style="font-size:28px">auto_awesome</span>
+        <div class="flex-1">
+          <p class="font-bold text-[#F5F7FA] mb-1" style="font-family:'Manrope',sans-serif;">
             Oggi: Giorno <span x-text="activeDay?.num"></span> — <span x-text="activeDay?.title"></span>
           </p>
-          <p class="text-on-surface-variant text-sm leading-relaxed" x-text="activeDay?.quote"></p>
+          <p class="text-[#bccac3] text-sm leading-relaxed italic mb-4" x-text="activeDay?.quote"></p>
           <a :href="'giorno.html?day=' + activeDay?.num"
-             class="inline-flex items-center gap-2 mt-4 bg-primary text-on-primary px-6 py-2.5 rounded-full font-semibold text-sm transition-all hover:bg-primary/90 active:scale-95"
-             style="font-family:'Manrope',sans-serif;">
+             class="inline-flex items-center gap-2 bg-[#49C7A5] text-[#101416] px-7 py-3 rounded-full font-bold text-sm transition-all hover:bg-[#49C7A5]/90 active:scale-95">
             <span class="material-symbols-outlined text-base">play_circle</span>
             Vai al Giorno <span x-text="activeDay?.num"></span>
           </a>
@@ -268,183 +147,123 @@
     </div>
 
     <!-- GRIGLIA 7 GIORNI -->
-    <div class="mb-4 reveal">
-      <h2 class="font-bold text-xl text-on-surface" style="font-family:'Manrope',sans-serif;">I 7 Giorni</h2>
+    <div class="mb-6 reveal">
+      <h2 class="font-bold text-xl text-[#F5F7FA]" style="font-family:'Manrope',sans-serif;">I 7 Giorni</h2>
     </div>
-
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16 reveal">
       <template x-for="day in days" :key="day.num">
-        <div class="day-card"
-             :class="{ completed: day.status==='completed', active: day.status==='active', locked: day.status==='locked' }">
-
-          <!-- Stripe laterale colorata -->
+        <div class="day-card" :class="{ completed: day.status==='completed', active: day.status==='active', locked: day.status==='locked' }">
           <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
-               :class="{
-                 'bg-primary': day.status==='completed',
-                 'bg-tertiary': day.status==='active',
-                 'bg-outline-variant': day.status==='locked'
-               }"></div>
-
+               :class="{ 'bg-[#49C7A5]': day.status==='completed', 'bg-[#C9A45C]': day.status==='active', 'bg-[#3d4944]': day.status==='locked' }"></div>
           <div class="p-5 pl-6">
-            <!-- Header card -->
             <div class="flex items-start justify-between mb-3">
               <div>
-                <span class="text-on-surface-variant text-xs font-semibold uppercase tracking-widest"
-                      x-text="'Giorno ' + day.num"></span>
-                <h3 class="font-bold text-on-surface mt-0.5" style="font-family:'Manrope',sans-serif;"
-                    x-text="day.title"></h3>
+                <span class="text-[#bccac3] text-xs font-semibold uppercase tracking-widest" x-text="'Giorno ' + day.num"></span>
+                <h3 class="font-bold text-[#F5F7FA] mt-0.5 leading-tight" style="font-family:'Manrope',sans-serif;" x-text="day.title"></h3>
               </div>
-              <!-- Icona stato -->
-              <div class="flex-shrink-0 mt-0.5">
-                <template x-if="day.status === 'completed'">
-                  <div class="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary" style="font-size:16px">check</span>
-                  </div>
-                </template>
-                <template x-if="day.status === 'active'">
-                  <div class="w-8 h-8 rounded-full bg-tertiary/15 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-tertiary" style="font-size:16px">radio_button_checked</span>
-                  </div>
-                </template>
-                <template x-if="day.status === 'locked'">
-                  <div class="w-8 h-8 rounded-full bg-outline-variant/30 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">lock</span>
-                  </div>
-                </template>
-              </div>
+              <template x-if="day.status === 'completed'">
+                <div class="w-8 h-8 rounded-full bg-[#49C7A5]/15 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-[#49C7A5]" style="font-size:16px">check</span>
+                </div>
+              </template>
+              <template x-if="day.status === 'active'">
+                <div class="w-8 h-8 rounded-full bg-[#C9A45C]/15 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-[#C9A45C]" style="font-size:16px">radio_button_checked</span>
+                </div>
+              </template>
+              <template x-if="day.status === 'locked'">
+                <div class="w-8 h-8 rounded-full bg-[#3d4944]/30 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-[#bccac3]" style="font-size:16px">lock</span>
+                </div>
+              </template>
             </div>
-
-            <!-- Citazione -->
-            <p class="text-on-surface-variant text-xs leading-relaxed mb-4 line-clamp-2" x-text="day.quote"></p>
-
-            <!-- Footer card -->
+            <p class="text-[#bccac3] text-xs leading-relaxed mb-4 line-clamp-2 italic" x-text="day.quote"></p>
             <div class="flex items-center justify-between">
-              <span class="status-badge"
-                    :class="{ completed: day.status==='completed', active: day.status==='active', locked: day.status==='locked' }">
+              <span class="status-badge" :class="{ completed: day.status==='completed', active: day.status==='active', locked: day.status==='locked' }">
                 <span class="material-symbols-outlined" style="font-size:12px"
                       x-text="day.status==='completed' ? 'verified' : day.status==='active' ? 'schedule' : 'lock'"></span>
                 <span x-text="day.status==='completed' ? 'Completato' : day.status==='active' ? 'Attivo oggi' : 'Bloccato'"></span>
               </span>
-
               <template x-if="day.status !== 'locked'">
                 <a :href="'giorno.html?day=' + day.num"
-                   class="text-primary hover:text-primary/80 transition-colors flex items-center gap-1 text-sm font-semibold"
-                   style="font-family:'Manrope',sans-serif;">
+                   class="text-[#49C7A5] hover:text-[#49C7A5]/80 transition-colors flex items-center gap-1 text-sm font-bold">
                   <span x-text="day.status==='completed' ? 'Rivedi' : 'Inizia'"></span>
                   <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
                 </a>
               </template>
             </div>
           </div>
-
         </div>
       </template>
     </div>
 
-    <!-- FILOSOFIA / PROMEMORIA -->
+    <!-- FILOSOFIA -->
     <div class="glass-card rounded-2xl p-8 mb-10 reveal">
       <div class="flex items-start gap-4">
-        <span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:28px">psychology</span>
+        <span class="material-symbols-outlined text-[#3A63FF] flex-shrink-0" style="font-size:28px">psychology</span>
         <div>
-          <h3 class="font-bold text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">
-            Il Ponte Mente-Azione
-          </h3>
-          <p class="text-on-surface-variant text-sm leading-relaxed mb-2">
-            L’Ipnosi Applicata lavora di notte (negli audio) ristrutturando le tue ‘radici’.
-            Il tuo lavoro, nel diario, è solo <span class="text-primary font-semibold">NOTARE</span>.
-          </p>
-          <p class="text-on-surface-variant text-sm leading-relaxed">
-            <span class="text-tertiary font-semibold">MENO MALE!</span> &mdash;
-            Le tue emozioni non sono un nemico, ma un’informazione preziosa.
-          </p>
+          <h3 class="font-bold text-[#F5F7FA] mb-3" style="font-family:'Manrope',sans-serif;">Il Ponte Mente-Azione</h3>
+          <p class="text-[#bccac3] text-sm leading-relaxed mb-2">L'Ipnosi Applicata lavora di notte ristrutturando le tue 'radici'. Il tuo lavoro nel diario è solo <span class="text-[#49C7A5] font-semibold">NOTARE</span>.</p>
+          <p class="text-[#bccac3] text-sm leading-relaxed"><span class="text-[#C9A45C] font-bold">MENO MALE!</span> &mdash; Le tue emozioni non sono un nemico, ma un'informazione preziosa.</p>
         </div>
       </div>
     </div>
 
-    <!-- CTA LIVELLO 2 — solo se tutti e 7 i giorni completati -->
-    <div x-show="completedCount === 7" class="cta-livello2 p-10 text-center reveal">
-      <span class="material-symbols-outlined text-tertiary mb-4 block" style="font-size:40px">workspace_premium</span>
-      <p class="text-tertiary font-label-md text-label-md uppercase tracking-widest mb-3">Hai completato il Reset</p>
-      <h2 class="text-2xl font-bold text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">
-        Il tuo prossimo livello: Autostima Applicata &mdash; 21 Giorni
-      </h2>
-      <p class="text-on-surface-variant text-body-md mb-4 max-w-lg mx-auto">
-        Hai dimostrato che il cambiamento è Facile, Semplice, Rapido.
-        Hai le fondamenta. Ora costruiamo il palazzo.
-      </p>
-      <blockquote class="text-on-surface-variant italic text-sm mb-8 max-w-md mx-auto">
-        &ldquo;Non basta essere un albero forte; devi imparare a goderti l’ombra che fai.&rdquo;
-      </blockquote>
-      <a href="#"
-         class="inline-flex items-center gap-2 bg-tertiary text-on-tertiary px-10 py-4 rounded-full font-bold text-base transition-all hover:bg-tertiary/90 active:scale-95"
-         style="font-family:'Manrope',sans-serif;">
-        Scopri l’Offerta Esclusiva
+    <!-- CTA LIVELLO 2 -->
+    <div x-show="completedCount === 7" x-transition class="cta-livello2 p-10 text-center reveal">
+      <span class="material-symbols-outlined text-[#C9A45C] mb-4 block" style="font-size:44px">workspace_premium</span>
+      <p class="text-[#C9A45C] font-bold text-xs uppercase tracking-widest mb-3">Hai completato il Reset</p>
+      <h2 class="text-2xl font-extrabold text-[#F5F7FA] mb-4" style="font-family:'Manrope',sans-serif;">Il tuo prossimo livello:<br/>Autostima Applicata — 21 Giorni</h2>
+      <p class="text-[#bccac3] text-base mb-3 max-w-lg mx-auto">Hai dimostrato che il cambiamento è Facile, Semplice, Rapido. Hai le fondamenta. Ora costruiamo la Cattedrale.</p>
+      <blockquote class="text-[#bccac3] italic text-sm mb-8 max-w-md mx-auto">&ldquo;Non basta essere un albero forte; devi imparare a goderti l'ombra che fai.&rdquo;</blockquote>
+      <a href="/sessione-di-svolta/"
+         class="inline-flex items-center gap-2 bg-[#C9A45C] text-[#101416] px-10 py-4 rounded-full font-bold text-base transition-all hover:bg-[#C9A45C]/90 active:scale-95">
+        Scopri l'Offerta Esclusiva
         <span class="material-symbols-outlined">arrow_forward</span>
       </a>
     </div>
 
   </main>
 
-  <!-- FOOTER MINIMALE area riservata -->
-  <footer class="bg-surface-container-lowest w-full py-8 px-6 border-t border-outline-variant/30">
+  <footer class="bg-[#0b0f11] w-full py-8 px-6 border-t border-[#3d4944]/30">
     <div class="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-      <span class="font-label-md text-label-md text-on-surface-variant">
-        &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
-      </span>
-      <div class="flex gap-6 font-label-md text-label-md">
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
-        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      <span class="text-sm font-semibold text-[#bccac3]">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      <div class="flex gap-6 text-sm font-semibold">
+        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/cookie/">Cookie</a>
       </div>
     </div>
   </footer>
 
-  <!-- ============================================
-       ALPINE.JS
-       TODO: sostituire dati mockup con PocketBase API
-  ============================================ -->
   <script>
     const DAYS_DATA = [
-      { num:1, title:'Il Risveglio',  quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.' },
-      { num:2, title:'Le Radici',     quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.' },
-      { num:3, title:'Il Valore',     quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.' },
-      { num:4, title:'Il Flusso',     quote:'MENO MALE! Ogni emozione che scorre è informazione completata.' },
-      { num:5, title:'La Leggerezza', quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.' },
-      { num:6, title:'Il Futuro',     quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.' },
-      { num:7, title:'Il Sigillo',    quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.' },
+      {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
+      {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
+      {num:3,title:'L\'Archivio Potenziante',quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.'},
+      {num:4,title:'Pulizia Emozionale Rapida',quote:'MENO MALE! Ogni emozione che scorre è informazione completata.'},
+      {num:5,title:'Il Permesso di Essere',quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.'},
+      {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
+      {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
     ];
-
     function dashboard() {
       return {
         days: [],
-
         init() {
-          // TODO: GET /api/collections/progress/records?filter=user_id=CURRENT_USER&&course=reset-notturno
-          // Mockup: simula 2 giorni completati
-          const mockCompleted = 2;
-          this.days = DAYS_DATA.map((d, i) => ({
-            ...d,
-            status: i < mockCompleted ? 'completed' : i === mockCompleted ? 'active' : 'locked'
-          }));
-
-          // Scroll reveal
+          // TODO: fetch progress reale da PocketBase
+          // GET /api/collections/progress/records?filter=user_id=CURRENT_USER&course=reset-notturno
+          const saved = parseInt(localStorage.getItem('rn_completed') || '0');
+          this.days = DAYS_DATA.map((d, i) => ({...d, status: i < saved ? 'completed' : i === saved ? 'active' : 'locked'}));
           setTimeout(() => {
             const obs = new IntersectionObserver(entries => {
               entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-            }, { threshold: 0.08 });
+            }, {threshold: 0.08});
             document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
           }, 100);
         },
-
-        get completedCount() {
-          return this.days.filter(d => d.status === 'completed').length;
-        },
-
-        get activeDay() {
-          return this.days.find(d => d.status === 'active') || null;
-        }
+        get completedCount() { return this.days.filter(d => d.status === 'completed').length; },
+        get activeDay() { return this.days.find(d => d.status === 'active') || null; }
       };
     }
   </script>
-
 </body>
 </html>
