@@ -102,7 +102,7 @@
     <div class="mb-8 reveal">
       <p class="text-[#bccac3] font-bold text-xs uppercase tracking-widest mb-2" x-text="'Reset Notturno — Giorno ' + day.num"></p>
       <h1 class="font-extrabold text-3xl md:text-4xl text-[#F5F7FA] mb-3" style="font-family:'Manrope',sans-serif;" x-text="day.title"></h1>
-      <blockquote class="border-l-2 border-[#49C7A5] pl-4 text-[#bccac3] italic text-base leading-relaxed" x-text="'«' + day.quote + '»'"></blockquote>
+      <blockquote class="border-l-2 border-[#49C7A5] pl-4 text-[#bccac3] italic text-base leading-relaxed" x-text="'\u00ab' + day.quote + '\u00bb'"></blockquote>
     </div>
 
     <div class="security-box flex items-start gap-3 mb-8 reveal">
@@ -200,7 +200,7 @@
         <div class="flex items-center gap-3 flex-wrap">
           <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="!allDone || isSaved || saving">
             <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : (saving ? 'hourglass_top' : 'check_circle')"></span>
-            <span x-text="isSaved ? 'Giorno completato!' : (saving ? 'Salvataggio…' : 'Completa il Giorno ' + day.num)"></span>
+            <span x-text="isSaved ? 'Giorno completato!' : (saving ? 'Salvataggio\u2026' : 'Completa il Giorno ' + day.num)"></span>
           </button>
           <button x-show="isSaved" x-transition class="undo-btn" @click="undoDay()">
             <span class="material-symbols-outlined" style="font-size:15px">undo</span>
@@ -240,17 +240,18 @@
   <script>
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
     const PRODUCT_ID = 'reset-notturno';
     const TOTAL_STEPS = 7;
 
     const DAYS_DATA = [
-      {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
-      {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
-      {num:3,title:'L\'Archivio Potenziante',quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.'},
-      {num:4,title:'Pulizia Emozionale Rapida',quote:'MENO MALE! Ogni emozione che scorre è informazione completata.'},
-      {num:5,title:'Il Permesso di Essere',quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.'},
-      {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
-      {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
+      {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento \u00e8 iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
+      {num:2,title:'Accettazione e Terraferma',quote:'Non devi pi\u00f9 scappare da te stesso. La tua casa \u00e8 qui, nelle tue radici.'},
+      {num:3,title:'L\'Archivio Potenziante',quote:'Il tuo valore non \u00e8 un evento isolato, ma una verit\u00e0 da riscoprire.'},
+      {num:4,title:'Pulizia Emozionale Rapida',quote:'MENO MALE! Ogni emozione che scorre \u00e8 informazione completata.'},
+      {num:5,title:'Il Permesso di Essere',quote:'La leggerezza \u00e8 la prova che ti sei dato il permesso di essere autentico.'},
+      {num:6,title:'La Proiezione del S\u00e9 Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
+      {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo \u00e8 posto. Questo cambiamento \u00e8 tuo: facile, semplice, rapido, permanente.'}
     ];
 
     function giornoApp() {
@@ -283,7 +284,7 @@
           const params = new URLSearchParams(window.location.search);
           const num = parseInt(params.get('day')) || 1;
           this.day = DAYS_DATA.find(d => d.num === num) || DAYS_DATA[0];
-          document.title = `Giorno ${this.day.num} — ${this.day.title} | IpnosiApplicata`;
+          document.title = `Giorno ${this.day.num} \u2014 ${this.day.title} | IpnosiApplicata`;
 
           await this.loadProgress();
 
@@ -300,7 +301,7 @@
           const uid = pb.authStore.model.id;
           try {
             const rec = await pb.collection('progress').getFirstListItem(
-              `user="${uid}" && product_id="${PRODUCT_ID}"`
+              `user='${uid}' && product_id='${PRODUCT_ID}'`
             );
             this.pbProgressId = rec.id;
             const completedSteps = rec.completed_steps || [];
@@ -329,7 +330,7 @@
 
             try {
               currentRec = await pb.collection('progress').getFirstListItem(
-                `user="${uid}" && product_id="${PRODUCT_ID}"`
+                `user='${uid}' && product_id='${PRODUCT_ID}'`
               );
               completedSteps = currentRec.completed_steps || [];
               this.pbProgressId = currentRec.id;
