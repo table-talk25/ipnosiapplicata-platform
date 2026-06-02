@@ -125,8 +125,9 @@
           <input type="range" min="0" max="1" step="0.05" x-model="volume" @input="setVolume()" class="flex-1 accent-[#49C7A5] h-1 cursor-pointer"/>
           <span class="text-[#bccac3] text-xs font-semibold" x-text="Math.round(volume*100) + '%'"></span>
         </div>
-        <audio id="audio-player" x-ref="audio" :src="'/assets/audio/reset-notturno/giorno-' + day.num + '.mp3'" @timeupdate="updateProgress()" @loadedmetadata="onMetadata()" @ended="onEnded()" preload="metadata"></audio>
-        <p class="text-[#3d4944] text-xs mt-4 text-center italic" x-show="!audioLoaded">Audio non ancora disponibile — verrà aggiunto a breve.</p>
+        <audio id="audio-player" x-ref="audio"
+          :src="'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/reset-notturno/giorno-' + day.num + '.mp3'"
+          @timeupdate="updateProgress()" @loadedmetadata="onMetadata()" @ended="onEnded()" preload="metadata"></audio>
       </div>
     </section>
 
@@ -178,4 +179,97 @@
           </div>
           <p class="text-[#bccac3] text-sm leading-relaxed ml-7">Se il mio valore avesse una forma o un colore, quale sarebbe e dove si trova ora?</p>
         </div>
-        <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="jour
+        <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="journal.p4" rows="3"></textarea></div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="isSaved">
+          <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : 'check_circle'"></span>
+          <span x-text="isSaved ? 'Giorno completato!' : 'Completa il Giorno ' + day.num"></span>
+        </button>
+        <a x-show="isSaved && day.num < 7" :href="'giorno.html?day=' + (day.num + 1)" class="day-nav-pill">
+          Vai al Giorno <span x-text="day.num + 1" class="ml-1"></span>
+          <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+        </a>
+        <a x-show="isSaved && day.num === 7" href="dashboard.html" class="day-nav-pill" style="border-color:rgba(201,164,92,0.4);color:#C9A45C;">
+          <span class="material-symbols-outlined" style="font-size:16px">workspace_premium</span>
+          Vedi il tuo traguardo
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-[#0b0f11] w-full py-8 px-6 border-t border-[#3d4944]/30">
+    <div class="max-w-3xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <a href="/" class="flex items-center gap-2 opacity-60 hover:opacity-90 transition-opacity">
+        <img src="/assets/logoIpnoApp.png" alt="" class="h-5 w-auto"/>
+      </a>
+      <span class="text-sm font-semibold text-[#bccac3]">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+    </div>
+  </footer>
+
+  <script>
+    const AUDIO_BASE = 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/reset-notturno';
+    const DAYS_DATA = [
+      {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
+      {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
+      {num:3,title:'L\'Archivio Potenziante',quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.'},
+      {num:4,title:'Pulizia Emozionale Rapida',quote:'MENO MALE! Ogni emozione che scorre è informazione completata.'},
+      {num:5,title:'Il Permesso di Essere',quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.'},
+      {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
+      {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
+    ];
+    function giornoApp() {
+      return {
+        day: {}, journal: {p1:'',p2a:'',p2b:'',p3:'',p4:''},
+        isPlaying: false, audioProgress: 0, currentTime: 0, duration: 0, volume: 0.9, audioLoaded: false, isSaved: false,
+        init() {
+          const params = new URLSearchParams(window.location.search);
+          const num = parseInt(params.get('day')) || 1;
+          this.day = DAYS_DATA.find(d => d.num === num) || DAYS_DATA[0];
+          document.title = `Giorno ${this.day.num} — ${this.day.title} | IpnosiApplicata`;
+          const saved = JSON.parse(localStorage.getItem(`rn_journal_${this.day.num}`) || 'null');
+          if (saved) { this.journal = saved; }
+          const completed = parseInt(localStorage.getItem('rn_completed') || '0');
+          this.isSaved = this.day.num <= completed;
+          this.$nextTick(() => {
+            if (this.$refs.audio) { this.$refs.audio.volume = this.volume; }
+            const obs = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }); }, {threshold: 0.08});
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+          });
+        },
+        togglePlay() {
+          const a = this.$refs.audio;
+          if (!a) return;
+          if (this.isPlaying) { a.pause(); this.isPlaying = false; }
+          else { a.play(); this.isPlaying = true; }
+        },
+        updateProgress() {
+          const a = this.$refs.audio;
+          if (!a) return;
+          this.currentTime = a.currentTime;
+          this.audioProgress = a.duration ? (a.currentTime / a.duration) * 100 : 0;
+        },
+        onMetadata() { if (this.$refs.audio) { this.duration = this.$refs.audio.duration; this.audioLoaded = true; } },
+        onEnded() { this.isPlaying = false; this.audioProgress = 0; this.$refs.audio.currentTime = 0; },
+        seekAudio(e) {
+          const a = this.$refs.audio;
+          if (!a || !a.duration) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const pct = (e.clientX - rect.left) / rect.width;
+          a.currentTime = pct * a.duration;
+        },
+        setVolume() { if (this.$refs.audio) this.$refs.audio.volume = this.volume; },
+        formatTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); },
+        saveDay() {
+          localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
+          const prev = parseInt(localStorage.getItem('rn_completed') || '0');
+          if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
+          this.isSaved = true;
+        }
+      };
+    }
+  </script>
+</body>
+</html>
