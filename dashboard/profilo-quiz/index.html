@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Il tuo Profilo Quiz | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#101416", "on-background": "#F5F7FA",
+            "surface": "#101416", "on-surface": "#F5F7FA",
+            "primary": "#49C7A5", "on-primary": "#101416",
+            "secondary": "#3A63FF", "on-secondary": "#FFFFFF",
+            "tertiary": "#C9A45C", "on-tertiary": "#101416",
+            "outline": "#86948e", "outline-variant": "#3d4944",
+            "surface-container": "#1d2022",
+            "surface-container-low": "#191c1e",
+            "surface-container-high": "#272a2d",
+            "surface-container-highest": "#323538",
+            "surface-container-lowest": "#0b0f11",
+            "surface-variant": "#323538",
+            "on-surface-variant": "#bccac3"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          fontFamily: { "label-md": ["Inter"], "body-md": ["Inter"], "headline-md": ["Manrope"], "display-lg": ["Manrope"] },
+          fontSize: {
+            "label-md": ["14px", {lineHeight:"1.2",letterSpacing:"0.05em",fontWeight:"600"}],
+            "body-md":  ["16px", {lineHeight:"1.6",fontWeight:"400"}],
+            "headline-md": ["32px", {lineHeight:"1.3",fontWeight:"600"}]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color:#101416; color:#F5F7FA; font-family:'Inter',sans-serif; min-height:100vh; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; display:inline-block; vertical-align:middle; }
+    .dashboard-nav { position:fixed; top:0; width:100%; z-index:50; background:rgba(16,20,22,0.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(61,73,68,0.4); }
+    .glass-card { background:rgba(29,32,34,0.6); backdrop-filter:blur(12px); border:1px solid rgba(245,247,250,0.08); transition:all 0.3s ease; }
+    .sidebar { position:fixed; top:65px; left:0; bottom:0; width:220px; background:rgba(16,20,22,0.95); border-right:1px solid rgba(61,73,68,0.35); padding:24px 12px; overflow-y:auto; }
+    .sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; color:#bccac3; font-size:14px; font-weight:600; transition:all 0.15s; cursor:pointer; text-decoration:none; margin-bottom:2px; }
+    .sidebar-item:hover { background:rgba(73,199,165,0.07); color:#F5F7FA; }
+    .sidebar-item.active { background:rgba(73,199,165,0.1); color:#49C7A5; border-left:2px solid #49C7A5; padding-left:12px; }
+    .sidebar-item .material-symbols-outlined { font-size:20px; }
+    .gradient-text { background:linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:40; background:rgba(16,20,22,0.95); backdrop-filter:blur(20px); border-top:1px solid rgba(61,73,68,0.35); display:flex; }
+    .bottom-nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 4px 12px; color:#bccac3; font-size:10px; font-weight:600; transition:color 0.2s; cursor:pointer; text-decoration:none; }
+    .bottom-nav-item.active { color:#49C7A5; }
+    .bottom-nav-item:hover { color:#F5F7FA; }
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity 500ms ease,transform 500ms ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    #loading-overlay { position:fixed; inset:0; z-index:200; background:#101416; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s ease; }
+    #loading-overlay.hidden { opacity:0; pointer-events:none; }
+    audio { width:100%; border-radius:12px; accent-color:#49C7A5; }
+    audio.blue-player { accent-color:#3A63FF; }
+    .profile-hero { background: linear-gradient(135deg, rgba(73,199,165,0.08) 0%, rgba(58,99,255,0.06) 100%); border: 1px solid rgba(73,199,165,0.15); border-radius: 20px; }
+    .workbook-placeholder { background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.2); border-radius: 16px; }
+    blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
+  </style>
+</head>
+
+<div id="loading-overlay">
+  <div style="text-align:center;">
+    <div style="width:44px;height:44px;border:2px solid rgba(73,199,165,0.25);border-top-color:#49C7A5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+    <p style="color:#bccac3;font-size:14px;font-family:'Inter',sans-serif;">Caricamento profilo&hellip;</p>
+  </div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<body x-data="profiloPage()" x-init="init()">
+
+  <nav class="dashboard-nav">
+    <div class="flex justify-between items-center px-5 py-4 max-w-6xl mx-auto">
+      <a href="/dashboard/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto">
+        <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+      </a>
+      <div class="flex items-center gap-3 relative">
+        <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
+          <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
+            <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
+                  x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
+          </div>
+          <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">expand_more</span>
+        </div>
+        <div x-show="showUserMenu" @click.away="showUserMenu = false"
+             class="absolute right-0 top-12 bg-surface-container-high border border-outline-variant/50 rounded-xl shadow-2xl py-2 w-48 z-50">
+          <div class="px-4 py-2 border-b border-outline-variant/30 mb-1">
+            <p class="text-sm font-semibold text-on-surface truncate" x-text="user.first_name"></p>
+            <p class="text-xs text-on-surface-variant truncate" x-text="user.email"></p>
+          </div>
+          <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-colors">
+            <span class="material-symbols-outlined" style="font-size:17px">manage_accounts</span>
+            Impostazioni
+          </a>
+          <div class="border-t border-outline-variant/30 my-1"></div>
+          <button @click="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface-variant hover:text-red-400 hover:bg-red-400/5 transition-colors">
+            <span class="material-symbols-outlined" style="font-size:17px">logout</span>
+            Esci
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <aside class="sidebar hidden lg:block">
+    <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
+    <a href="/dashboard/" class="sidebar-item">
+      <span class="material-symbols-outlined">home</span> Area personale
+    </a>
+    <a href="/percorso/" class="sidebar-item">
+      <span class="material-symbols-outlined">route</span> Il mio Percorso
+    </a>
+    <a href="/dashboard/#corsi" class="sidebar-item">
+      <span class="material-symbols-outlined">school</span> Corsi
+    </a>
+    <a href="/dashboard/profilo-quiz/" class="sidebar-item active">
+      <span class="material-symbols-outlined">psychology</span> Profilo Quiz
+    </a>
+    <div class="border-t border-outline-variant/30 my-3"></div>
+    <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400">
+      <span class="material-symbols-outlined">logout</span> Esci
+    </button>
+  </aside>
+
+  <main class="pt-20 pb-24 lg:pb-10 px-5 lg:pl-[240px] max-w-6xl mx-auto">
+    <div class="max-w-3xl">
+
+      <!-- Errore fetch -->
+      <div x-show="fetchError" class="mt-8 mb-4 p-4 rounded-xl border border-red-400/20 bg-red-400/5 text-red-400 text-sm flex items-center gap-3">
+        <span class="material-symbols-outlined" style="font-size:18px">error</span>
+        <span>Impossibile caricare i dati. Ricarica la pagina o riprova tra poco.</span>
+      </div>
+
+      <!-- Quiz non completato -->
+      <div x-show="!loading && !fetchError && !profile" class="mt-16 text-center reveal">
+        <div class="w-16 h-16 rounded-2xl bg-outline-variant/30 border border-outline-variant/40 flex items-center justify-center mx-auto mb-6">
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:32px">quiz</span>
+        </div>
+        <h2 class="font-bold text-2xl text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">Non hai ancora completato il Quiz</h2>
+        <p class="text-on-surface-variant mb-8 max-w-sm mx-auto">Fai il Quiz del Coraggio per scoprire il tuo profilo e accedere ai contenuti personalizzati.</p>
+        <a href="https://cristianlecca.it/quiz/" target="_blank"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90"
+           style="font-family:'Manrope',sans-serif;">
+          <span class="material-symbols-outlined" style="font-size:18px">play_arrow</span>
+          Fai il Quiz del Coraggio
+        </a>
+      </div>
+
+      <!-- Profilo trovato -->
+      <template x-if="profile">
+        <div>
+
+          <!-- Breadcrumb -->
+          <div class="py-6 reveal">
+            <div class="flex items-center gap-2 text-xs text-on-surface-variant mb-4">
+              <a href="/dashboard/" class="hover:text-primary transition-colors">Area personale</a>
+              <span class="material-symbols-outlined" style="font-size:14px">chevron_right</span>
+              <span class="text-on-surface">Profilo Quiz</span>
+            </div>
+            <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">Il tuo profilo</p>
+            <h1 class="font-bold text-3xl md:text-4xl text-on-surface" style="font-family:'Manrope',sans-serif;">
+              <span class="gradient-text" x-text="profile.title"></span>
+            </h1>
+            <p class="text-on-surface-variant mt-2 text-sm" x-text="'Profilo ' + profileLetter + ' · Assegnato dal Quiz del Coraggio'"></p>
+          </div>
+
+          <!-- Hero card -->
+          <div class="profile-hero p-6 md:p-8 mb-8 reveal">
+            <div class="flex items-start gap-4 mb-5">
+              <div class="w-12 h-12 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary" style="font-size:24px">self_improvement</span>
+              </div>
+              <div>
+                <h2 class="font-bold text-lg text-on-surface" style="font-family:'Manrope',sans-serif;" x-text="profile.title"></h2>
+                <p class="text-on-surface-variant text-sm mt-1 leading-relaxed" x-text="profile.intro"></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audio descrizione profilo -->
+          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary" style="font-size:20px">graphic_eq</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Descrizione del profilo</h3>
+                <p class="text-on-surface-variant text-xs">Ascolta la spiegazione del tuo pattern</p>
+              </div>
+            </div>
+            <template x-if="profile.audio_descrizione">
+              <audio controls :src="profile.audio_descrizione"></audio>
+            </template>
+            <template x-if="!profile.audio_descrizione">
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+                <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
+                <p class="text-on-surface-variant text-xs">Audio in arrivo a breve.</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Testo del profilo -->
+          <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 reveal">
+            <h3 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Come si manifesta in te</h3>
+            <div class="text-on-surface-variant text-sm leading-relaxed space-y-4" x-html="profile.testo_completo"></div>
+            <blockquote x-text="profile.citazione"></blockquote>
+            <p class="text-xs text-on-surface-variant mt-2">— Cristian Lecca</p>
+          </div>
+
+          <!-- Audio ipnotico -->
+          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-10 h-10 rounded-xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-secondary" style="font-size:20px">nightlight</span>
+              </div>
+              <div>
+                <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Induzione ipnotica personalizzata</h3>
+                <p class="text-on-surface-variant text-xs">15 minuti · Ascolta in un momento di calma</p>
+              </div>
+            </div>
+            <template x-if="profile.audio_ipnotico">
+              <audio controls class="blue-player" :src="profile.audio_ipnotico"></audio>
+            </template>
+            <template x-if="!profile.audio_ipnotico">
+              <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+                <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
+                <p class="text-on-surface-variant text-xs">Audio ipnotico in arrivo a breve.</p>
+              </div>
+            </template>
+          </div>
+
+          <!-- Workbook / Esercizi -->
+          <div class="workbook-placeholder p-6 mb-8 reveal">
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-tertiary" style="font-size:20px">menu_book</span>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center gap-3 flex-wrap mb-2">
+                  <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Workbook &mdash; Esercizi del tuo profilo</h3>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary/12 text-tertiary border border-tertiary/20">
+                    <span class="material-symbols-outlined" style="font-size:12px">schedule</span>
+                    In arrivo
+                  </span>
+                </div>
+                <p class="text-on-surface-variant text-xs leading-relaxed">
+                  Gli esercizi pratici del tuo percorso saranno disponibili qui a breve. 
+                  Riceverai una notifica via email non appena il workbook sarà pronto.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
+            <h3 class="font-bold text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Prossimi passi</h3>
+            <p class="text-on-surface-variant text-sm mb-5">Porta il lavoro sul tuo profilo a un livello più profondo.</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <a href="/reset-notturno/"
+                 class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90"
+                 style="font-family:'Manrope',sans-serif;">
+                <span class="material-symbols-outlined" style="font-size:18px">bedtime</span>
+                Inizia il Reset Notturno
+              </a>
+              <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank"
+                 class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm transition-all hover:border-primary/40 hover:text-primary"
+                 style="font-family:'Manrope',sans-serif;">
+                <span class="material-symbols-outlined" style="font-size:18px">video_call</span>
+                Prenota la Sessione di Svolta
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </template>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav lg:hidden">
+    <a href="/dashboard/" class="bottom-nav-item">
+      <span class="material-symbols-outlined" style="font-size:22px">home</span>
+      Home
+    </a>
+    <a href="/dashboard/#corsi" class="bottom-nav-item">
+      <span class="material-symbols-outlined" style="font-size:22px">school</span>
+      Corsi
+    </a>
+    <a href="/percorso/" class="bottom-nav-item">
+      <span class="material-symbols-outlined" style="font-size:22px">route</span>
+      Percorso
+    </a>
+    <a href="/dashboard/profilo-quiz/" class="bottom-nav-item active">
+      <span class="material-symbols-outlined" style="font-size:22px">psychology</span>
+      Profilo
+    </a>
+  </nav>
+
+  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-6 w-auto opacity-70">
+        <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      </a>
+      <div class="flex gap-5 text-xs">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var PB_URL = 'https://api.ipnosiapplicata.it';
+    var pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
+
+    var PROFILES = {
+      'A': {
+        title: 'Il Perfezionista Bloccato',
+        intro: 'Il tuo standard è alto — così alto che spesso ti impedisce di partire. Il perfezionismo non è un pregio: è la paura del giudizio travestita da ambizione.',
+        testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema è che quella visione diventa una prigione: finché le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perché ogni volta che si avvicina, sposti l\'asticella un po\' più in là.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione — non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
+        citazione: 'La perfezione è la forma più sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
+        audio_descrizione: '',
+        audio_ipnotico: ''
+      },
+      'B': {
+        title: 'Il Guardiano del Consenso',
+        intro: 'La tua forza è nell\'empatia — ma stai usando quella forza per comprare la pace invece di costruire la tua strada. Il bisogno di approvazione ti tiene immobile.',
+        testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perché senti il disagio altrui come se fosse tuo. Questo non è un difetto — è una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni più importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E così aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non è una catastrofe — e che la tua voce ha valore anche quando non è accolta da tutti.</p>',
+        citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
+        audio_descrizione: '',
+        audio_ipnotico: ''
+      },
+      'C': {
+        title: 'Il Critico Instancabile',
+        intro: 'Hai una mente acutissima, capace di vedere ogni falla, ogni rischio, ogni possibilità di fallimento. Il problema è che la usi soprattutto contro te stesso.',
+        testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante — e quel dialogo è spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo è altissimo.</p><p>La voce interiore critica non ti rende più bravo — ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacità proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo costruttivo: a valutare senza condannare, a correggere senza punire, a essere preciso senza essere spietato con te stesso.</p>',
+        citazione: 'La mente critica è uno strumento potente. Usala per costruire, non per demolire.',
+        audio_descrizione: '',
+        audio_ipnotico: ''
+      },
+      'D': {
+        title: "L'Esploratore Esitante",
+        intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio. Non è mancanza di desiderio: è una paura sottile dell\'impegno, della scelta definitiva, di smettere di essere potenziale.',
+        testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
+        citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
+        audio_descrizione: '',
+        audio_ipnotico: ''
+      }
+    };
+
+    function hideOverlay() {
+      var el = document.getElementById('loading-overlay');
+      if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
+    }
+
+    function profiloPage() {
+      return {
+        _loaded: false,
+        loading: true, fetchError: false,
+        user: {}, showUserMenu: false,
+        profile: null, profileLetter: '',
+
+        async init() {
+          if (this._loaded) return;
+          this._loaded = true;
+
+          if (!pb.authStore.isValid) {
+            window.location.href = '/login/';
+            return;
+          }
+          try {
+            await pb.collection('users').authRefresh();
+          } catch(e) {
+            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+            console.warn('authRefresh non critico:', e.message);
+          }
+
+          this.user = pb.authStore.model;
+          await this.loadProfile();
+          this.loading = false;
+          hideOverlay();
+
+          this.$nextTick(function() {
+            setTimeout(function() {
+              var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                  if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+                });
+              }, { threshold: 0.06 });
+              document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+            }, 80);
+          });
+        },
+
+        async loadProfile() {
+          var uid = this.user.id;
+          try {
+            var res = await pb.collection('quiz_responses').getFirstListItem(
+              "user='" + uid + "'",
+              { sort: '-created' }
+            );
+            if (res && res.profile_result) {
+              var letter = res.profile_result.trim().toUpperCase();
+              this.profileLetter = letter;
+              this.profile = PROFILES[letter] || null;
+            }
+          } catch(e) {
+            if (e.status === 404) {
+              // Nessun quiz completato — stato vuoto, non errore
+              this.profile = null;
+            } else {
+              console.warn('[quiz_responses] errore:', e.message);
+              this.fetchError = true;
+            }
+          }
+        },
+
+        logout: function() {
+          pb.authStore.clear();
+          window.location.href = '/login/';
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
