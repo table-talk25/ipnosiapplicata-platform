@@ -351,25 +351,21 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    /**
-     * Costruisce l'URL dell'avatar in modo sicuro.
-     * Ritorna null (non stringa vuota) se manca userId o filename,
-     * così renderAvatar() sa che deve mostrare le iniziali.
-     */
     function buildAvatarUrl(userId, filename) {
-      if (!userId || !filename) return null;
-      // Aggiunge il cache-bust come query string — il separator è sempre "?"
-      // perché costruiamo l'URL da zero (nessun altro query param).
-      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+      console.log('[avatar] buildAvatarUrl → userId:', userId, '| filename:', filename);
+      if (!userId || !filename) {
+        console.log('[avatar] buildAvatarUrl → nessun avatar, ritorno null');
+        return null;
+      }
+      var url = PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+      console.log('[avatar] buildAvatarUrl → URL costruito:', url);
+      return url;
     }
 
-    /**
-     * Aggiorna il DOM dell'avatar in modo imperativo.
-     * src può essere: blob URL (preview), URL remoto, oppure null (mostra iniziali).
-     */
     function renderAvatar(src, initial) {
+      console.log('[avatar] renderAvatar → src:', src, '| initial:', initial);
       var wrap = document.getElementById('avatar-wrap');
-      if (!wrap) return;
+      if (!wrap) { console.warn('[avatar] renderAvatar → #avatar-wrap non trovato!'); return; }
       wrap.innerHTML = '';
 
       var overlay = document.createElement('label');
@@ -381,18 +377,24 @@
         var img = document.createElement('img');
         img.alt = 'Avatar';
         img.style.cssText = 'width:80px;height:80px;border-radius:50%;border:2px solid rgba(73,199,165,0.3);object-fit:cover;display:block;';
-        img.onerror = function() { renderAvatar(null, initial); };
-        img.src = src; // assegno src DOPO onerror per evitare race condition
+        img.onerror = function() {
+          console.error('[avatar] img.onerror → impossibile caricare:', src);
+          renderAvatar(null, initial);
+        };
+        img.onload = function() {
+          console.log('[avatar] img.onload → immagine caricata con successo:', src);
+        };
+        img.src = src;
         wrap.appendChild(img);
       } else {
         var ini = document.createElement('div');
         ini.className = 'avatar-initials';
         ini.textContent = initial || 'U';
         wrap.appendChild(ini);
+        console.log('[avatar] renderAvatar → mostro iniziali:', initial || 'U');
       }
       wrap.appendChild(overlay);
 
-      // Pulsante Rimuovi: visibile solo se c'è un'immagine salvata (non blob)
       var btnRemove = document.getElementById('btn-remove-avatar');
       if (btnRemove) {
         btnRemove.style.display = (src && src.indexOf('blob:') !== 0) ? 'inline-flex' : 'none';
@@ -431,11 +433,11 @@
           catch(e) { if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; } }
 
           this.user = Object.assign({}, pb.authStore.model);
+          console.log('[avatar] init → user.id:', this.user.id, '| user.avatar:', this.user.avatar);
           this.form.first_name = this.user.first_name || '';
           this.form.last_name  = this.user.last_name  || '';
 
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
-          // buildAvatarUrl ritorna null se non c'è avatar → renderAvatar mostra iniziali
           renderAvatar(buildAvatarUrl(this.user.id, this.user.avatar), initial);
 
           hideOverlay();
@@ -459,9 +461,9 @@
           }
           this.avatarFile = file;
           var blobUrl = URL.createObjectURL(file);
+          console.log('[avatar] onAvatarSelected → preview blob:', blobUrl);
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           renderAvatar(blobUrl, initial);
-          // mostra Salva, nasconde Rimuovi
           var btnSave = document.getElementById('btn-save-avatar');
           if (btnSave) btnSave.style.display = 'inline-flex';
           var btnRemove = document.getElementById('btn-remove-avatar');
@@ -474,12 +476,16 @@
           try {
             var fd = new FormData();
             fd.append('avatar', this.avatarFile);
+            console.log('[avatar] saveAvatar → invio a PocketBase, user.id:', this.user.id);
             var updated = await pb.collection('users').update(this.user.id, fd);
+            console.log('[avatar] saveAvatar → risposta PocketBase:', JSON.stringify(updated));
+            console.log('[avatar] saveAvatar → updated.id:', updated.id, '| updated.avatar:', updated.avatar);
+
             this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
 
-            // buildAvatarUrl è sempre sicuro: ritorna null se updated.avatar è vuoto
             var newUrl = buildAvatarUrl(updated.id, updated.avatar);
+            console.log('[avatar] saveAvatar → chiamo renderAvatar con URL:', newUrl);
             var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
             renderAvatar(newUrl, initial);
 
@@ -491,7 +497,7 @@
 
             showToast('Foto aggiornata!', 'success');
           } catch(e) {
-            console.error('saveAvatar:', e);
+            console.error('[avatar] saveAvatar ERROR:', e);
             showToast('Errore durante il salvataggio.', 'error');
           } finally {
             this.savingAvatar = false;
@@ -515,7 +521,7 @@
         },
 
         async saveProfile() {
-          if (!this.form.first_name.trim()) { showToast('Il nome non pu\u00f2 essere vuoto.', 'error'); return; }
+          if (!this.form.first_name.trim()) { showToast('Il nome non può essere vuoto.', 'error'); return; }
           this.savingProfile = true;
           try {
             var updated = await pb.collection('users').update(this.user.id, {
