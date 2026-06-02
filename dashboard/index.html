@@ -54,9 +54,6 @@
     .corso-card .accent-bar { position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:3px 0 0 3px; }
     .progress-track { width:100%; height:4px; background:rgba(61,73,68,0.5); border-radius:2px; }
     .progress-fill { height:100%; background:linear-gradient(90deg,#49C7A5,#3A63FF); border-radius:2px; transition:width 1s ease; }
-    .sessione-card { background:linear-gradient(135deg,rgba(58,99,255,0.1),rgba(58,99,255,0.04)); border:1px solid rgba(58,99,255,0.2); border-radius:20px; }
-    .esercizio-row { background:rgba(29,32,34,0.5); border:1px solid rgba(61,73,68,0.35); border-radius:14px; transition:all 0.2s ease; }
-    .esercizio-row:hover { border-color:rgba(73,199,165,0.2); background:rgba(73,199,165,0.03); }
     .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:100px; font-size:11px; font-weight:600; }
     .badge.teal  { background:rgba(73,199,165,0.12); color:#49C7A5; border:1px solid rgba(73,199,165,0.2); }
     .badge.blue  { background:rgba(58,99,255,0.12);  color:#aab8ff; border:1px solid rgba(58,99,255,0.2); }
@@ -390,31 +387,30 @@
         },
 
         async loadAll() {
-          const uid = this.user.id;
+          const userEmail = this.user.email;
 
-          // Carica acquisti: filtro solo per user, poi filtra status lato JS
-          // (evita 400 da PocketBase su campi select in filter con List Rule restrittiva)
+          // Filtro per email (il campo user in purchases contiene l'email, non l'ID)
           let activePurchases = [];
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user="${uid}"`,
+              filter: `user="${userEmail}"`,
               sort: '-created',
               '$autoCancel': false
             });
             if (purchasesRes && purchasesRes.items) {
-              // Filtra lato JS: solo status=completed
               activePurchases = purchasesRes.items
                 .filter(p => p.status === 'completed')
                 .map(p => p.product)
                 .filter(Boolean);
-              console.log('[DEBUG] purchases loaded, activePurchases:', activePurchases);
+              console.log('[DEBUG] purchases OK, prodotti attivi:', activePurchases);
             }
           } catch(e) {
             console.warn('[purchases] errore:', e.message);
             this.fetchError = true;
           }
 
-          // Carica progressi
+          // Progressi (filtro per ID utente — collection progress usa ID standard)
+          const uid = this.user.id;
           const progressMap = {};
           try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
@@ -428,7 +424,7 @@
             console.warn('[progress] errore:', e.message);
           }
 
-          // Carica journey (opzionale, non blocca se manca)
+          // Journey (opzionale)
           try {
             const journeyRes = await pb.collection('journey').getList(1, 20, {
               filter: `user="${uid}"`,
@@ -439,7 +435,6 @@
               this.journey = journeyRes.items.map(j => ({ ...j, dateFormatted: timeAgo(j.created) }));
             }
           } catch(e) {
-            // journey non ancora creata o permessi mancanti: silenzioso
             this.journey = [];
           }
 
