@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
   <title>Diario del Reset — Dashboard | IpnosiApplicata</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -61,8 +60,6 @@
     .disclaimer-mini-fill{background:#bccac3;border-radius:100px;height:4px;transition:width 0.1s linear;pointer-events:none;}
     .mini-play-btn{width:36px;height:36px;border-radius:50%;background:rgba(245,247,250,0.1);border:1px solid rgba(245,247,250,0.15);color:#bccac3;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s ease;flex-shrink:0;}
     .mini-play-btn:hover{background:rgba(245,247,250,0.18);color:#F5F7FA;}
-    .profile-btn{width:36px;height:36px;border-radius:50%;background:rgba(39,42,45,0.9);border:1px solid rgba(61,73,68,0.5);color:#bccac3;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;text-decoration:none;}
-    .profile-btn:hover{border-color:rgba(73,199,165,0.4);color:#49C7A5;}
   </style>
 </head>
 
@@ -78,8 +75,9 @@
         <span class="text-[#3d4944] text-xs">/</span>
         <span class="text-[#bccac3] font-semibold text-sm" style="font-family:'Manrope',sans-serif;">Reset Notturno</span>
       </div>
-      <a href="/area-riservata/" class="profile-btn" title="Il mio profilo">
-        <span class="material-symbols-outlined" style="font-size:20px">account_circle</span>
+      <a href="/dashboard/" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors flex items-center gap-1.5 text-sm font-semibold">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Area personale
       </a>
     </div>
   </nav>
