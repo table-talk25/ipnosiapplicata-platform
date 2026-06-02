@@ -357,8 +357,8 @@
         intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio. Non è mancanza di desiderio: è una paura sottile dell\'impegno, della scelta definitiva, di smettere di essere potenziale.',
         testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
         citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22L%20\'Esploratore%20Esitante%22.mp3',
-        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L\'Esploratore%20Esitante%22.mp3'
+        audio_descrizione: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22L%20'Esploratore%20Esitante%22.mp3",
+        audio_ipnotico: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L'Esploratore%20Esitante%22.mp3"
       }
     };
 
@@ -409,22 +409,25 @@
         async loadProfile() {
           var uid = this.user.id;
           try {
-            var res = await pb.collection('quiz_responses').getFirstListItem(
-              "user='" + uid + "'",
-              { sort: '-created' }
-            );
-            if (res && res.profile_result) {
-              var letter = res.profile_result.trim().toUpperCase();
-              this.profileLetter = letter;
-              this.profile = PROFILES[letter] || null;
+            // Usa getList senza sort per evitare il 400 di PocketBase
+            var res = await pb.collection('quiz_responses').getList(1, 50, {
+              filter: "user='" + uid + "'"
+            });
+            if (res && res.items && res.items.length > 0) {
+              // Prende l'ultimo per data (ordinamento lato client)
+              var items = res.items.slice().sort(function(a, b) {
+                return new Date(b.created) - new Date(a.created);
+              });
+              var record = items[0];
+              if (record.profile_result) {
+                var letter = record.profile_result.trim().toUpperCase();
+                this.profileLetter = letter;
+                this.profile = PROFILES[letter] || null;
+              }
             }
           } catch(e) {
-            if (e.status === 404) {
-              this.profile = null;
-            } else {
-              console.warn('[quiz_responses] errore:', e.message);
-              this.fetchError = true;
-            }
+            console.warn('[quiz_responses] errore:', e.message);
+            this.fetchError = true;
           }
         },
 
