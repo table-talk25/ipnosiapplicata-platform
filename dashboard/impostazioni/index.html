@@ -81,13 +81,7 @@
       -webkit-text-fill-color: #F5F7FA !important; caret-color: #F5F7FA;
     }
 
-    /* Avatar wrapper: mostra immagine O iniziali, mai entrambi */
     .avatar-wrap { position:relative; width:80px; height:80px; flex-shrink:0; }
-    .avatar-wrap img {
-      width:80px; height:80px; border-radius:50%;
-      border:2px solid rgba(73,199,165,0.3); object-fit:cover;
-      display:block;
-    }
     .avatar-initials {
       width:80px; height:80px; border-radius:50%;
       background:rgba(73,199,165,0.12); border:2px solid rgba(73,199,165,0.3);
@@ -120,9 +114,6 @@
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <div id="toast" class="toast"></div>
-
-<!-- Avatar preview element usato da JS puro (fuori Alpine per max controllo) -->
-<img id="avatar-img" style="display:none;" alt="Avatar" class="" />
 
 <body x-data="impostazioniPage()" x-init="init()">
 
@@ -192,12 +183,9 @@
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Foto profilo</h2>
         <div class="flex items-center gap-5">
-
-          <!-- Avatar: gestito interamente da JS, non da Alpine -->
           <div class="avatar-wrap" id="avatar-wrap">
-            <!-- img e iniziali iniettati da renderAvatar() -->
+            <!-- popolato da renderAvatar() -->
           </div>
-
           <div class="flex-1">
             <p class="text-sm text-on-surface-variant mb-3">JPG, PNG o WebP &mdash; max 10 MB. Consigliato 400&times;400 px.</p>
             <div class="flex flex-wrap gap-2">
@@ -363,16 +351,27 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    /* ── Avatar DOM helpers ──
-       Gestione completamente imperativa: nessun x-show/x-if sull'avatar.
-       renderAvatar(src, initial) aggiorna il DOM direttamente.
-    */
+    /**
+     * Costruisce l'URL dell'avatar in modo sicuro.
+     * Ritorna null (non stringa vuota) se manca userId o filename,
+     * così renderAvatar() sa che deve mostrare le iniziali.
+     */
+    function buildAvatarUrl(userId, filename) {
+      if (!userId || !filename) return null;
+      // Aggiunge il cache-bust come query string — il separator è sempre "?"
+      // perché costruiamo l'URL da zero (nessun altro query param).
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+    }
+
+    /**
+     * Aggiorna il DOM dell'avatar in modo imperativo.
+     * src può essere: blob URL (preview), URL remoto, oppure null (mostra iniziali).
+     */
     function renderAvatar(src, initial) {
       var wrap = document.getElementById('avatar-wrap');
       if (!wrap) return;
       wrap.innerHTML = '';
 
-      // overlay camera
       var overlay = document.createElement('label');
       overlay.htmlFor = 'avatar-input';
       overlay.className = 'avatar-overlay';
@@ -380,13 +379,10 @@
 
       if (src) {
         var img = document.createElement('img');
-        img.src = src;
         img.alt = 'Avatar';
         img.style.cssText = 'width:80px;height:80px;border-radius:50%;border:2px solid rgba(73,199,165,0.3);object-fit:cover;display:block;';
-        img.onerror = function() {
-          // se l'immagine fallisce mostra iniziali
-          renderAvatar(null, initial);
-        };
+        img.onerror = function() { renderAvatar(null, initial); };
+        img.src = src; // assegno src DOPO onerror per evitare race condition
         wrap.appendChild(img);
       } else {
         var ini = document.createElement('div');
@@ -396,11 +392,8 @@
       }
       wrap.appendChild(overlay);
 
-      // aggiorna visibilità pulsanti
-      var btnSave   = document.getElementById('btn-save-avatar');
+      // Pulsante Rimuovi: visibile solo se c'è un'immagine salvata (non blob)
       var btnRemove = document.getElementById('btn-remove-avatar');
-      // btn-save: visibile solo se c'è una preview locale (gestito da Alpine)
-      // btn-remove: visibile solo se c'è un avatar salvato (src non-blob)
       if (btnRemove) {
         btnRemove.style.display = (src && src.indexOf('blob:') !== 0) ? 'inline-flex' : 'none';
       }
@@ -426,7 +419,7 @@
         form: { first_name: '', last_name: '' },
         pw: { old: '', new: '', confirm: '' },
         showOld: false, showNew: false, showConfirm: false,
-        avatarPreview: null, avatarFile: null,
+        avatarFile: null,
         savingProfile: false, savingPw: false, savingAvatar: false,
         showDeleteModal: false, deleteConfirmText: '', deletingAccount: false,
 
@@ -442,10 +435,8 @@
           this.form.last_name  = this.user.last_name  || '';
 
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
-          var avatarSrc = this.user.avatar
-            ? pb.files.getUrl(this.user, this.user.avatar, { thumb: '200x200' })
-            : null;
-          renderAvatar(avatarSrc, initial);
+          // buildAvatarUrl ritorna null se non c'è avatar → renderAvatar mostra iniziali
+          renderAvatar(buildAvatarUrl(this.user.id, this.user.avatar), initial);
 
           hideOverlay();
           this.$nextTick(function() {
@@ -467,11 +458,10 @@
             return;
           }
           this.avatarFile = file;
-          this.avatarPreview = URL.createObjectURL(file);
-          // mostra preview subito nel DOM
+          var blobUrl = URL.createObjectURL(file);
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
-          renderAvatar(this.avatarPreview, initial);
-          // mostra pulsante Salva
+          renderAvatar(blobUrl, initial);
+          // mostra Salva, nasconde Rimuovi
           var btnSave = document.getElementById('btn-save-avatar');
           if (btnSave) btnSave.style.display = 'inline-flex';
           var btnRemove = document.getElementById('btn-remove-avatar');
@@ -482,19 +472,17 @@
           if (!this.avatarFile) return;
           this.savingAvatar = true;
           try {
-            var formData = new FormData();
-            formData.append('avatar', this.avatarFile);
-            var updated = await pb.collection('users').update(this.user.id, formData);
+            var fd = new FormData();
+            fd.append('avatar', this.avatarFile);
+            var updated = await pb.collection('users').update(this.user.id, fd);
             this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
 
-            // Usa pb.files.getUrl per avere l'URL corretto con thumb + cache-bust
-            var newSrc = pb.files.getUrl(updated, updated.avatar, { thumb: '200x200' })
-                         + '&nocache=' + Date.now();
+            // buildAvatarUrl è sempre sicuro: ritorna null se updated.avatar è vuoto
+            var newUrl = buildAvatarUrl(updated.id, updated.avatar);
             var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
-            renderAvatar(newSrc, initial);
+            renderAvatar(newUrl, initial);
 
-            this.avatarPreview = null;
             this.avatarFile = null;
             var inp = document.getElementById('avatar-input');
             if (inp) inp.value = '';
@@ -504,7 +492,7 @@
             showToast('Foto aggiornata!', 'success');
           } catch(e) {
             console.error('saveAvatar:', e);
-            showToast('Errore durante il salvataggio: ' + (e.message || ''), 'error');
+            showToast('Errore durante il salvataggio.', 'error');
           } finally {
             this.savingAvatar = false;
           }
