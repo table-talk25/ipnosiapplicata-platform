@@ -74,6 +74,8 @@
     .reveal.visible { opacity:1; transform:translateY(0); }
     #loading-overlay { position:fixed; inset:0; z-index:200; background:#101416; display:flex; align-items:center; justify-content:center; transition:opacity 0.3s ease; }
     #loading-overlay.hidden { opacity:0; pointer-events:none; }
+    .profilo-card { background: linear-gradient(135deg, rgba(73,199,165,0.07) 0%, rgba(58,99,255,0.05) 100%); border: 1px solid rgba(73,199,165,0.18); border-radius: 20px; transition: all 0.25s ease; }
+    .profilo-card:hover { border-color: rgba(73,199,165,0.35); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
   </style>
 </head>
 
@@ -133,6 +135,9 @@
     <a href="#corsi" class="sidebar-item">
       <span class="material-symbols-outlined">school</span> Corsi
     </a>
+    <a href="/dashboard/profilo-quiz/" class="sidebar-item">
+      <span class="material-symbols-outlined">psychology</span> Profilo Quiz
+    </a>
     <div class="border-t border-outline-variant/30 my-3"></div>
     <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400">
       <span class="material-symbols-outlined">logout</span> Esci
@@ -153,6 +158,45 @@
           Bentornato, <span class="gradient-text" x-text="user.first_name || 'amico'"></span>
         </h1>
         <p class="text-on-surface-variant mt-2" x-text="greeting"></p>
+      </div>
+
+      <!-- Card Profilo Quiz -->
+      <div class="mb-8 reveal">
+        <!-- Profilo assegnato -->
+        <template x-if="quizProfile">
+          <a href="/dashboard/profilo-quiz/" class="profilo-card p-5 flex items-center gap-4 cursor-pointer block no-underline">
+            <div class="w-11 h-11 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-size:22px">psychology</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                <p class="text-xs font-semibold text-primary uppercase tracking-widest">Il tuo Profilo Quiz</p>
+                <span class="badge teal" x-text="'Profilo ' + quizProfileLetter"></span>
+              </div>
+              <p class="font-bold text-on-surface text-sm truncate" style="font-family:'Manrope',sans-serif;" x-text="quizProfile.title"></p>
+              <p class="text-on-surface-variant text-xs mt-0.5 line-clamp-1" x-text="quizProfile.intro"></p>
+            </div>
+            <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size:20px">arrow_forward</span>
+          </a>
+        </template>
+        <!-- Quiz non ancora completato -->
+        <template x-if="!quizProfile && !loading">
+          <div class="profilo-card p-5 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-2xl bg-outline-variant/30 border border-outline-variant/40 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-on-surface-variant" style="font-size:22px">quiz</span>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest mb-0.5">Profilo Quiz</p>
+              <p class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Scopri il tuo profilo</p>
+              <p class="text-on-surface-variant text-xs mt-0.5">Fai il Quiz del Coraggio per sbloccare i contenuti personalizzati.</p>
+            </div>
+            <a href="https://cristianlecca.it/quiz/" target="_blank"
+               class="flex-shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary font-bold text-xs transition-all hover:opacity-90"
+               style="font-family:'Manrope',sans-serif;">
+              Fai il Quiz
+            </a>
+          </div>
+        </template>
       </div>
 
       <!-- I miei percorsi -->
@@ -273,6 +317,10 @@
       <span class="material-symbols-outlined" style="font-size:22px">route</span>
       Percorso
     </a>
+    <a href="/dashboard/profilo-quiz/" class="bottom-nav-item">
+      <span class="material-symbols-outlined" style="font-size:22px">psychology</span>
+      Profilo
+    </a>
   </nav>
 
   <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
@@ -292,6 +340,13 @@
     var PB_URL = 'https://api.ipnosiapplicata.it';
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
+
+    var PROFILES = {
+      'A': { title: 'Il Perfezionista Bloccato', intro: 'Il tuo standard è alto — così alto che spesso ti impedisce di partire.' },
+      'B': { title: 'Il Guardiano del Consenso', intro: 'La tua forza è nell\'empatia — ma stai usando quella forza per comprare la pace.' },
+      'C': { title: 'Il Critico Instancabile', intro: 'Hai una mente acutissima, capace di vedere ogni falla. Il problema è che la usi soprattutto contro te stesso.' },
+      'D': { title: "L'Esploratore Esitante", intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio.' }
+    };
 
     var CATALOG = [
       {
@@ -356,11 +411,12 @@
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
         corsi: [], journey: [],
+        quizProfile: null, quizProfileLetter: '',
 
         get greeting() {
           var h = new Date().getHours();
           if (h < 12) return 'Buongiorno. Come ti sei svegliato oggi?';
-          if (h < 18) return 'Buon pomeriggio. Il tuo percorso e in corso.';
+          if (h < 18) return 'Buon pomeriggio. Il tuo percorso è in corso.';
           return 'Buonasera. Un buon momento per l\'induzione di stasera.';
         },
 
@@ -400,28 +456,39 @@
           var uid = this.user.id;
           var filterUser = "user='" + uid + "'";
 
+          // Quiz profile
+          try {
+            var quizRes = await pb.collection('quiz_responses').getFirstListItem(
+              filterUser, { sort: '-created' }
+            );
+            if (quizRes && quizRes.profile_result) {
+              var letter = quizRes.profile_result.trim().toUpperCase();
+              this.quizProfileLetter = letter;
+              this.quizProfile = PROFILES[letter] || null;
+            }
+          } catch(e) {
+            if (e.status !== 404) console.warn('[quiz_responses] errore:', e.message);
+          }
+
+          // Purchases
           var activePurchases = [];
           try {
-            var purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: filterUser
-            });
+            var purchasesRes = await pb.collection('purchases').getList(1, 50, { filter: filterUser });
             if (purchasesRes && purchasesRes.items) {
               activePurchases = purchasesRes.items
                 .filter(function(p) { return p.status === 'completed'; })
                 .map(function(p) { return p.product; })
                 .filter(Boolean);
-              console.log('[DEBUG] purchases OK, prodotti attivi:', activePurchases);
             }
           } catch(e) {
             console.warn('[purchases] errore:', e.message);
             this.fetchError = true;
           }
 
+          // Progress
           var progressMap = {};
           try {
-            var progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: filterUser
-            });
+            var progressRes = await pb.collection('progress').getList(1, 50, { filter: filterUser });
             if (progressRes && progressRes.items) {
               progressRes.items.forEach(function(p) { progressMap[p.product_id] = p; });
             }
@@ -429,13 +496,11 @@
             console.warn('[progress] errore:', e.message);
           }
 
+          // Journey
           try {
-            var journeyRes = await pb.collection('journey').getList(1, 50, {
-              filter: filterUser
-            });
+            var journeyRes = await pb.collection('journey').getList(1, 50, { filter: filterUser });
             if (journeyRes && journeyRes.items) {
-              var items = journeyRes.items.slice();
-              this.journey = items.map(function(j) {
+              this.journey = journeyRes.items.map(function(j) {
                 return Object.assign({}, j, { dateFormatted: timeAgo(j.created) });
               });
             }
@@ -444,16 +509,14 @@
             this.journey = [];
           }
 
+          // Corsi
           this.corsi = CATALOG.map(function(c) {
             var purchased = activePurchases.indexOf(c.id) !== -1;
             var prog = progressMap[c.id];
             var completedSteps = prog && prog.completed_steps ? prog.completed_steps.length : 0;
             var currentStep = prog && prog.current_step ? prog.current_step : 0;
             var pct = c.totalSteps > 0 ? Math.round((completedSteps / c.totalSteps) * 100) : 0;
-            var statusLabel = !purchased ? 'Bloccato'
-              : pct === 100 ? 'Completato'
-              : currentStep > 0 ? 'In corso'
-              : 'Disponibile';
+            var statusLabel = !purchased ? 'Bloccato' : pct === 100 ? 'Completato' : currentStep > 0 ? 'In corso' : 'Disponibile';
             var badgeClass = !purchased ? 'grey' : pct === 100 ? 'teal' : currentStep > 0 ? 'blue' : 'teal';
             return Object.assign({}, c, {
               unlocked: purchased,
