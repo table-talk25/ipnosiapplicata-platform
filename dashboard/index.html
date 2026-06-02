@@ -393,7 +393,7 @@
           let activePurchases = [];
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user.id='${uid}'`,
+              filter: `user='${uid}'`,
               sort: '-created'
             });
             if (purchasesRes?.items) {
@@ -411,7 +411,7 @@
           const progressMap = {};
           try {
             const progressRes = await pb.collection('progress').getList(1, 50, {
-              filter: `user.id='${uid}'`
+              filter: `user='${uid}'`
             });
             if (progressRes?.items) {
               progressRes.items.forEach(p => { progressMap[p.product_id] = p; });
@@ -422,7 +422,7 @@
 
           try {
             const journeyRes = await pb.collection('journey').getList(1, 20, {
-              filter: `user.id='${uid}'`,
+              filter: `user='${uid}'`,
               sort: '-created'
             });
             if (journeyRes?.items) {
