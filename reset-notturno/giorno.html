@@ -60,10 +60,14 @@
     .day-nav-pill{background:rgba(29,32,34,0.8);border:1px solid rgba(61,73,68,0.4);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.2s ease;text-decoration:none;color:#bccac3;}
     .day-nav-pill:hover{border-color:rgba(73,199,165,0.4);color:#49C7A5;}
     .complete-btn{background:#49C7A5;color:#101416;border:none;cursor:pointer;border-radius:14px;padding:16px 32px;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;display:inline-flex;align-items:center;gap:10px;transition:all 0.2s ease;}
-    .complete-btn:hover{background:rgba(73,199,165,0.88);transform:translateY(-1px);}
-    .complete-btn:active{transform:scale(0.97);}
+    .complete-btn:hover:not(:disabled){background:rgba(73,199,165,0.88);transform:translateY(-1px);}
+    .complete-btn:active:not(:disabled){transform:scale(0.97);}
+    .complete-btn:disabled{background:rgba(61,73,68,0.35);color:#3d4944;cursor:not-allowed;transform:none;}
     .complete-btn.saved{background:rgba(73,199,165,0.15);color:#49C7A5;border:1px solid rgba(73,199,165,0.3);cursor:default;}
+    .undo-btn{background:transparent;border:1px solid rgba(61,73,68,0.5);color:#bccac3;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:all 0.2s ease;font-family:'Inter',sans-serif;}
+    .undo-btn:hover{border-color:rgba(201,164,92,0.4);color:#C9A45C;}
     .security-box{background:rgba(201,164,92,0.05);border:1px solid rgba(201,164,92,0.18);border-radius:12px;padding:16px 20px;}
+    .progress-hint{font-size:12px;color:#bccac3;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:10px;}
   </style>
 </head>
 
@@ -182,11 +186,24 @@
         <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="journal.p4" rows="3"></textarea></div>
       </div>
 
+      <!-- BARRA PROGRESSO PROMPT -->
+      <div class="progress-hint mb-6" x-show="!allDone && !isSaved">
+        <span class="material-symbols-outlined text-[#3d4944]" style="font-size:16px">pending</span>
+        <span x-text="promptsDone + ' di 4 esercizi completati — compila tutto per sbloccare il completamento'"></span>
+      </div>
+
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="isSaved">
-          <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : 'check_circle'"></span>
-          <span x-text="isSaved ? 'Giorno completato!' : 'Completa il Giorno ' + day.num"></span>
-        </button>
+        <div class="flex items-center gap-3">
+          <button class="complete-btn" :class="{ saved: isSaved }" @click="saveDay()" :disabled="!allDone || isSaved">
+            <span class="material-symbols-outlined" x-text="isSaved ? 'verified' : 'check_circle'"></span>
+            <span x-text="isSaved ? 'Giorno completato!' : 'Completa il Giorno ' + day.num"></span>
+          </button>
+          <!-- TASTO ANNULLA visibile solo se salvato -->
+          <button x-show="isSaved" x-transition class="undo-btn" @click="undoDay()">
+            <span class="material-symbols-outlined" style="font-size:15px">undo</span>
+            Annulla
+          </button>
+        </div>
         <a x-show="isSaved && day.num < 7" :href="'giorno.html?day=' + (day.num + 1)" class="day-nav-pill">
           Vai al Giorno <span x-text="day.num + 1" class="ml-1"></span>
           <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
@@ -210,7 +227,6 @@
   </footer>
 
   <script>
-    const AUDIO_BASE = 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/reset-notturno';
     const DAYS_DATA = [
       {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
       {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
@@ -224,6 +240,15 @@
       return {
         day: {}, journal: {p1:'',p2a:'',p2b:'',p3:'',p4:''},
         isPlaying: false, audioProgress: 0, currentTime: 0, duration: 0, volume: 0.9, audioLoaded: false, isSaved: false,
+        get promptsDone() {
+          let n = 0;
+          if (this.journal.p1?.trim()) n++;
+          if (this.journal.p2a?.trim() && this.journal.p2b?.trim()) n++;
+          if (this.journal.p3?.trim()) n++;
+          if (this.journal.p4?.trim()) n++;
+          return n;
+        },
+        get allDone() { return this.promptsDone === 4; },
         init() {
           const params = new URLSearchParams(window.location.search);
           const num = parseInt(params.get('day')) || 1;
@@ -263,10 +288,18 @@
         setVolume() { if (this.$refs.audio) this.$refs.audio.volume = this.volume; },
         formatTime(s) { if (!s || isNaN(s)) return '0:00'; const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); },
         saveDay() {
+          if (!this.allDone) return;
           localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
           const prev = parseInt(localStorage.getItem('rn_completed') || '0');
           if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
           this.isSaved = true;
+        },
+        undoDay() {
+          const prev = parseInt(localStorage.getItem('rn_completed') || '0');
+          if (prev >= this.day.num) {
+            localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
+          }
+          this.isSaved = false;
         }
       };
     }
