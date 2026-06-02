@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Il Metodo IpnosiApplicata | Cristian Lecca</title>
+<meta name="description" content="IpnosiApplicata è una filosofia di lavoro che unisce ipnosi eriksoniana, PNL, coaching sistemico e neuroscienze. Non gestisci il blocco — diventi autonomo dal blocco."/>
+<link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#101416",
+          "on-background": "#F5F7FA",
+          "surface": "#101416",
+          "on-surface": "#F5F7FA",
+          "primary": "#49C7A5",
+          "on-primary": "#101416",
+          "primary-container": "#49C7A5",
+          "on-primary-container": "#101416",
+          "primary-fixed-dim": "#60dbb8",
+          "secondary": "#3A63FF",
+          "on-secondary": "#FFFFFF",
+          "on-secondary-container": "#c1cbff",
+          "secondary-container": "#0543e3",
+          "tertiary": "#C9A45C",
+          "on-tertiary": "#101416",
+          "on-tertiary-container": "#5b4100",
+          "outline": "#86948e",
+          "outline-variant": "#3d4944",
+          "surface-container": "#1d2022",
+          "surface-container-low": "#191c1e",
+          "surface-container-high": "#272a2d",
+          "surface-container-highest": "#323538",
+          "surface-container-lowest": "#0b0f11",
+          "surface-dim": "#101416",
+          "surface-variant": "#323538",
+          "on-surface-variant": "#bccac3"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
+        },
+        "spacing": {
+          "section-v-desktop": "104px", "stack-sm": "8px", "container-max": "1280px",
+          "stack-lg": "32px", "stack-md": "16px", "section-v-mobile": "64px", "gutter": "24px"
+        },
+        "fontFamily": {
+          "label-md": ["Inter"], "body-md": ["Inter"], "headline-lg": ["Manrope"],
+          "headline-md": ["Manrope"], "body-lg": ["Inter"], "display-lg": ["Manrope"],
+          "display-lg-mobile": ["Manrope"]
+        },
+        "fontSize": {
+          "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+          "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "headline-lg": ["48px", {"lineHeight": "1.2", "fontWeight": "600"}],
+          "headline-md": ["32px", {"lineHeight": "1.3", "fontWeight": "600"}],
+          "body-lg": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+          "display-lg": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body { background-color: #101416; color: #F5F7FA; overflow-x: hidden; }
+  .glass-card {
+    background: rgba(29,32,34,0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245,247,250,0.1);
+    transition: all 0.3s ease-in-out;
+  }
+  .glass-card:hover {
+    border-color: rgba(73,199,165,0.3);
+    background: rgba(73,199,165,0.05);
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #49C7A5, #3A63FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 600ms ease, transform 600ms ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  #mobile-menu {
+    display: none; flex-direction: column; gap: 0;
+    background: #101416; border-top: 1px solid rgba(255,255,255,0.08); padding: 16px 24px 24px;
+  }
+  #mobile-menu.open { display: flex; }
+  #mobile-menu a {
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: #F5F7FA; font-size: 14px; font-weight: 600; letter-spacing: 0.03em;
+    text-decoration: none; transition: color 180ms ease;
+  }
+  #mobile-menu a:last-child {
+    border-bottom: none; margin-top: 12px; background: #49C7A5; color: #101416;
+    text-align: center; border-radius: 12px; padding: 14px 0;
+  }
+  #mobile-menu a:hover { color: #49C7A5; }
+  #mobile-menu a:last-child:hover { color: #101416; }
+  .discipline-card {
+    background: rgba(29,32,34,0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245,247,250,0.08);
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .discipline-card:hover {
+    border-color: rgba(73,199,165,0.25);
+    background: rgba(73,199,165,0.04);
+  }
+</style>
+</head>
+<body class="font-body-md text-body-md">
+
+<!-- HEADER -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-sm">
+  <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
+    <a class="flex items-center gap-3" href="/">
+      <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto">
+      <span class="font-bold" style="font-size:18px; background:linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+    </a>
+    <div class="hidden md:flex gap-8 items-center">
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/">Home</a>
+      <a class="text-primary border-b-2 border-primary pb-1 font-semibold text-sm" href="/metodo/">Metodo</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/corsi/">Corsi</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="/sessioni/">Sessioni 1:1</a>
+      <span id="nav-auth-area">
+        <a href="/login/" class="border border-outline-variant/60 hover:border-primary/40 text-on-surface px-5 py-2 rounded-full font-semibold text-sm transition-all">Accedi</a>
+      </span>
+    </div>
+    <button id="hamburger-btn" class="md:hidden text-on-background p-2" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span class="material-symbols-outlined" id="hamburger-icon">menu</span>
+    </button>
+  </div>
+  <div id="mobile-menu" role="navigation" aria-label="Menu mobile">
+    <a href="/">Home</a>
+    <a href="/metodo/">Metodo</a>
+    <a href="/corsi/">Corsi</a>
+    <a href="/sessioni/">Sessioni 1:1</a>
+    <a href="/login/">Accedi</a>
+  </div>
+</nav>
+
+<main class="mt-20">
+
+<!-- HERO -->
+<section class="relative min-h-[80vh] flex items-center px-gutter py-section-v-mobile md:py-section-v-desktop overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle at 70% 40%, rgba(73,199,165,0.07) 0%, transparent 55%), radial-gradient(circle at 20% 70%, rgba(58,99,255,0.05) 0%, transparent 50%);"></div>
+  <div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-4xl">
+      <span class="inline-block font-label-md text-label-md text-tertiary tracking-widest uppercase mb-6 reveal">Filosofia IpnosiApplicata</span>
+      <h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg mb-8 leading-tight reveal">
+        Il problema che porti è reale.<br/>Ma quasi sempre <span class="gradient-text">non è il problema vero.</span>
+      </h1>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-12 reveal">
+        IpnosiApplicata è una filosofia di lavoro che ho creato e continuo a sviluppare. Unisce ipnosi eriksoniana, PNL, coaching sistemico e posturale, psicologia e neuroscienze in un metodo cucito su ogni singola persona. Non per insegnarti a gestire il blocco — per aiutarti a diventare autonomo dal blocco, e da me.
+      </p>
+      <div class="flex flex-wrap gap-4 reveal">
+        <a href="/corsi/" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block">Esplora i corsi</a>
+        <a href="/sessioni/" class="border border-outline-variant/50 text-on-surface px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Sessioni 1:1 con Cristian</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NON CURO SINTOMI -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container-low">
+  <div class="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-center">
+    <div class="space-y-6 reveal">
+      <h2 class="font-headline-lg text-headline-lg">Non curo sintomi.<br/>Trovo radici.</h2>
+      <div class="space-y-5 font-body-lg text-body-lg text-on-surface-variant">
+        <p>Quando un cliente arriva da me, porta una storia. Una storia su quello che non funziona, su cosa lo blocca, su perché non riesce a cambiare. Quella storia è vera — ma quasi sempre descrive un sintomo, non la causa.</p>
+        <p>Il mio primo lavoro è identificare la radice reale. A volte il cliente non viene messo a conoscenza del lavoro profondo che stiamo facendo insieme — perché la mente conscia, se avvisata, attiva le stesse difese che vogliamo sciogliere.</p>
+        <p>Questo non è inganno. È rispetto per come funziona davvero la mente.</p>
+      </div>
+    </div>
+    <div class="relative reveal">
+      <div class="absolute inset-0 bg-primary/8 blur-[80px] pointer-events-none rounded-3xl"></div>
+      <div class="relative glass-card rounded-3xl p-10 border-primary/20 space-y-6">
+        <div class="flex items-start gap-4">
+          <span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg shrink-0">search</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Quello che vedi</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">Il problema che descrivi: ansia, blocco, relazioni difficili, mancanza di direzione.</p>
+          </div>
+        </div>
+        <div class="border-l-2 border-outline-variant/30 ml-6 pl-6">
+          <span class="font-label-md text-label-md text-tertiary">↓ sintomo</span>
+        </div>
+        <div class="flex items-start gap-4">
+          <span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-2 rounded-lg shrink-0">psychology</span>
+          <div>
+            <h4 class="font-label-md text-label-md text-on-surface mb-1">Quello che troviamo</h4>
+            <p class="font-body-md text-body-md text-on-surface-variant">La credenza alla radice: lo schema inconscio che genera il sintomo da anni.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERCHÉ APPLICATA -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-container-max mx-auto">
+    <div class="max-w-3xl mx-auto text-center mb-16 reveal">
+      <h2 class="font-headline-lg text-headline-lg mb-6">L'ipnosi non è un evento.<br/>È un linguaggio.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant">Milton Erickson diceva: <em class="text-primary">&ldquo;L'ipnosi non esiste &mdash; è tutto ipnosi.&rdquo;</em> Questa frase è il cuore di tutto quello che faccio.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <div class="space-y-6 font-body-lg text-body-lg text-on-surface-variant reveal">
+        <p>L'ipnosi tradizionale è vista come un momento separato: ti rilassi, entri in trance, esci cambiato. A volte funziona. Ma non è questo il mio approccio.</p>
+        <p><strong class="text-on-surface">"Applicata" significa che l'ipnosi non è il momento della sessione — è il tessuto di ogni conversazione, ogni esercizio, ogni interazione.</strong> Utilizzo ipnosi conversazionale eriksoniana: il cliente non viene "messo in ipnosi". Sta già lavorando in profondità, senza barriere difensive attive.</p>
+        <p>La teoria diventa pratica nel momento in cui la faccio vivere. Sessione dopo sessione, esercizio dopo esercizio — finché il cambiamento non diventa qualcosa che il cliente sperimenta, non qualcosa che gli viene raccontato.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-8 border-secondary/20 reveal">
+        <div class="flex items-center gap-3 mb-8">
+          <span class="material-symbols-outlined text-secondary">format_quote</span>
+          <span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Il principio fondante</span>
+        </div>
+        <blockquote class="font-headline-md text-headline-md leading-relaxed text-on-surface mb-6">
+          &ldquo;L'ipnosi non esiste &mdash; è tutto ipnosi.&rdquo;
+        </blockquote>
+        <p class="font-body-md text-body-md text-on-surface-variant">— Milton H. Erickson</p>
+        <div class="mt-8 pt-8 border-t border-outline-variant/30">
+          <p class="font-body-md text-body-md text-on-surface-variant">Ogni conversazione è già comunicazione con l'inconscio. IpnosiApplicata porta questa consapevolezza dentro ogni singolo scambio con il cliente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCIPLINE -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container-lowest">
+  <div class="max-w-container-max mx-auto">
+    <div class="mb-16 reveal">
+      <h2 class="font-headline-lg text-headline-lg mb-4">Un metodo nato dalla sintesi,<br/>non dalla teoria.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Non ho costruito IpnosiApplicata in un'aula. L'ho costruito sul campo, integrando discipline che raramente dialogano tra loro — e continuando a svilupparlo ogni giorno.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">self_improvement</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">Ipnosi Eriksoniana</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Il linguaggio dell'inconscio. Comunicazione indiretta che bypassa le resistenze senza forzarle, seguendo il metodo di Milton H. Erickson.</p>
+      </div>
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">swap_horiz</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">PNL — Master Livello 3</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Ristrutturazione del dialogo interno e delle credenze limitanti. Strumenti concreti per cambiare il modo in cui una persona si parla e si percepisce.</p>
+      </div>
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">hub</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">Coaching Sistemico</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Il cliente non è solo. È parte di sistemi — famiglia, lavoro, relazioni — che influenzano e spesso alimentano il blocco.</p>
+      </div>
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">accessibility_new</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">Coaching Posturale</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Il corpo non mente. La postura è il riflesso degli schemi mentali — e lavorare su di essa è lavorare direttamente sullo schema.</p>
+      </div>
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">biotech</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">Neuroscienze & Neurobiologia</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Studio applicato di come il cervello forma, mantiene e può riscrivere i propri pattern automatici. La base scientifica di ogni intervento.</p>
+      </div>
+      <div class="discipline-card reveal">
+        <span class="material-symbols-outlined text-primary mb-4" style="font-size:2rem;">manage_accounts</span>
+        <h3 class="font-label-md text-label-md text-on-surface mb-2">Psicologia Applicata</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Non clinica. Pratica. Applicata a come le persone pensano, si raccontano e si bloccano — e a come possono smettere di farlo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- I 3 PILASTRI -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-container-max mx-auto">
+    <div class="mb-16 reveal">
+      <h2 class="font-headline-lg text-headline-lg mb-4">La sequenza non cambia.<br/>L'applicazione è sempre unica.</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">La trasformazione segue una direzione precisa. Saltare un passaggio significa costruire sulla sabbia.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-12">
+      <div class="relative pl-12 border-l-2 border-primary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-primary rounded-full flex items-center justify-center font-label-md text-label-md text-primary">1</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-primary">Riconosci</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Identifico la vera radice del blocco — non quello che il cliente crede sia il problema. Questo richiede ascolto profondo e la capacità di leggere tra le righe di ciò che viene detto, e di ciò che non viene detto.</p>
+      </div>
+      <div class="relative pl-12 border-l-2 border-secondary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-secondary rounded-full flex items-center justify-center font-label-md text-label-md text-secondary">2</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-secondary">Rileggi</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Attraverso ipnosi conversazionale, PNL e coaching, ristrutturiamo il modo in cui il cliente parla a sé stesso. Le credenze alla radice del sintomo vengono scardinate — non soppresse, non aggirate. Dissolte.</p>
+      </div>
+      <div class="relative pl-12 border-l-2 border-tertiary/40 reveal">
+        <div class="absolute -left-4 top-0 w-8 h-8 bg-background border-2 border-tertiary rounded-full flex items-center justify-center font-label-md text-label-md text-tertiary">3</div>
+        <h3 class="font-headline-md text-headline-md mb-4 text-tertiary">Agisci</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant">Il cambiamento non si dichiara — si sperimenta. Il cliente viene messo davanti a situazioni note in cui verifica in prima persona che reagisce diversamente. Il cambiamento diventa misurabile, inconfutabile, suo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COSA NON È -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container">
+  <div class="max-w-container-max mx-auto">
+    <div class="flex flex-col md:flex-row gap-16">
+      <div class="md:w-1/3 reveal">
+        <h2 class="font-headline-lg text-headline-lg mb-4">Cosa <span style="color:#ffb4ab;">non è</span></h2>
+        <p class="font-body-md text-body-md text-on-surface-variant">Per rispetto del tuo tempo e del mio lavoro, è importante essere chiari sui confini.</p>
+      </div>
+      <div class="md:w-2/3 grid sm:grid-cols-2 gap-8">
+        <div class="flex gap-4 reveal">
+          <span class="material-symbols-outlined shrink-0" style="color:#ffb4ab;">close</span>
+          <div><h4 class="font-label-md text-label-md mb-2">Una formula rapida</h4><p class="font-body-md text-body-md text-on-surface-variant">Non esistono bacchette magiche. Il cambiamento richiede impegno e onestà — con sé stessi prima di tutto.</p></div>
+        </div>
+        <div class="flex gap-4 reveal">
+          <span class="material-symbols-outlined shrink-0" style="color:#ffb4ab;">close</span>
+          <div><h4 class="font-label-md text-label-md mb-2">Repressione</h4><p class="font-body-md text-body-md text-on-surface-variant">Non ti insegnerò a soffocare le emozioni, ma a comprenderne la radice e a smettere di esserne guidato.</p></div>
+        </div>
+        <div class="flex gap-4 reveal">
+          <span class="material-symbols-outlined shrink-0" style="color:#ffb4ab;">close</span>
+          <div><h4 class="font-label-md text-label-md mb-2">Perfezione</h4><p class="font-body-md text-body-md text-on-surface-variant">L'obiettivo non è essere perfetti. È essere lucidi, liberi e capaci di agire in modo congruente con chi si è davvero.</p></div>
+        </div>
+        <div class="flex gap-4 reveal">
+          <span class="material-symbols-outlined shrink-0" style="color:#ffb4ab;">close</span>
+          <div><h4 class="font-label-md text-label-md mb-2">Terapia medica</h4><p class="font-body-md text-body-md text-on-surface-variant">Il mental coaching non sostituisce la psicoterapia o le cure psichiatriche. Sono strumenti diversi, con ruoli diversi.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LE COMPETENZE SI MISURANO SUI RISULTATI -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-4xl mx-auto">
+    <div class="glass-card rounded-3xl p-10 md:p-16 border-primary/15 reveal">
+      <span class="font-label-md text-label-md text-tertiary uppercase tracking-widest mb-6 block">Il metodo si misura sul campo</span>
+      <h2 class="font-headline-lg text-headline-lg mb-8">Le competenze si misurano sui risultati.</h2>
+      <div class="space-y-5 font-body-lg text-body-lg text-on-surface-variant">
+        <p>Ho dedicato anni allo studio e alla ricerca su ipnosi eriksoniana, PNL, neuroscienze e psicologia applicata. Non mi sono fermato — e non mi fermo. IpnosiApplicata non è un sistema chiuso: si affina continuamente, sessione dopo sessione, persona dopo persona.</p>
+        <p>Tra chi lavora con me ci sono imprenditori, professionisti, persone che stavano cambiando vita e non sapevano come farlo. Background diversi, blocchi diversi — stessa cosa in comune: non cercavano un altro titolo da appendere al muro. Cercavano risultati.</p>
+        <p class="text-on-surface font-semibold">I titoli — i miei e i loro — sono rimasti fuori dalla stanza. Dentro c'era solo il lavoro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBIETTIVO: RENDERMI INUTILE -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop bg-surface-container-lowest">
+  <div class="max-w-container-max mx-auto">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+      <div class="space-y-6 reveal">
+        <h2 class="font-headline-lg text-headline-lg">Il mio obiettivo è<br/><span class="gradient-text">rendermi inutile.</span></h2>
+        <div class="space-y-5 font-body-lg text-body-lg text-on-surface-variant">
+          <p>Non costruisco dipendenza. Costruisco autonomia.</p>
+          <p>Ogni persona che lavora con me ha un obiettivo preciso: riconoscere il proprio valore e imparare a stare in piedi da sola, con strumenti che restano anche quando le sessioni finiscono.</p>
+          <p>L'autostima reale non è auto-percezione — è la capacità concreta di agire, scegliere e reagire in modo diverso rispetto a prima. Quella si costruisce. E si verifica.</p>
+          <p>Quando una persona arriva a quel punto, il mio lavoro è finito. È il risultato migliore che posso ottenere.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6 reveal">
+        <div class="glass-card rounded-2xl p-6 text-center">
+          <span class="material-symbols-outlined text-primary mb-3" style="font-size:2.5rem;">timer</span>
+          <h4 class="font-label-md text-label-md text-on-surface mb-2">Sessione ogni 2 settimane</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant">Non ogni settimana. Il tempo tra le sessioni è parte del metodo.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 text-center">
+          <span class="material-symbols-outlined text-primary mb-3" style="font-size:2.5rem;">trending_up</span>
+          <h4 class="font-label-md text-label-md text-on-surface mb-2">Progressi misurabili</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant">Situazioni note, reazioni diverse. Il cambiamento si vede, si sente, si verifica.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 text-center">
+          <span class="material-symbols-outlined text-primary mb-3" style="font-size:2.5rem;">person_check</span>
+          <h4 class="font-label-md text-label-md text-on-surface mb-2">Autonomia come obiettivo</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant">Il traguardo non è il coach — è la persona che non ha più bisogno di lui.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 text-center">
+          <span class="material-symbols-outlined text-primary mb-3" style="font-size:2.5rem;">construction</span>
+          <h4 class="font-label-md text-label-md text-on-surface mb-2">Strumenti che restano</h4>
+          <p class="font-body-md text-body-md text-on-surface-variant">Quello che impari nel percorso non scompare quando il percorso finisce.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA SULLA PIATTAFORMA -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop">
+  <div class="max-w-container-max mx-auto">
+    <h2 class="font-headline-lg text-headline-lg mb-4 text-center reveal">Il Metodo dentro la piattaforma</h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant text-center max-w-2xl mx-auto mb-16 reveal">Ogni strumento della piattaforma è costruito attorno alla stessa sequenza: Riconosci, Rileggi, Agisci.</p>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="glass-card p-10 rounded-2xl flex flex-col reveal">
+        <div class="mb-6 w-14 h-14 bg-primary/12 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-primary" style="font-size:1.75rem;">map</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md mb-4">La tua Mappa</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Si aggiorna dopo ogni sessione. Mostra da dove sei partito, la credenza identificata, i passi fatti. Non è un report — è la tua narrativa personale riscritta in tempo reale.</p>
+        <a href="/dashboard/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">Vai all'area personale <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span></a>
+      </div>
+      <div class="glass-card p-10 rounded-2xl flex flex-col reveal">
+        <div class="mb-6 w-14 h-14 bg-secondary/12 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary" style="font-size:1.75rem;">school</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md mb-4">I Corsi del Metodo</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Percorsi strutturati sul Metodo IpnosiApplicata. Ogni modulo si sblocca quando sei pronto. Il Reset Notturno è il punto di ingresso — il lavoro inizia anche quando dormi.</p>
+        <a href="/corsi/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">Esplora i corsi <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span></a>
+      </div>
+      <div class="glass-card p-10 rounded-2xl flex flex-col reveal">
+        <div class="mb-6 w-14 h-14 bg-tertiary/12 rounded-full flex items-center justify-center">
+          <span class="material-symbols-outlined text-tertiary" style="font-size:1.75rem;">center_focus_strong</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md mb-4">Sessioni 1:1</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-auto">Il lavoro individuale intensivo avviene dentro la piattaforma. Dopo ogni sessione: mappa aggiornata, esercizi su misura, induzioni personalizzate. Nessuno strumento esterno.</p>
+        <a href="/sessioni/" class="mt-8 text-primary font-label-md text-label-md flex items-center gap-2 hover:translate-x-1 transition-transform">Scopri le sessioni <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-gutter py-section-v-mobile md:py-section-v-desktop relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle at 50% 50%, rgba(73,199,165,0.06) 0%, transparent 60%);"></div>
+  <div class="max-w-4xl mx-auto text-center reveal">
+    <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg mb-8 leading-tight">
+      Ogni cambiamento reale inizia quando smetti di combattere il blocco e inizi a leggerlo.
+    </h2>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-12 max-w-2xl mx-auto">Scegli da dove vuoi iniziare. Il percorso si adatta a dove sei adesso.</p>
+    <div class="flex flex-col sm:flex-row gap-6 justify-center">
+      <a href="/corsi/" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block">Esplora i corsi</a>
+      <a href="/sessioni/" class="border border-outline-variant text-on-surface px-10 py-5 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Sessioni 1:1 con Cristian</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-surface-container-lowest w-full py-16 px-6 border-t border-outline-variant/25">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+    <div class="space-y-4">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-7 w-auto">
+        <span class="font-bold" style="font-size:16px; background:linear-gradient(135deg,#49C7A5,#3A63FF); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+      </a>
+      <p class="text-on-surface-variant text-sm leading-relaxed">La piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca. Percorsi di trasformazione personale guidati, concreti, misurabili.</p>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Piattaforma</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/">Home</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/metodo/">Metodo</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/corsi/">Corsi</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/sessioni/">Sessioni 1:1</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Il brand</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it">cristianlecca.it</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="https://cristianlecca.it/quiz/">Quiz del Coraggio</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/login/">Accedi</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-5">Legale</h4>
+      <ul class="space-y-3 text-sm">
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy Policy</a></li>
+        <li><a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="max-w-6xl mx-auto mt-12 pt-8 border-t border-outline-variant/25 flex flex-col md:flex-row items-center justify-between gap-3">
+    <a href="/" class="flex items-center gap-2 opacity-50 hover:opacity-80 transition-opacity">
+      <img src="/assets/logoIpnoApp.png" alt="" class="h-5 w-auto">
+    </a>
+    <span class="text-on-surface-variant text-xs text-center">
+      &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
+    </span>
+  </div>
+</footer>
+
+<script>
+  // Auth-aware nav
+  const PB_URL = 'https://api.ipnosiapplicata.it';
+  const pb = new PocketBase(PB_URL);
+  if (pb.authStore.isValid) {
+    const area = document.getElementById('nav-auth-area');
+    if (area) {
+      area.innerHTML = `<a href="/dashboard/" class="border border-primary/40 text-primary px-5 py-2 rounded-full font-semibold text-sm transition-all hover:bg-primary/10 flex items-center gap-1.5"><span class="material-symbols-outlined" style="font-size:16px">person</span>Area personale</a>`;
+    }
+  }
+  // Menu mobile
+  const btn = document.getElementById('hamburger-btn');
+  const menu = document.getElementById('mobile-menu');
+  const icon = document.getElementById('hamburger-icon');
+  btn.addEventListener('click', () => {
+    const isOpen = menu.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
+    icon.textContent = isOpen ? 'close' : 'menu';
+  });
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      icon.textContent = 'menu';
+    });
+  });
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
