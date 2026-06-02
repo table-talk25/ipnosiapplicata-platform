@@ -257,7 +257,7 @@
                   </span>
                 </div>
                 <p class="text-on-surface-variant text-xs leading-relaxed">
-                  Gli esercizi pratici del tuo percorso saranno disponibili qui a breve. 
+                  Gli esercizi pratici del tuo percorso saranno disponibili qui a breve.
                   Riceverai una notifica via email non appena il workbook sarà pronto.
                 </p>
               </div>
@@ -334,7 +334,7 @@
         testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema è che quella visione diventa una prigione: finché le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perché ogni volta che si avvicina, sposti l\'asticella un po\' più in là.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione — non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
         citazione: 'La perfezione è la forma più sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
         audio_descrizione: '',
-        audio_ipnotico: ''
+        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Perfezionista%20Bloccato%22.mp3'
       },
       'B': {
         title: 'Il Guardiano del Consenso',
@@ -342,7 +342,7 @@
         testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perché senti il disagio altrui come se fosse tuo. Questo non è un difetto — è una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni più importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E così aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non è una catastrofe — e che la tua voce ha valore anche quando non è accolta da tutti.</p>',
         citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
         audio_descrizione: '',
-        audio_ipnotico: ''
+        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Guardiano%20del%20Consenso%22.mp3'
       },
       'C': {
         title: 'Il Critico Instancabile',
@@ -350,7 +350,7 @@
         testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante — e quel dialogo è spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo è altissimo.</p><p>La voce interiore critica non ti rende più bravo — ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacità proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo costruttivo: a valutare senza condannare, a correggere senza punire, a essere preciso senza essere spietato con te stesso.</p>',
         citazione: 'La mente critica è uno strumento potente. Usala per costruire, non per demolire.',
         audio_descrizione: '',
-        audio_ipnotico: ''
+        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Critico%20Instancabile%22.mp3'
       },
       'D': {
         title: "L'Esploratore Esitante",
@@ -358,7 +358,7 @@
         testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
         citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
         audio_descrizione: '',
-        audio_ipnotico: ''
+        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L\'Esploratore%20Esitante%22.mp3'
       }
     };
 
@@ -420,7 +420,6 @@
             }
           } catch(e) {
             if (e.status === 404) {
-              // Nessun quiz completato — stato vuoto, non errore
               this.profile = null;
             } else {
               console.warn('[quiz_responses] errore:', e.message);
