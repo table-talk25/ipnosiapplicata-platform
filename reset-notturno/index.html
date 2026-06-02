@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link rel="icon" type="image/png" href="/assets/favicon%201.png">
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
   <title>Reset Notturno — 7 Giorni di Autostima Applicata | IpnosiApplicata</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -41,8 +41,6 @@
     .glass-card:hover{border-color:rgba(73,199,165,0.3);background:rgba(73,199,165,0.05);}
     .gradient-text{background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
-    .nav-logo{filter:brightness(2) drop-shadow(0 0 8px rgba(73,199,165,0.25));transition:filter 300ms ease;}
-    .nav-logo:hover{filter:brightness(2.4) drop-shadow(0 0 10px rgba(73,199,165,0.40));}
     .reveal{opacity:0;transform:translateY(20px);transition:opacity 600ms ease,transform 600ms ease;}
     .reveal.visible{opacity:1;transform:translateY(0);}
     #mobile-menu{display:none;flex-direction:column;gap:0;background:#101416;border-top:1px solid rgba(255,255,255,0.08);padding:16px 24px 24px;}
@@ -60,7 +58,8 @@
   <nav class="fixed top-0 w-full z-50 bg-[#101416]/80 backdrop-blur-xl border-b border-[#3d4944]/20 shadow-sm">
     <div class="flex justify-between items-center px-6 py-4 max-w-6xl mx-auto">
       <a class="flex items-center gap-3" href="/">
-        <img src="/assets/Logo Lungo.png" alt="IpnosiApplicata" class="h-8 md:h-9 w-auto nav-logo" loading="lazy"/>
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto" loading="lazy"/>
+        <span class="font-bold" style="font-size:18px;background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
       </a>
       <div class="hidden md:flex gap-8 items-center">
         <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm" href="/">Home</a>
@@ -81,7 +80,6 @@
 
   <main class="mt-20">
 
-    <!-- HERO -->
     <section class="relative py-24 md:py-36 px-6 text-center overflow-hidden">
       <div class="hero-glow"></div>
       <div class="max-w-3xl mx-auto relative reveal">
@@ -107,7 +105,6 @@
       </div>
     </section>
 
-    <!-- IL PONTE MENTE-AZIONE -->
     <section class="py-16 px-6">
       <div class="max-w-4xl mx-auto">
         <div class="glass-card rounded-2xl p-8 md:p-12 reveal">
@@ -118,10 +115,7 @@
             <div>
               <p class="text-[#49C7A5] font-bold text-xs uppercase tracking-widest mb-3">Il Ponte Mente-Azione</p>
               <h2 class="text-2xl md:text-3xl font-bold text-[#F5F7FA] mb-4" style="font-family:'Manrope',sans-serif;">Come funziona il Reset Notturno</h2>
-              <p class="text-[#bccac3] leading-relaxed mb-6">
-                L'Ipnosi Applicata lavora <strong class="text-[#F5F7FA]">di notte</strong>, ristrutturando le tue radici profonde mentre dormi.
-                Il tuo lavoro di mattina è semplice: <span class="text-[#49C7A5] font-semibold">notare l'evidenza del cambiamento</span>.
-              </p>
+              <p class="text-[#bccac3] leading-relaxed mb-6">L'Ipnosi Applicata lavora <strong class="text-[#F5F7FA]">di notte</strong>, ristrutturando le tue radici profonde mentre dormi. Il tuo lavoro di mattina è semplice: <span class="text-[#49C7A5] font-semibold">notare l'evidenza del cambiamento</span>.</p>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-[#1d2022]/60 rounded-xl p-4 border border-[#3d4944]/40">
                   <span class="material-symbols-outlined text-[#49C7A5] mb-2 block">bedtime</span>
@@ -145,20 +139,15 @@
       </div>
     </section>
 
-    <!-- MENO MALE -->
     <section class="py-8 px-6">
       <div class="max-w-4xl mx-auto reveal">
         <div class="text-center bg-gradient-to-r from-[#49C7A5]/8 via-transparent to-[#3A63FF]/8 border border-[#49C7A5]/15 rounded-2xl p-10">
           <p class="text-5xl font-extrabold text-[#49C7A5] mb-4" style="font-family:'Manrope',sans-serif;">MENO MALE!</p>
-          <p class="text-[#bccac3] text-lg max-w-xl mx-auto leading-relaxed">
-            Quando senti resistenza, ansia o dubbio — non combatterli. Dì <strong class="text-[#F5F7FA]">"MENO MALE!"</strong>.
-            Hai intercettato un vecchio schema. Quella è l'esatta informazione che ci serve per consolidare la tua nuova identità.
-          </p>
+          <p class="text-[#bccac3] text-lg max-w-xl mx-auto leading-relaxed">Quando senti resistenza, ansia o dubbio — non combatterli. Dì <strong class="text-[#F5F7FA]">"MENO MALE!"</strong>. Hai intercettato un vecchio schema. Quella è l'esatta informazione che ci serve per consolidare la tua nuova identità.</p>
         </div>
       </div>
     </section>
 
-    <!-- I 7 GIORNI -->
     <section class="py-16 px-6">
       <div class="max-w-4xl mx-auto">
         <div class="text-center mb-12 reveal">
@@ -166,81 +155,17 @@
           <h2 class="text-3xl md:text-4xl font-bold text-[#F5F7FA]" style="font-family:'Manrope',sans-serif;">I 7 Giorni del Reset</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 reveal">
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">1</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 1</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Rilascio e Ricalibrazione</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il cambiamento è iniziato nel momento in cui hai abbassato l'interruttore della mente critica.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">2</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 2</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Accettazione e Terraferma</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">3</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 3</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">L'Archivio Potenziante</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il tuo valore non è un evento isolato, ma una verità da riscoprire.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">4</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 4</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Pulizia Emozionale Rapida</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;MENO MALE! Ogni emozione che scorre è informazione completata.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">5</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 5</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Il Permesso di Essere</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;La leggerezza è la prova che ti sei dato il permesso di essere autentico.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">6</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 6</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">La Proiezione del Sé Futuro</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.&rdquo;</p>
-            </div>
-          </div>
-          <div class="day-pill flex items-start gap-4 p-5 md:col-span-2">
-            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#C9A45C]/10 flex items-center justify-center">
-              <span class="font-extrabold text-[#C9A45C] text-sm" style="font-family:'Manrope',sans-serif;">7</span>
-            </div>
-            <div>
-              <p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 7</p>
-              <p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Ancora Finale e Consolidamento</p>
-              <p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.&rdquo;</p>
-            </div>
-          </div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">1</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 1</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Rilascio e Ricalibrazione</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il cambiamento è iniziato nel momento in cui hai abbassato l'interruttore della mente critica.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">2</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 2</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Accettazione e Terraferma</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">3</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 3</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">L'Archivio Potenziante</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il tuo valore non è un evento isolato, ma una verità da riscoprire.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">4</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 4</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Pulizia Emozionale Rapida</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;MENO MALE! Ogni emozione che scorre è informazione completata.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">5</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 5</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Il Permesso di Essere</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;La leggerezza è la prova che ti sei dato il permesso di essere autentico.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#49C7A5]/10 flex items-center justify-center"><span class="font-extrabold text-[#49C7A5] text-sm" style="font-family:'Manrope',sans-serif;">6</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 6</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">La Proiezione del Sé Futuro</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.&rdquo;</p></div></div>
+          <div class="day-pill flex items-start gap-4 p-5 md:col-span-2"><div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#C9A45C]/10 flex items-center justify-center"><span class="font-extrabold text-[#C9A45C] text-sm" style="font-family:'Manrope',sans-serif;">7</span></div><div><p class="text-[#bccac3] text-xs font-semibold uppercase tracking-wider mb-0.5">Giorno 7</p><p class="font-bold text-[#F5F7FA] text-sm mb-1" style="font-family:'Manrope',sans-serif;">Ancora Finale e Consolidamento</p><p class="text-[#bccac3] text-xs leading-relaxed italic">&ldquo;Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.&rdquo;</p></div></div>
         </div>
       </div>
     </section>
 
-    <!-- SICUREZZA -->
     <section class="py-8 px-6">
       <div class="max-w-4xl mx-auto reveal">
         <div class="security-box flex items-start gap-4">
@@ -253,13 +178,11 @@
       </div>
     </section>
 
-    <!-- CTA FINALE -->
     <section class="py-20 px-6 text-center reveal">
       <div class="max-w-2xl mx-auto">
         <h2 class="text-3xl md:text-4xl font-extrabold text-[#F5F7FA] mb-4" style="font-family:'Manrope',sans-serif;">Pronto a iniziare<br/>il tuo Reset?</h2>
         <p class="text-[#bccac3] text-lg mb-8">7 notti. 7 audio. 7 mattine di evidenza.<br/>Il cambiamento è Facile, Semplice, Rapido.</p>
-        <a href="/reset-notturno/dashboard.html"
-           class="inline-flex items-center gap-3 bg-[#49C7A5] hover:bg-[#49C7A5]/90 text-[#101416] px-12 py-5 rounded-full font-extrabold text-lg transition-all active:scale-95 shadow-xl shadow-[#49C7A5]/20">
+        <a href="/reset-notturno/dashboard.html" class="inline-flex items-center gap-3 bg-[#49C7A5] hover:bg-[#49C7A5]/90 text-[#101416] px-12 py-5 rounded-full font-extrabold text-lg transition-all active:scale-95 shadow-xl shadow-[#49C7A5]/20">
           <span class="material-symbols-outlined">nights_stay</span>
           Inizia il Reset Notturno
         </a>
@@ -271,7 +194,10 @@
   <footer class="bg-[#0b0f11] w-full py-16 px-6 border-t border-[#3d4944]/30">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto mb-12">
       <div class="space-y-4">
-        <img src="/assets/Logo Lungo.png" alt="IpnosiApplicata" class="h-7 w-auto nav-logo" loading="lazy"/>
+        <a href="/" class="flex items-center gap-2">
+          <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-7 w-auto" loading="lazy"/>
+          <span class="font-bold" style="font-size:16px;background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+        </a>
         <p class="text-[#bccac3] text-sm leading-relaxed">Il Metodo IpnosiApplicata per la trasformazione mentale.</p>
       </div>
       <div>
@@ -297,8 +223,11 @@
         </ul>
       </div>
     </div>
-    <div class="max-w-6xl mx-auto pt-8 border-t border-[#3d4944]/30 text-center text-[#bccac3] text-sm font-semibold">
-      &copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018
+    <div class="max-w-6xl mx-auto pt-8 border-t border-[#3d4944]/30 flex flex-col md:flex-row items-center justify-between gap-3">
+      <a href="/" class="flex items-center gap-2 opacity-50 hover:opacity-80 transition-opacity">
+        <img src="/assets/logoIpnoApp.png" alt="" class="h-5 w-auto"/>
+      </a>
+      <span class="text-[#bccac3] text-xs text-center font-semibold">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
     </div>
   </footer>
 
@@ -306,14 +235,8 @@
     const btn = document.getElementById('hamburger-btn');
     const menu = document.getElementById('mobile-menu');
     const icon = document.getElementById('hamburger-icon');
-    if(btn) btn.addEventListener('click', () => {
-      const isOpen = menu.classList.toggle('open');
-      btn.setAttribute('aria-expanded', isOpen);
-      icon.textContent = isOpen ? 'close' : 'menu';
-    });
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
-    }, { threshold: 0.08 });
+    if(btn) btn.addEventListener('click', () => { const isOpen = menu.classList.toggle('open'); btn.setAttribute('aria-expanded', isOpen); icon.textContent = isOpen ? 'close' : 'menu'; });
+    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.08 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>

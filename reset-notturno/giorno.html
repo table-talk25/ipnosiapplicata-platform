@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <link rel="icon" type="image/png" href="/assets/favicon%201.png">
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
   <title>Giorno — Reset Notturno | IpnosiApplicata</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
@@ -39,17 +39,14 @@
   <style>
     body{background-color:#101416;color:#F5F7FA;overflow-x:hidden;font-family:'Inter',sans-serif;}
     .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}
-    .nav-logo{filter:brightness(2) drop-shadow(0 0 8px rgba(73,199,165,0.25));transition:filter 300ms ease;}
     .reveal{opacity:0;transform:translateY(20px);transition:opacity 600ms ease,transform 600ms ease;}
     .reveal.visible{opacity:1;transform:translateY(0);}
-    /* Audio player */
     .audio-player{background:linear-gradient(135deg,rgba(73,199,165,0.08),rgba(58,99,255,0.05));border:1px solid rgba(73,199,165,0.2);border-radius:20px;padding:28px 32px;}
     .audio-progress-track{background:rgba(61,73,68,0.4);border-radius:100px;height:6px;cursor:pointer;position:relative;}
     .audio-progress-fill{background:linear-gradient(90deg,#49C7A5,#3A63FF);border-radius:100px;height:6px;transition:width 0.1s linear;pointer-events:none;}
     .play-btn{width:56px;height:56px;border-radius:50%;background:#49C7A5;color:#101416;display:flex;align-items:center;justify-content:center;transition:all 0.2s ease;flex-shrink:0;border:none;cursor:pointer;}
     .play-btn:hover{background:rgba(73,199,165,0.85);transform:scale(1.05);}
     .play-btn:active{transform:scale(0.96);}
-    /* Diario */
     .prompt-card{background:rgba(29,32,34,0.7);border:1px solid rgba(61,73,68,0.4);border-radius:16px;overflow:hidden;transition:border-color 0.2s ease;}
     .prompt-card:focus-within{border-color:rgba(73,199,165,0.4);}
     .prompt-header{padding:18px 20px 14px;border-bottom:1px solid rgba(61,73,68,0.3);}
@@ -60,7 +57,7 @@
     .sub-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#bccac3;margin-bottom:8px;}
     .tappa-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(61,73,68,0.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.3s ease;}
     .tappa-check.done{background:#49C7A5;border-color:#49C7A5;}
-    .day-nav-pill{background:rgba(29,32,34,0.8);border:1px solid rgba(61,73,68,0.4);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.2s ease;text-decoration:none;}
+    .day-nav-pill{background:rgba(29,32,34,0.8);border:1px solid rgba(61,73,68,0.4);border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.2s ease;text-decoration:none;color:#bccac3;}
     .day-nav-pill:hover{border-color:rgba(73,199,165,0.4);color:#49C7A5;}
     .complete-btn{background:#49C7A5;color:#101416;border:none;cursor:pointer;border-radius:14px;padding:16px 32px;font-family:'Manrope',sans-serif;font-weight:800;font-size:16px;display:inline-flex;align-items:center;gap:10px;transition:all 0.2s ease;}
     .complete-btn:hover{background:rgba(73,199,165,0.88);transform:translateY(-1px);}
@@ -72,12 +69,12 @@
 
 <body x-data="giornoApp()" x-init="init()">
 
-  <!-- HEADER -->
   <nav class="fixed top-0 w-full z-50 bg-[#101416]/92 backdrop-blur-xl border-b border-[#3d4944]/40">
     <div class="flex justify-between items-center px-6 py-4 max-w-3xl mx-auto">
       <div class="flex items-center gap-3">
         <a href="/" class="flex items-center gap-2">
-          <img src="/assets/Logo Lungo.png" alt="IpnosiApplicata" class="h-8 w-auto nav-logo" loading="lazy"/>
+          <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto" loading="lazy"/>
+          <span class="font-bold" style="font-size:15px;background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
         </a>
         <span class="text-[#3d4944] text-xs">/</span>
         <a href="/reset-notturno/dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm">Reset Notturno</a>
@@ -93,20 +90,17 @@
 
   <main class="pt-24 pb-24 px-4 md:px-6 max-w-3xl mx-auto">
 
-    <!-- INTESTAZIONE GIORNO -->
     <div class="mb-8 reveal">
       <p class="text-[#bccac3] font-bold text-xs uppercase tracking-widest mb-2" x-text="'Reset Notturno — Giorno ' + day.num"></p>
       <h1 class="font-extrabold text-3xl md:text-4xl text-[#F5F7FA] mb-3" style="font-family:'Manrope',sans-serif;" x-text="day.title"></h1>
       <blockquote class="border-l-2 border-[#49C7A5] pl-4 text-[#bccac3] italic text-base leading-relaxed" x-text="'«' + day.quote + '»'"></blockquote>
     </div>
 
-    <!-- SICUREZZA -->
     <div class="security-box flex items-start gap-3 mb-8 reveal">
       <span class="material-symbols-outlined text-[#C9A45C] flex-shrink-0 text-lg mt-0.5">warning</span>
       <p class="text-[#bccac3] text-xs leading-relaxed"><strong class="text-[#F5F7FA]">Sicurezza:</strong> ascolta in un luogo sicuro. Non usare durante la guida. Questo programma non sostituisce terapie mediche.</p>
     </div>
 
-    <!-- PLAYER AUDIO -->
     <section class="mb-10 reveal">
       <div class="flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-[#49C7A5]">bedtime</span>
@@ -115,38 +109,27 @@
       <div class="audio-player">
         <div class="flex items-center gap-5 mb-5">
           <button class="play-btn" @click="togglePlay()" :aria-label="isPlaying ? 'Pausa' : 'Riproduci'">
-            <span class="material-symbols-outlined" style="font-size:26px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24"
-                  x-text="isPlaying ? 'pause' : 'play_arrow'"></span>
+            <span class="material-symbols-outlined" style="font-size:26px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24" x-text="isPlaying ? 'pause' : 'play_arrow'"></span>
           </button>
           <div class="flex-1 min-w-0">
             <p class="font-bold text-[#F5F7FA] text-sm mb-0.5" style="font-family:'Manrope',sans-serif;" x-text="'Audio Ipnotico — Giorno ' + day.num"></p>
             <p class="text-[#bccac3] text-xs mb-3" x-text="day.title"></p>
-            <div class="audio-progress-track" @click="seekAudio($event)">
-              <div class="audio-progress-fill" :style="'width:' + audioProgress + '%'"></div>
-            </div>
+            <div class="audio-progress-track" @click="seekAudio($event)"><div class="audio-progress-fill" :style="'width:' + audioProgress + '%'"></div></div>
             <div class="flex justify-between mt-1.5 text-xs text-[#bccac3] font-semibold">
-              <span x-text="formatTime(currentTime)"></span>
-              <span x-text="formatTime(duration)"></span>
+              <span x-text="formatTime(currentTime)"></span><span x-text="formatTime(duration)"></span>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-[#bccac3] text-base">volume_up</span>
-          <input type="range" min="0" max="1" step="0.05" x-model="volume" @input="setVolume()"
-                 class="flex-1 accent-[#49C7A5] h-1 cursor-pointer"/>
+          <input type="range" min="0" max="1" step="0.05" x-model="volume" @input="setVolume()" class="flex-1 accent-[#49C7A5] h-1 cursor-pointer"/>
           <span class="text-[#bccac3] text-xs font-semibold" x-text="Math.round(volume*100) + '%'"></span>
         </div>
-        <audio id="audio-player" x-ref="audio"
-               :src="'/assets/audio/reset-notturno/giorno-' + day.num + '.mp3'"
-               @timeupdate="updateProgress()"
-               @loadedmetadata="onMetadata()"
-               @ended="onEnded()"
-               preload="metadata"></audio>
+        <audio id="audio-player" x-ref="audio" :src="'/assets/audio/reset-notturno/giorno-' + day.num + '.mp3'" @timeupdate="updateProgress()" @loadedmetadata="onMetadata()" @ended="onEnded()" preload="metadata"></audio>
         <p class="text-[#3d4944] text-xs mt-4 text-center italic" x-show="!audioLoaded">Audio non ancora disponibile — verrà aggiunto a breve.</p>
       </div>
     </section>
 
-    <!-- DIARIO DEL MATTINO -->
     <section class="mb-10 reveal">
       <div class="flex items-center gap-2 mb-5">
         <span class="material-symbols-outlined text-[#3A63FF]">wb_sunny</span>
@@ -154,202 +137,45 @@
         <span class="text-[#bccac3] text-xs font-semibold">(compila a mente fresca)</span>
       </div>
 
-      <!-- PROMPT 1 -->
       <div class="prompt-card mb-4">
         <div class="prompt-header">
           <div class="flex items-center gap-2 mb-1">
-            <div class="tappa-check" :class="{ done: !!journal.p1 }">
-              <span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p1">check</span>
-            </div>
+            <div class="tappa-check" :class="{ done: !!journal.p1 }"><span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p1">check</span></div>
             <p class="font-bold text-[#49C7A5] text-xs uppercase tracking-widest">1. Il Respiro del Risveglio</p>
           </div>
           <p class="text-[#bccac3] text-sm leading-relaxed ml-7">Con che singola emozione mi sono svegliato? E dove si posa l'energia nel mio corpo in questo momento?</p>
         </div>
-        <div class="prompt-body">
-          <textarea class="prompt-textarea" placeholder="Scrivi qui... anche una sola frase è sufficiente." x-model="journal.p1" rows="3"></textarea>
-        </div>
+        <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Scrivi qui... anche una sola frase è sufficiente." x-model="journal.p1" rows="3"></textarea></div>
       </div>
 
-      <!-- PROMPT 2 -->
       <div class="prompt-card mb-4">
         <div class="prompt-header">
           <div class="flex items-center gap-2 mb-1">
-            <div class="tappa-check" :class="{ done: !!journal.p2a && !!journal.p2b }">
-              <span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p2a && !!journal.p2b">check</span>
-            </div>
+            <div class="tappa-check" :class="{ done: !!journal.p2a && !!journal.p2b }"><span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p2a && !!journal.p2b">check</span></div>
             <p class="font-bold text-[#49C7A5] text-xs uppercase tracking-widest">2. MENO MALE! La Riformulazione Attiva</p>
           </div>
         </div>
-        <div class="sub-prompt">
-          <p class="sub-label">Il Vecchio Seme</p>
-          <p class="text-[#bccac3] text-xs mb-2">Qual è stato il "vecchio pensiero limitante" che ho intercettato in azione oggi?</p>
-          <textarea class="prompt-textarea" placeholder="Il pensiero limitante che ho notato..." x-model="journal.p2a" rows="2"></textarea>
-        </div>
-        <div class="sub-prompt border-t border-[#3d4944]/30">
-          <p class="sub-label" style="color:#49C7A5;">La Nuova Verità</p>
-          <p class="text-[#bccac3] text-xs mb-2">In base alla mia identità, come lo riformulo in un'affermazione di crescita?</p>
-          <textarea class="prompt-textarea" placeholder="La mia nuova verità è..." x-model="journal.p2b" rows="2"></textarea>
-        </div>
+        <div class="sub-prompt"><p class="sub-label">Il Vecchio Seme</p><p class="text-[#bccac3] text-xs mb-2">Qual è stato il "vecchio pensiero limitante" che ho intercettato in azione oggi?</p><textarea class="prompt-textarea" placeholder="Il pensiero limitante che ho notato..." x-model="journal.p2a" rows="2"></textarea></div>
+        <div class="sub-prompt border-t border-[#3d4944]/30"><p class="sub-label" style="color:#49C7A5;">La Nuova Verità</p><p class="text-[#bccac3] text-xs mb-2">In base alla mia identità, come lo riformulo in un'affermazione di crescita?</p><textarea class="prompt-textarea" placeholder="La mia nuova verità è..." x-model="journal.p2b" rows="2"></textarea></div>
       </div>
 
-      <!-- PROMPT 3 -->
       <div class="prompt-card mb-4">
         <div class="prompt-header">
           <div class="flex items-center gap-2 mb-1">
-            <div class="tappa-check" :class="{ done: !!journal.p3 }">
-              <span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p3">check</span>
-            </div>
+            <div class="tappa-check" :class="{ done: !!journal.p3 }"><span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p3">check</span></div>
             <p class="font-bold text-[#49C7A5] text-xs uppercase tracking-widest">3. L'Evidenza del Cambiamento</p>
           </div>
           <p class="text-[#bccac3] text-sm leading-relaxed ml-7">Qual è stata la singola azione, decisione o reazione che ho notato essere inaspettatamente facile o diversa oggi? <em class="text-xs opacity-70">(Cerca una piccola vittoria.)</em></p>
         </div>
-        <div class="prompt-body">
-          <textarea class="prompt-textarea" placeholder="Oggi ho notato che..." x-model="journal.p3" rows="3"></textarea>
-        </div>
+        <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Oggi ho notato che..." x-model="journal.p3" rows="3"></textarea></div>
       </div>
 
-      <!-- PROMPT 4 -->
       <div class="prompt-card mb-6">
         <div class="prompt-header">
           <div class="flex items-center gap-2 mb-1">
-            <div class="tappa-check" :class="{ done: !!journal.p4 }">
-              <span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p4">check</span>
-            </div>
+            <div class="tappa-check" :class="{ done: !!journal.p4 }"><span class="material-symbols-outlined text-[#101416]" style="font-size:13px" x-show="!!journal.p4">check</span></div>
             <p class="font-bold text-[#C9A45C] text-xs uppercase tracking-widest">4. L'Ancoraggio e il Sigillo</p>
           </div>
           <p class="text-[#bccac3] text-sm leading-relaxed ml-7">Se il mio valore avesse una forma o un colore, quale sarebbe e dove si trova ora?</p>
         </div>
-        <div class="prompt-body">
-          <textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="journal.p4" rows="2"></textarea>
-        </div>
-      </div>
-
-      <!-- SALVA -->
-      <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-        <button class="complete-btn" :class="{ saved: isSaved }" @click="saveJournal()" :disabled="isSaved">
-          <span class="material-symbols-outlined" x-text="isSaved ? 'check_circle' : 'save'"></span>
-          <span x-text="isSaved ? 'Giorno completato ✓' : 'Salva il Diario'"></span>
-        </button>
-        <p class="text-[#bccac3] text-xs" x-show="isSaved">Ottimo lavoro! Il tuo progresso è stato salvato.</p>
-      </div>
-    </section>
-
-    <!-- NAVIGAZIONE TRA GIORNI -->
-    <div class="flex items-center justify-between pt-6 border-t border-[#3d4944]/30 reveal">
-      <a :href="day.num > 1 ? 'giorno.html?day=' + (day.num - 1) : 'dashboard.html'"
-         class="day-nav-pill text-[#bccac3] hover:text-[#49C7A5]">
-        <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
-        <span x-text="day.num > 1 ? 'Giorno ' + (day.num - 1) : 'Dashboard'"></span>
-      </a>
-      <a href="dashboard.html" class="text-[#bccac3] hover:text-[#49C7A5] transition-colors font-semibold text-sm flex items-center gap-1">
-        <span class="material-symbols-outlined" style="font-size:16px">grid_view</span>
-        <span class="hidden md:inline">Tutti i giorni</span>
-      </a>
-      <template x-if="day.num < 7 && isSaved">
-        <a :href="'giorno.html?day=' + (day.num + 1)" class="day-nav-pill text-[#49C7A5] border-[#49C7A5]/40">
-          <span x-text="'Giorno ' + (day.num + 1)"></span>
-          <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
-        </a>
-      </template>
-      <template x-if="day.num < 7 && !isSaved">
-        <span class="day-nav-pill text-[#3d4944] cursor-not-allowed border-[#3d4944]/20">
-          Giorno <span x-text="day.num + 1"></span>
-          <span class="material-symbols-outlined" style="font-size:16px">lock</span>
-        </span>
-      </template>
-      <template x-if="day.num === 7 && isSaved">
-        <a href="dashboard.html" class="day-nav-pill text-[#C9A45C] border-[#C9A45C]/40">
-          <span>Completa il Reset</span>
-          <span class="material-symbols-outlined" style="font-size:16px">workspace_premium</span>
-        </a>
-      </template>
-    </div>
-
-  </main>
-
-  <footer class="bg-[#0b0f11] w-full py-8 px-6 border-t border-[#3d4944]/30">
-    <div class="max-w-3xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
-      <span class="text-sm font-semibold text-[#bccac3]">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
-      <div class="flex gap-6 text-sm font-semibold">
-        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/privacy/">Privacy</a>
-        <a class="text-[#bccac3] hover:text-[#49C7A5] transition-colors" href="/cookie/">Cookie</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const DAYS_DATA = [
-      {num:1,title:'Rilascio e Ricalibrazione',quote:'Il cambiamento è iniziato nel momento in cui hai abbassato l\'interruttore della mente critica.'},
-      {num:2,title:'Accettazione e Terraferma',quote:'Non devi più scappare da te stesso. La tua casa è qui, nelle tue radici.'},
-      {num:3,title:'L\'Archivio Potenziante',quote:'Il tuo valore non è un evento isolato, ma una verità da riscoprire.'},
-      {num:4,title:'Pulizia Emozionale Rapida',quote:'MENO MALE! Ogni emozione che scorre è informazione completata.'},
-      {num:5,title:'Il Permesso di Essere',quote:'La leggerezza è la prova che ti sei dato il permesso di essere autentico.'},
-      {num:6,title:'La Proiezione del Sé Futuro',quote:'Non dormi come la persona di ieri, ma come la persona che sarai tra sei mesi.'},
-      {num:7,title:'Ancora Finale e Consolidamento',quote:'Il Sigillo è posto. Questo cambiamento è tuo: facile, semplice, rapido, permanente.'}
-    ];
-    function giornoApp() {
-      return {
-        day: {},
-        journal: {p1:'',p2a:'',p2b:'',p3:'',p4:''},
-        isPlaying: false, currentTime: 0, duration: 0, volume: 0.8,
-        audioProgress: 0, audioLoaded: false, isSaved: false,
-        init() {
-          const params = new URLSearchParams(window.location.search);
-          const dayNum = parseInt(params.get('day')) || 1;
-          this.day = DAYS_DATA.find(d => d.num === dayNum) || DAYS_DATA[0];
-          document.title = 'Giorno ' + this.day.num + ' — ' + this.day.title + ' | IpnosiApplicata';
-          const saved = localStorage.getItem('rn_journal_day_' + this.day.num);
-          if (saved) { try { this.journal = JSON.parse(saved); this.isSaved = true; } catch(e) {} }
-          this.$nextTick(() => {
-            const audio = this.$refs.audio;
-            if (audio) {
-              audio.volume = this.volume;
-              audio.addEventListener('canplay', () => { this.audioLoaded = true; });
-              audio.addEventListener('error', () => { this.audioLoaded = false; });
-            }
-          });
-          setTimeout(() => {
-            const obs = new IntersectionObserver(entries => {
-              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-            }, {threshold: 0.08});
-            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-          }, 100);
-        },
-        togglePlay() {
-          const audio = this.$refs.audio;
-          if (!audio || !this.audioLoaded) return;
-          if (this.isPlaying) { audio.pause(); this.isPlaying = false; }
-          else { audio.play().then(() => { this.isPlaying = true; }).catch(() => {}); }
-        },
-        updateProgress() {
-          const audio = this.$refs.audio;
-          if (!audio) return;
-          this.currentTime = audio.currentTime;
-          this.audioProgress = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-        },
-        onMetadata() { const a = this.$refs.audio; if (a) { this.duration = a.duration; this.audioLoaded = true; } },
-        onEnded() { this.isPlaying = false; this.audioProgress = 100; },
-        seekAudio(event) {
-          const audio = this.$refs.audio;
-          if (!audio || !audio.duration) return;
-          const rect = event.currentTarget.getBoundingClientRect();
-          audio.currentTime = ((event.clientX - rect.left) / rect.width) * audio.duration;
-        },
-        setVolume() { const a = this.$refs.audio; if (a) a.volume = this.volume; },
-        formatTime(secs) {
-          if (!secs || isNaN(secs)) return '0:00';
-          return Math.floor(secs/60) + ':' + (Math.floor(secs%60)<10?'0':'') + Math.floor(secs%60);
-        },
-        saveJournal() {
-          if (this.isSaved) return;
-          // TODO: POST /api/collections/journal/records su PocketBase
-          localStorage.setItem('rn_journal_day_' + this.day.num, JSON.stringify(this.journal));
-          const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-          if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
-          this.isSaved = true;
-        }
-      };
-    }
-  </script>
-</body>
-</html>
+        <div class="prompt-body"><textarea class="prompt-textarea" placeholder="Il mio valore oggi ha la forma di..." x-model="jour
