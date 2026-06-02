@@ -275,7 +275,6 @@
     function dashboard() {
       return {
         days: [],
-        completedSteps: [],
 
         get completedCount() { return this.days.filter(d => d.status === 'completed').length; },
         get activeDay() { return this.days.find(d => d.status === 'active') || null; },
@@ -293,11 +292,11 @@
 
           const uid = pb.authStore.model.id;
 
-          // 2. Verifica acquisto
+          // 2. Verifica acquisto — richiede status = completed
           let hasPurchased = false;
           try {
-            const purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: `user="${uid}" && product="${PRODUCT_ID}"`,
+            const purchasesRes = await pb.collection('purchases').getList(1, 10, {
+              filter: `user="${uid}" && product="${PRODUCT_ID}" && status="completed"`,
               '$autoCancel': false
             });
             hasPurchased = purchasesRes.totalItems > 0;
@@ -317,7 +316,6 @@
               `user="${uid}" && product_id="${PRODUCT_ID}"`
             );
             completedSteps = prog.completed_steps || [];
-            // Sincronizza localStorage come cache
             const maxStep = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
             localStorage.setItem('rn_completed', maxStep);
           } catch(e) {
@@ -327,7 +325,7 @@
           }
 
           // 4. Costruisce stato giorni
-          this.days = DAYS_DATA.map((d, i) => {
+          this.days = DAYS_DATA.map((d) => {
             const isDone = completedSteps.includes(d.num);
             const maxDone = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
             const isActive = !isDone && d.num === maxDone + 1;
