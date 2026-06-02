@@ -360,7 +360,7 @@
         get greeting() {
           var h = new Date().getHours();
           if (h < 12) return 'Buongiorno. Come ti sei svegliato oggi?';
-          if (h < 18) return 'Buon pomeriggio. Il tuo percorso è in corso.';
+          if (h < 18) return 'Buon pomeriggio. Il tuo percorso e in corso.';
           return 'Buonasera. Un buon momento per l\'induzione di stasera.';
         },
 
@@ -403,8 +403,7 @@
           var activePurchases = [];
           try {
             var purchasesRes = await pb.collection('purchases').getList(1, 50, {
-              filter: filterUser,
-              sort: '-created'
+              filter: filterUser
             });
             if (purchasesRes && purchasesRes.items) {
               activePurchases = purchasesRes.items
@@ -431,20 +430,20 @@
           }
 
           try {
-            var journeyRes = await pb.collection('journey').getList(1, 20, {
-              filter: filterUser,
-              sort: '-created'
+            var journeyRes = await pb.collection('journey').getList(1, 50, {
+              filter: filterUser
             });
             if (journeyRes && journeyRes.items) {
-              this.journey = journeyRes.items.map(function(j) {
+              var items = journeyRes.items.slice();
+              this.journey = items.map(function(j) {
                 return Object.assign({}, j, { dateFormatted: timeAgo(j.created) });
               });
             }
           } catch(e) {
+            console.warn('[journey] errore:', e.message);
             this.journey = [];
           }
 
-          var self = this;
           this.corsi = CATALOG.map(function(c) {
             var purchased = activePurchases.indexOf(c.id) !== -1;
             var prog = progressMap[c.id];
