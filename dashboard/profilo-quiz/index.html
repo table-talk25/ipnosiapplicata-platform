@@ -67,6 +67,8 @@
     .profile-hero { background: linear-gradient(135deg, rgba(73,199,165,0.08) 0%, rgba(58,99,255,0.06) 100%); border: 1px solid rgba(73,199,165,0.15); border-radius: 20px; }
     .workbook-placeholder { background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.2); border-radius: 16px; }
     blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
+    .nav-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(73,199,165,0.35); flex-shrink:0; }
+    .nav-avatar-placeholder { width:36px; height:36px; border-radius:50%; background:rgba(73,199,165,0.15); border:1.5px solid rgba(73,199,165,0.25); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   </style>
 </head>
 
@@ -88,9 +90,15 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
-            <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;" x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
-          </div>
+          <template x-if="avatarUrl">
+            <img :src="avatarUrl" alt="Avatar" class="nav-avatar" width="36" height="36" loading="lazy">
+          </template>
+          <template x-if="!avatarUrl">
+            <div class="nav-avatar-placeholder">
+              <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
+                    x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
+            </div>
+          </template>
           <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
           <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">expand_more</span>
         </div>
@@ -310,6 +318,11 @@
       }
     };
 
+    function buildAvatarUrl(user) {
+      if (!user || !user.avatar || !user.id) return null;
+      return PB_URL + '/api/files/_pb_users_auth_/' + user.id + '/' + user.avatar + '?thumb=72x72';
+    }
+
     function hideOverlay() {
       var el = document.getElementById('loading-overlay');
       if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
@@ -320,6 +333,7 @@
         _loaded: false,
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
+        avatarUrl: null,
         profile: null, profileLetter: '',
 
         async init() {
@@ -333,6 +347,7 @@
             console.warn('authRefresh non critico:', e.message);
           }
           this.user = pb.authStore.model;
+          this.avatarUrl = buildAvatarUrl(this.user);
           await this.loadProfile();
           this.loading = false;
           hideOverlay();
