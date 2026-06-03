@@ -102,6 +102,8 @@
     .danger-zone { background:rgba(255,180,171,0.04); border:1px solid rgba(255,180,171,0.15); border-radius:16px; }
     .modal-backdrop { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px; }
     .modal-box { background:#1d2022; border:1px solid rgba(61,73,68,0.5); border-radius:20px; padding:28px; max-width:380px; width:100%; }
+
+    #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
   </style>
 </head>
 
@@ -126,8 +128,9 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
-            <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
+          <!-- Avatar nav: foto se disponibile, altrimenti iniziali -->
+          <div id="nav-avatar-wrap" class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <span id="nav-avatar-initials" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
                   x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
           </div>
           <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
@@ -183,9 +186,7 @@
       <div class="glass-card rounded-2xl p-6 mb-6 reveal">
         <h2 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Foto profilo</h2>
         <div class="flex items-center gap-5">
-          <div class="avatar-wrap" id="avatar-wrap">
-            <!-- popolato da renderAvatar() -->
-          </div>
+          <div class="avatar-wrap" id="avatar-wrap"></div>
           <div class="flex-1">
             <p class="text-sm text-on-surface-variant mb-3">JPG, PNG o WebP &mdash; max 10 MB. Consigliato 400&times;400 px.</p>
             <div class="flex flex-wrap gap-2">
@@ -352,20 +353,38 @@
     pb.autoCancellation(false);
 
     function buildAvatarUrl(userId, filename) {
-      console.log('[avatar] buildAvatarUrl → userId:', userId, '| filename:', filename);
-      if (!userId || !filename) {
-        console.log('[avatar] buildAvatarUrl → nessun avatar, ritorno null');
-        return null;
+      if (!userId || !filename) return null;
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+    }
+
+    // Aggiorna l'avatar piccolo nel nav in tempo reale
+    function renderNavAvatar(src, initial) {
+      var wrap = document.getElementById('nav-avatar-wrap');
+      if (!wrap) return;
+      var existingImg = wrap.querySelector('img');
+      var existingSpan = wrap.querySelector('span');
+      if (src) {
+        if (!existingImg) {
+          var img = document.createElement('img');
+          img.id = 'nav-avatar-img';
+          img.alt = 'Avatar';
+          img.onerror = function() { renderNavAvatar(null, initial); };
+          if (existingSpan) existingSpan.style.display = 'none';
+          wrap.insertBefore(img, wrap.firstChild);
+          existingImg = img;
+        }
+        existingImg.src = src;
+        existingImg.style.display = 'block';
+        if (existingSpan) existingSpan.style.display = 'none';
+      } else {
+        if (existingImg) existingImg.style.display = 'none';
+        if (existingSpan) { existingSpan.style.display = ''; existingSpan.textContent = initial || 'U'; }
       }
-      var url = PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
-      console.log('[avatar] buildAvatarUrl → URL costruito:', url);
-      return url;
     }
 
     function renderAvatar(src, initial) {
-      console.log('[avatar] renderAvatar → src:', src, '| initial:', initial);
       var wrap = document.getElementById('avatar-wrap');
-      if (!wrap) { console.warn('[avatar] renderAvatar → #avatar-wrap non trovato!'); return; }
+      if (!wrap) return;
       wrap.innerHTML = '';
 
       var overlay = document.createElement('label');
@@ -377,13 +396,7 @@
         var img = document.createElement('img');
         img.alt = 'Avatar';
         img.style.cssText = 'width:80px;height:80px;border-radius:50%;border:2px solid rgba(73,199,165,0.3);object-fit:cover;display:block;';
-        img.onerror = function() {
-          console.error('[avatar] img.onerror → impossibile caricare:', src);
-          renderAvatar(null, initial);
-        };
-        img.onload = function() {
-          console.log('[avatar] img.onload → immagine caricata con successo:', src);
-        };
+        img.onerror = function() { renderAvatar(null, initial); };
         img.src = src;
         wrap.appendChild(img);
       } else {
@@ -391,7 +404,6 @@
         ini.className = 'avatar-initials';
         ini.textContent = initial || 'U';
         wrap.appendChild(ini);
-        console.log('[avatar] renderAvatar → mostro iniziali:', initial || 'U');
       }
       wrap.appendChild(overlay);
 
@@ -433,12 +445,13 @@
           catch(e) { if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; } }
 
           this.user = Object.assign({}, pb.authStore.model);
-          console.log('[avatar] init → user.id:', this.user.id, '| user.avatar:', this.user.avatar);
           this.form.first_name = this.user.first_name || '';
           this.form.last_name  = this.user.last_name  || '';
 
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
-          renderAvatar(buildAvatarUrl(this.user.id, this.user.avatar), initial);
+          var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
+          renderAvatar(avatarUrl, initial);
+          renderNavAvatar(avatarUrl, initial);
 
           hideOverlay();
           this.$nextTick(function() {
@@ -461,7 +474,6 @@
           }
           this.avatarFile = file;
           var blobUrl = URL.createObjectURL(file);
-          console.log('[avatar] onAvatarSelected → preview blob:', blobUrl);
           var initial = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           renderAvatar(blobUrl, initial);
           var btnSave = document.getElementById('btn-save-avatar');
@@ -476,18 +488,15 @@
           try {
             var fd = new FormData();
             fd.append('avatar', this.avatarFile);
-            console.log('[avatar] saveAvatar → invio a PocketBase, user.id:', this.user.id);
             var updated = await pb.collection('users').update(this.user.id, fd);
-            console.log('[avatar] saveAvatar → risposta PocketBase:', JSON.stringify(updated));
-            console.log('[avatar] saveAvatar → updated.id:', updated.id, '| updated.avatar:', updated.avatar);
 
             this.user = Object.assign({}, updated);
             pb.authStore.save(pb.authStore.token, updated);
 
-            var newUrl = buildAvatarUrl(updated.id, updated.avatar);
-            console.log('[avatar] saveAvatar → chiamo renderAvatar con URL:', newUrl);
             var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
+            var newUrl = buildAvatarUrl(updated.id, updated.avatar);
             renderAvatar(newUrl, initial);
+            renderNavAvatar(newUrl, initial);
 
             this.avatarFile = null;
             var inp = document.getElementById('avatar-input');
@@ -512,6 +521,7 @@
             pb.authStore.save(pb.authStore.token, updated);
             var initial = updated.first_name ? updated.first_name[0].toUpperCase() : 'U';
             renderAvatar(null, initial);
+            renderNavAvatar(null, initial);
             showToast('Foto rimossa.', 'success');
           } catch(e) {
             showToast('Errore durante la rimozione.', 'error');
