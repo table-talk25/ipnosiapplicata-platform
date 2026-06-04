@@ -69,7 +69,7 @@
     blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
     #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
 
-    /* ───── TAB BAR stile dossier ───── */
+    /* ───── TAB BAR stile dossier — STICKY ───── */
     .dossier-tabs {
       display: flex;
       align-items: flex-end;
@@ -77,6 +77,14 @@
       padding: 0 0 0 2px;
       border-bottom: 1.5px solid rgba(61,73,68,0.45);
       margin-bottom: 32px;
+
+      /* sticky: rimane visibile durante lo scroll */
+      position: sticky;
+      top: 65px;          /* altezza della nav fissa */
+      z-index: 40;
+      background: #101416;
+      /* padding verticale per non toccare la nav sopra */
+      padding-top: 10px;
     }
     .dossier-tab {
       display: inline-flex;
@@ -243,7 +251,7 @@
             <p class="text-on-surface-variant mt-2 text-sm" x-text="'Profilo ' + profileLetter + ' · Assegnato dal Quiz del Coraggio'"></p>
           </div>
 
-          <!-- ═══ TAB BAR — stile dossier cartaceo ═══ -->
+          <!-- ═══ TAB BAR — stile dossier cartaceo — STICKY ═══ -->
           <div class="dossier-tabs reveal">
             <button @click="activeTab='profilo'"
               class="dossier-tab"
@@ -354,9 +362,9 @@
                 <p class="text-xs font-semibold text-secondary uppercase tracking-wider mb-3">Come usarla</p>
                 <ul class="space-y-2 text-sm text-on-surface-variant">
                   <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Ascolta la sera, nel momento di riposo</li>
-                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Usa le cuffie per massimizzare l\'effetto</li>
-                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Non guidare o usare macchinari durante l\'ascolto</li>
-                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Ripeti l\'ascolto per almeno 7 giorni consecutivi</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Usa le cuffie per massimizzare l'effetto</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Non guidare o usare macchinari durante l'ascolto</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Ripeti l'ascolto per almeno 7 giorni consecutivi</li>
                 </ul>
               </div>
 
@@ -390,7 +398,7 @@
 
             <!-- Intro -->
             <div class="mb-6">
-              <p class="text-on-surface-variant text-sm leading-relaxed">Gli esercizi sono progettati per rafforzare il lavoro dell\'induzione durante il giorno. Falli con costanza per consolidare il cambiamento.</p>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Gli esercizi sono progettati per rafforzare il lavoro dell'induzione durante il giorno. Falli con costanza per consolidare il cambiamento.</p>
             </div>
 
             <!-- Esercizi digitali -->
