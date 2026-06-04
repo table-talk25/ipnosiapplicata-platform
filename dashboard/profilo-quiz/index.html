@@ -342,6 +342,114 @@
               <p class="text-on-surface-variant text-sm leading-relaxed">Questi rituali di trasformazione sono progettati per rafforzare il lavoro dell&rsquo;induzione durante il giorno. Falli con costanza per consolidare il cambiamento.</p>
             </div>
 
+            <!-- ── ESERCIZI PROFILO B (Guardiano del Consenso) ── -->
+            <template x-if="profileLetter === 'B'">
+              <div>
+                <h3 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider" style="font-family:'Manrope',sans-serif;">I tuoi 3 Rituali di Trasformazione</h3>
+                <div class="space-y-3 mb-8" x-data="{ open: null }">
+
+                  <!-- Esercizio 1 -->
+                  <div class="esercizio-card" :class="open === 1 ? 'open' : ''" @click="open = open === 1 ? null : 1" style="cursor:pointer;">
+                    <div class="flex items-start gap-4">
+                      <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined text-tertiary" style="font-size:18px">pause_circle</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-semibold text-tertiary uppercase tracking-wider">Esercizio 1</span>
+                            <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">La Pausa Strategica del &ldquo;Sì&rdquo;</p>
+                          </div>
+                          <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0 transition-transform duration-200" :style="open === 1 ? 'transform:rotate(180deg);font-size:18px' : 'font-size:18px'">expand_more</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs leading-relaxed">Crea uno spazio sacro tra la richiesta e la tua risposta, per consultare la tua &ldquo;ancora interiore&rdquo; prima di parlare.</p>
+                        <div x-show="open === 1" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
+                          <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
+                            <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Ogni volta che qualcuno ti fa una richiesta, invece di rispondere subito, allenati a usare una frase-ponte. Respira e dì con calma: <em>&ldquo;Grazie per aver pensato a me. Fammi controllare un attimo e ti faccio sapere.&rdquo;</em> Questo piccolo spazio ti dà il tempo di chiederti: <em>&ldquo;Lo voglio fare davvero?&rdquo;</em></p>
+                          </div>
+                          <div class="p-4 rounded-xl bg-primary/5 border border-primary/15">
+                            <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Il beneficio profondo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Rompi l&rsquo;automatismo della compiacenza. Ti riprendi il potere della scelta e comunichi — a te e agli altri — che il tuo tempo e la tua energia hanno un valore.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Esercizio 2 -->
+                  <div class="esercizio-card" :class="open === 2 ? 'open' : ''" @click="open = open === 2 ? null : 2" style="cursor:pointer;">
+                    <div class="flex items-start gap-4">
+                      <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined text-tertiary" style="font-size:18px">menu_book</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-semibold text-tertiary uppercase tracking-wider">Esercizio 2</span>
+                            <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">L&rsquo;Inventario dei Desideri Silenziosi</p>
+                          </div>
+                          <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0 transition-transform duration-200" :style="open === 2 ? 'transform:rotate(180deg);font-size:18px' : 'font-size:18px'">expand_more</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs leading-relaxed">Dai voce e validità ai tuoi desideri e preferenze, allenandoti a sentire la tua voce interiore ogni giorno.</p>
+                        <div x-show="open === 2" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
+                          <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
+                            <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Una volta al giorno, per 5 minuti, apri un quaderno e scrivi una lista di piccole cose che <strong>TU</strong> desideri fare (bere un caffè in pace, ascoltare quella canzone, fare una passeggiata). Non devi realizzarle tutte. L&rsquo;obiettivo è semplicemente riallenarti a sentire la tua voce interiore e a dare dignità ai tuoi bisogni.</p>
+                          </div>
+                          <div class="p-4 rounded-xl bg-primary/5 border border-primary/15">
+                            <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Il beneficio profondo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Inizi a riconoscere e a onorare i tuoi bisogni. Questo semplice atto di ascolto interiore è il fondamento dell&rsquo;autostima e ti ricorda che anche tu hai il diritto di desiderare.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Esercizio 3 -->
+                  <div class="esercizio-card" :class="open === 3 ? 'open' : ''" @click="open = open === 3 ? null : 3" style="cursor:pointer;">
+                    <div class="flex items-start gap-4">
+                      <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="material-symbols-outlined text-tertiary" style="font-size:18px">do_not_disturb_on</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-semibold text-tertiary uppercase tracking-wider">Esercizio 3</span>
+                            <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Identifica un &ldquo;No&rdquo; a Basso Rischio</p>
+                          </div>
+                          <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0 transition-transform duration-200" :style="open === 3 ? 'transform:rotate(180deg);font-size:18px' : 'font-size:18px'">expand_more</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs leading-relaxed">Allena il muscolo del &ldquo;no&rdquo; partendo da piccoli pesi, per dimostrare al tuo sistema nervoso che stabilire un confine è un atto sicuro.</p>
+                        <div x-show="open === 3" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
+                          <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
+                            <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Questa settimana, trova un&rsquo;opportunità per dire un &ldquo;no&rdquo; gentile ma fermo a qualcosa di piccolo. Può essere un invito a cui non vuoi andare o una richiesta extra sul lavoro. Usa una formula semplice: <em>&ldquo;Ti ringrazio, ma questa volta non posso.&rdquo;</em> Non aggiungere troppe giustificazioni.</p>
+                          </div>
+                          <div class="p-4 rounded-xl bg-primary/5 border border-primary/15">
+                            <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Il beneficio profondo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Stai dimostrando al tuo sistema nervoso che stabilire un confine è un atto sicuro. Ogni piccolo &ldquo;no&rdquo; costruisce la fiducia necessaria per affermare te stessa/o in situazioni più importanti.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Domanda potente Profilo B -->
+                <div class="domanda-potente mb-8">
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:22px">auto_awesome</span>
+                    <p class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Una Domanda Potente per Te</p>
+                  </div>
+                  <p class="text-on-surface-variant text-sm leading-relaxed mb-5">Prenditi un momento. Respira. Immagina un mondo in cui l&rsquo;approvazione e l&rsquo;affetto di tutte le persone importanti della tua vita fossero garantiti per sempre, a prescindere dalle tue scelte.</p>
+                  <p class="text-on-surface font-semibold text-sm italic">&ldquo;Se l&rsquo;approvazione di tutti fosse garantita, cosa farei di diverso domani?&rdquo;</p>
+                  <p class="text-on-surface-variant text-xs mt-3">Lascia che la risposta emerga senza filtri. Quella risposta è la voce della tua autenticità.</p>
+                </div>
+              </div>
+            </template>
+
             <!-- ── ESERCIZI PROFILO C (Critico Instancabile) ── -->
             <template x-if="profileLetter === 'C'">
               <div>
@@ -437,7 +545,7 @@
 
                 </div>
 
-                <!-- Domanda potente -->
+                <!-- Domanda potente Profilo C -->
                 <div class="domanda-potente mb-8">
                   <div class="flex items-center gap-3 mb-4">
                     <span class="material-symbols-outlined text-tertiary" style="font-size:22px">auto_awesome</span>
@@ -450,8 +558,8 @@
               </div>
             </template>
 
-            <!-- ── ESERCIZI PLACEHOLDER per profili A, B, D ── -->
-            <template x-if="profileLetter !== 'C'">
+            <!-- ── ESERCIZI PLACEHOLDER per profili A, D ── -->
+            <template x-if="profileLetter !== 'B' && profileLetter !== 'C'">
               <div>
                 <h3 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider" style="font-family:'Manrope',sans-serif;">Esercizi del tuo profilo</h3>
                 <div class="space-y-3 mb-8">
@@ -604,101 +712,4 @@
       'A': {
         title: 'Il Perfezionista Bloccato',
         intro: 'Il tuo standard è alto — così alto che spesso ti impedisce di partire. Il perfezionismo non è un pregio: è la paura del giudizio travestita da ambizione.',
-        testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema è che quella visione diventa una prigione: finché le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perché ogni volta che si avvicina, sposti l\'asticella un po\' più in là.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione — non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
-        citazione: 'La perfezione è la forma più sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Perfezionista%20Bloccato%22.mp3',
-        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Perfezionista%20Bloccato%22.mp3',
-        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20IL%20PERFEZIONISTA%20BLOCCATO.pdf'
-      },
-      'B': {
-        title: 'Il Guardiano del Consenso',
-        intro: 'La tua forza è nell\'empatia — ma stai usando quella forza per comprare la pace invece di costruire la tua strada. Il bisogno di approvazione ti tiene immobile.',
-        testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perché senti il disagio altrui come se fosse tuo. Questo non è un difetto — è una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni più importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E così aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non è una catastrofe — e che la tua voce ha valore anche quando non è accolta da tutti.</p>',
-        citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
-        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
-        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20IL%20GUARDIANO%20DEL%20CONSENSO.pdf'
-      },
-      'C': {
-        title: 'Il Critico Instancabile',
-        intro: 'Hai una mente acutissima, capace di vedere ogni falla, ogni rischio, ogni possibilità di fallimento. Il problema è che la usi soprattutto contro te stesso.',
-        testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante — e quel dialogo è spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo è altissimo.</p><p>La voce interiore critica non ti rende più bravo — ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacità proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo costruttivo: a valutare senza condannare, a correggere senza punire, a essere preciso senza essere spietato con te stesso.</p>',
-        citazione: 'La mente critica è uno strumento potente. Usala per costruire, non per demolire.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Critico%20Instancabile%22.mp3',
-        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Critico%20Instancabile%22.mp3',
-        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20CRITICO%20INSTANCABILE.pdf'
-      },
-      'D': {
-        title: "L'Esploratore Esitante",
-        intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio. Non è mancanza di desiderio: è una paura sottile dell\'impegno, della scelta definitiva, di smettere di essere potenziale.',
-        testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
-        citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
-        audio_descrizione: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22L%20'Esploratore%20Esitante%22.mp3",
-        audio_ipnotico:    "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L'Esploratore%20Esitante%22.mp3",
-        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20ESPLORATORE%20ESITANTE.pdf'
-      }
-    };
-
-    function profiloPage() {
-      return {
-        _loaded: false,
-        loading: true, fetchError: false,
-        user: {}, showUserMenu: false,
-        profile: null, profileLetter: '',
-        activeTab: 'profilo',
-
-        async init() {
-          if (this._loaded) return;
-          this._loaded = true;
-          if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
-          try {
-            await pb.collection('users').authRefresh();
-          } catch(e) {
-            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
-            console.warn('authRefresh non critico:', e.message);
-          }
-          this.user = pb.authStore.model || {};
-
-          var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
-          var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
-          renderNavAvatar(avatarUrl, initial);
-
-          await this.loadProfile();
-          this.loading = false;
-          hideOverlay();
-          this.$nextTick(function() {
-            setTimeout(function() {
-              var obs = new IntersectionObserver(function(entries) {
-                entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
-              }, { threshold: 0.06 });
-              document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
-            }, 80);
-          });
-        },
-
-        async loadProfile() {
-          var uid = this.user.id;
-          try {
-            var res = await pb.collection('quiz_responses').getList(1, 50, { filter: "user='" + uid + "'" });
-            if (res && res.items && res.items.length > 0) {
-              var items = res.items.slice().sort(function(a, b) { return new Date(b.created) - new Date(a.created); });
-              var record = items[0];
-              if (record.profile_result) {
-                var letter = record.profile_result.trim().toUpperCase();
-                this.profileLetter = letter;
-                this.profile = PROFILES[letter] || null;
-              }
-            }
-          } catch(e) {
-            console.warn('[quiz_responses] errore:', e.message);
-            this.fetchError = true;
-          }
-        },
-
-        logout: function() { pb.authStore.clear(); window.location.href = '/login/'; }
-      };
-    }
-  </script>
-
-</body>
-</html>
+        tes
