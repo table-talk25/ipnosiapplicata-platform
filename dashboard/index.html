@@ -99,7 +99,6 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <!-- Foto profilo se disponibile, altrimenti iniziale -->
           <template x-if="avatarUrl">
             <img :src="avatarUrl" alt="Avatar" class="nav-avatar" width="36" height="36" loading="lazy">
           </template>
@@ -147,6 +146,9 @@
       <span class="material-symbols-outlined">psychology</span> Profilo Quiz
     </a>
     <div class="border-t border-outline-variant/30 my-3"></div>
+    <a href="/dashboard/impostazioni/" class="sidebar-item">
+      <span class="material-symbols-outlined">manage_accounts</span> Impostazioni
+    </a>
     <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400">
       <span class="material-symbols-outlined">logout</span> Esci
     </button>
@@ -356,9 +358,6 @@
       return 'Step ' + currentStep + ' di ' + totalSteps;
     }
 
-    /* Costruisce l'URL della foto profilo da PocketBase.
-       PocketBase espone i file dei record utenti su:
-       {PB_URL}/api/files/_pb_users_auth_/{recordId}/{filename}?thumb=36x36 */
     function buildAvatarUrl(user) {
       if (!user || !user.avatar || !user.id) return null;
       return PB_URL + '/api/files/_pb_users_auth_/' + user.id + '/' + user.avatar + '?thumb=72x72';
