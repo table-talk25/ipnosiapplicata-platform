@@ -67,8 +67,7 @@
     .profile-hero { background: linear-gradient(135deg, rgba(73,199,165,0.08) 0%, rgba(58,99,255,0.06) 100%); border: 1px solid rgba(73,199,165,0.15); border-radius: 20px; }
     .workbook-placeholder { background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.2); border-radius: 16px; }
     blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
-    .nav-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(73,199,165,0.35); flex-shrink:0; }
-    .nav-avatar-placeholder { width:36px; height:36px; border-radius:50%; background:rgba(73,199,165,0.15); border:1.5px solid rgba(73,199,165,0.25); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
   </style>
 </head>
 
@@ -90,15 +89,11 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <template x-if="avatarUrl">
-            <img :src="avatarUrl" alt="Avatar" class="nav-avatar" width="36" height="36" loading="lazy">
-          </template>
-          <template x-if="!avatarUrl">
-            <div class="nav-avatar-placeholder">
-              <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
-                    x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
-            </div>
-          </template>
+          <!-- Avatar nav: DOM imperativo — foto reale o iniziali -->
+          <div id="nav-avatar-wrap" class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <span id="nav-avatar-initials" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
+                  x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
+          </div>
           <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
           <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">expand_more</span>
         </div>
@@ -284,44 +279,35 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    var PROFILES = {
-      'A': {
-        title: 'Il Perfezionista Bloccato',
-        intro: 'Il tuo standard è alto — così alto che spesso ti impedisce di partire. Il perfezionismo non è un pregio: è la paura del giudizio travestita da ambizione.',
-        testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema è che quella visione diventa una prigione: finché le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perché ogni volta che si avvicina, sposti l\'asticella un po\' più in là.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione — non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
-        citazione: 'La perfezione è la forma più sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Perfezionista%20Bloccato%22.mp3',
-        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Perfezionista%20Bloccato%22.mp3'
-      },
-      'B': {
-        title: 'Il Guardiano del Consenso',
-        intro: 'La tua forza è nell\'empatia — ma stai usando quella forza per comprare la pace invece di costruire la tua strada. Il bisogno di approvazione ti tiene immobile.',
-        testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perché senti il disagio altrui come se fosse tuo. Questo non è un difetto — è una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni più importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E così aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non è una catastrofe — e che la tua voce ha valore anche quando non è accolta da tutti.</p>',
-        citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
-        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Guardiano%20del%20Consenso%22.mp3'
-      },
-      'C': {
-        title: 'Il Critico Instancabile',
-        intro: 'Hai una mente acutissima, capace di vedere ogni falla, ogni rischio, ogni possibilità di fallimento. Il problema è che la usi soprattutto contro te stesso.',
-        testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante — e quel dialogo è spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo è altissimo.</p><p>La voce interiore critica non ti rende più bravo — ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacità proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo costruttivo: a valutare senza condannare, a correggere senza punire, a essere preciso senza essere spietato con te stesso.</p>',
-        citazione: 'La mente critica è uno strumento potente. Usala per costruire, non per demolire.',
-        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Critico%20Instancabile%22.mp3',
-        audio_ipnotico: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Critico%20Instancabile%22.mp3'
-      },
-      'D': {
-        title: "L'Esploratore Esitante",
-        intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio. Non è mancanza di desiderio: è una paura sottile dell\'impegno, della scelta definitiva, di smettere di essere potenziale.',
-        testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
-        citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
-        audio_descrizione: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22L%20'Esploratore%20Esitante%22.mp3",
-        audio_ipnotico: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L'Esploratore%20Esitante%22.mp3"
-      }
-    };
+    // Stessa firma di impostazioni/index.html
+    function buildAvatarUrl(userId, filename) {
+      if (!userId || !filename) return null;
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+    }
 
-    function buildAvatarUrl(user) {
-      if (!user || !user.avatar || !user.id) return null;
-      return PB_URL + '/api/files/_pb_users_auth_/' + user.id + '/' + user.avatar + '?thumb=72x72';
+    // DOM imperativo — identico a impostazioni/index.html
+    function renderNavAvatar(src, initial) {
+      var wrap = document.getElementById('nav-avatar-wrap');
+      if (!wrap) return;
+      var existingImg  = wrap.querySelector('img');
+      var existingSpan = wrap.querySelector('span');
+      if (src) {
+        if (!existingImg) {
+          var img = document.createElement('img');
+          img.id  = 'nav-avatar-img';
+          img.alt = 'Avatar';
+          img.onerror = function() { renderNavAvatar(null, initial); };
+          if (existingSpan) existingSpan.style.display = 'none';
+          wrap.insertBefore(img, wrap.firstChild);
+          existingImg = img;
+        }
+        existingImg.src   = src;
+        existingImg.style.display = 'block';
+        if (existingSpan) existingSpan.style.display = 'none';
+      } else {
+        if (existingImg)  existingImg.style.display  = 'none';
+        if (existingSpan) { existingSpan.style.display = ''; existingSpan.textContent = initial || 'U'; }
+      }
     }
 
     function hideOverlay() {
@@ -329,12 +315,46 @@
       if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
     }
 
+    var PROFILES = {
+      'A': {
+        title: 'Il Perfezionista Bloccato',
+        intro: 'Il tuo standard è alto — così alto che spesso ti impedisce di partire. Il perfezionismo non è un pregio: è la paura del giudizio travestita da ambizione.',
+        testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema è che quella visione diventa una prigione: finché le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perché ogni volta che si avvicina, sposti l\'asticella un po\' più in là.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione — non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
+        citazione: 'La perfezione è la forma più sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Perfezionista%20Bloccato%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Perfezionista%20Bloccato%22.mp3'
+      },
+      'B': {
+        title: 'Il Guardiano del Consenso',
+        intro: 'La tua forza è nell\'empatia — ma stai usando quella forza per comprare la pace invece di costruire la tua strada. Il bisogno di approvazione ti tiene immobile.',
+        testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perché senti il disagio altrui come se fosse tuo. Questo non è un difetto — è una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni più importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E così aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non è una catastrofe — e che la tua voce ha valore anche quando non è accolta da tutti.</p>',
+        citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Guardiano%20del%20Consenso%22.mp3'
+      },
+      'C': {
+        title: 'Il Critico Instancabile',
+        intro: 'Hai una mente acutissima, capace di vedere ogni falla, ogni rischio, ogni possibilità di fallimento. Il problema è che la usi soprattutto contro te stesso.',
+        testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante — e quel dialogo è spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo è altissimo.</p><p>La voce interiore critica non ti rende più bravo — ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacità proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo costruttivo: a valutare senza condannare, a correggere senza punire, a essere preciso senza essere spietato con te stesso.</p>',
+        citazione: 'La mente critica è uno strumento potente. Usala per costruire, non per demolire.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Critico%20Instancabile%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Critico%20Instancabile%22.mp3'
+      },
+      'D': {
+        title: "L'Esploratore Esitante",
+        intro: 'Hai visione, curiosità, energia — ma esiti sempre sul ciglio. Non è mancanza di desiderio: è una paura sottile dell\'impegno, della scelta definitiva, di smettere di essere potenziale.',
+        testo_completo: '<p>Ti interessa tutto. Hai mille idee, mille direzioni possibili. Inizi con entusiasmo e poi rallenti, distrai, sposti l\'attenzione su qualcosa di nuovo. Non è pigrizia — è una difesa sofisticata: se non ti impegni davvero, non puoi davvero fallire.</p><p>C\'è qualcosa di seducente nel restare nel possibile. Finché non scegli, tutte le strade sono ancora aperte. Ma questa libertà infinita diventa una trappola: non costruisci nulla, non arrivi da nessuna parte, e accumuli un senso crescente di potenziale non realizzato.</p><p>Il lavoro ipnotico ti aiuta a fare pace con la scelta — a capire che scegliere una strada non significa perdere le altre, ma significa finalmente iniziare a camminare davvero.</p>',
+        citazione: 'Il potenziale non vissuto pesa più del fallimento. Scegliere è già un atto di coraggio.',
+        audio_descrizione: "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22L%20'Esploratore%20Esitante%22.mp3",
+        audio_ipnotico:    "https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22L'Esploratore%20Esitante%22.mp3"
+      }
+    };
+
     function profiloPage() {
       return {
         _loaded: false,
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
-        avatarUrl: null,
         profile: null, profileLetter: '',
 
         async init() {
@@ -347,8 +367,13 @@
             if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
             console.warn('authRefresh non critico:', e.message);
           }
-          this.user = pb.authStore.model;
-          this.avatarUrl = buildAvatarUrl(this.user);
+          this.user = pb.authStore.model || {};
+
+          // Renderizza avatar nav — DOM imperativo, identico a impostazioni
+          var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
+          var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
+          renderNavAvatar(avatarUrl, initial);
+
           await this.loadProfile();
           this.loading = false;
           hideOverlay();
