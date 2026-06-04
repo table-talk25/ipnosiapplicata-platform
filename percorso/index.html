@@ -77,7 +77,7 @@
     }
     .bottom-nav-item.active { color:#49C7A5; }
 
-    .nav-avatar-placeholder { width:36px; height:36px; border-radius:50%; background:rgba(73,199,165,0.15); border:1.5px solid rgba(73,199,165,0.25); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
 
     .timeline { position:relative; padding-left:40px; }
     .timeline::before {
@@ -145,8 +145,9 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <div class="nav-avatar-placeholder">
-            <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
+          <!-- Avatar nav: DOM imperativo — foto reale o iniziali -->
+          <div id="nav-avatar-wrap" class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <span id="nav-avatar-initials" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
                   x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
           </div>
           <span class="hidden md:block text-sm font-semibold text-on-surface" x-text="user.first_name || 'Il tuo account'"></span>
@@ -300,6 +301,35 @@
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
 
+    function buildAvatarUrl(userId, filename) {
+      if (!userId || !filename) return null;
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+    }
+
+    function renderNavAvatar(src, initial) {
+      var wrap = document.getElementById('nav-avatar-wrap');
+      if (!wrap) return;
+      var existingImg  = wrap.querySelector('img');
+      var existingSpan = wrap.querySelector('span');
+      if (src) {
+        if (!existingImg) {
+          var img = document.createElement('img');
+          img.id  = 'nav-avatar-img';
+          img.alt = 'Avatar';
+          img.onerror = function() { renderNavAvatar(null, initial); };
+          if (existingSpan) existingSpan.style.display = 'none';
+          wrap.insertBefore(img, wrap.firstChild);
+          existingImg = img;
+        }
+        existingImg.src = src;
+        existingImg.style.display = 'block';
+        if (existingSpan) existingSpan.style.display = 'none';
+      } else {
+        if (existingImg)  existingImg.style.display  = 'none';
+        if (existingSpan) { existingSpan.style.display = ''; existingSpan.textContent = initial || 'U'; }
+      }
+    }
+
     function percorsoPage() {
       return {
         user: {},
@@ -351,6 +381,12 @@
         init() {
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
           this.user = pb.authStore.model || {};
+
+          // Renderizza avatar nav — DOM imperativo, identico a impostazioni
+          var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
+          var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
+          renderNavAvatar(avatarUrl, initial);
+
           setTimeout(() => {
             const obs = new IntersectionObserver(entries => {
               entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
