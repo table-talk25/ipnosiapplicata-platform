@@ -68,6 +68,80 @@
     .workbook-placeholder { background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.2); border-radius: 16px; }
     blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
     #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
+
+    /* ───── TAB BAR stile dossier ───── */
+    .dossier-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      padding: 0 0 0 2px;
+      border-bottom: 1.5px solid rgba(61,73,68,0.45);
+      margin-bottom: 32px;
+    }
+    .dossier-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 20px 11px;
+      border-radius: 10px 10px 0 0;
+      border: 1.5px solid transparent;
+      border-bottom: none;
+      font-family: 'Manrope', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #86948e;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: transparent;
+      position: relative;
+      bottom: -1.5px;
+      white-space: nowrap;
+    }
+    .dossier-tab:hover { color: #F5F7FA; background: rgba(61,73,68,0.18); }
+    .dossier-tab.active-profilo {
+      color: #49C7A5;
+      background: rgba(73,199,165,0.07);
+      border-color: rgba(73,199,165,0.3);
+      border-bottom-color: #101416;
+    }
+    .dossier-tab.active-induzione {
+      color: #aab8ff;
+      background: rgba(58,99,255,0.07);
+      border-color: rgba(58,99,255,0.3);
+      border-bottom-color: #101416;
+    }
+    .dossier-tab.active-esercizi {
+      color: #C9A45C;
+      background: rgba(201,164,92,0.07);
+      border-color: rgba(201,164,92,0.3);
+      border-bottom-color: #101416;
+    }
+    .dossier-tab .material-symbols-outlined { font-size: 16px; }
+
+    /* ───── audio player ───── */
+    .audio-card {
+      background: rgba(29,32,34,0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(61,73,68,0.4);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .audio-glow {
+      box-shadow: 0 0 40px -8px rgba(73,199,165,0.15);
+    }
+    .audio-glow-blue {
+      box-shadow: 0 0 40px -8px rgba(58,99,255,0.15);
+    }
+
+    /* ───── esercizi card ───── */
+    .esercizio-card {
+      background: rgba(29,32,34,0.55);
+      border: 1px solid rgba(61,73,68,0.35);
+      border-radius: 16px;
+      padding: 20px 22px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .esercizio-card:hover { border-color: rgba(201,164,92,0.25); background: rgba(201,164,92,0.025); }
   </style>
 </head>
 
@@ -81,6 +155,7 @@
 
 <body x-data="profiloPage()" x-init="init()">
 
+  <!-- NAV -->
   <nav class="dashboard-nav">
     <div class="flex justify-between items-center px-5 py-4 max-w-6xl mx-auto">
       <a href="/dashboard/" class="flex items-center gap-2">
@@ -89,7 +164,6 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <!-- Avatar nav: DOM imperativo — foto reale o iniziali -->
           <div id="nav-avatar-wrap" class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center overflow-hidden flex-shrink-0">
             <span id="nav-avatar-initials" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
                   x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
@@ -117,6 +191,7 @@
     </div>
   </nav>
 
+  <!-- SIDEBAR -->
   <aside class="sidebar hidden lg:block">
     <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
     <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span> Area personale</a>
@@ -131,11 +206,13 @@
   <main class="pt-20 pb-24 lg:pb-10 px-5 lg:pl-[240px] max-w-6xl mx-auto">
     <div class="max-w-3xl">
 
+      <!-- ERRORE -->
       <div x-show="fetchError" class="mt-8 mb-4 p-4 rounded-xl border border-red-400/20 bg-red-400/5 text-red-400 text-sm flex items-center gap-3">
         <span class="material-symbols-outlined" style="font-size:18px">error</span>
         <span>Impossibile caricare i dati. Ricarica la pagina o riprova tra poco.</span>
       </div>
 
+      <!-- NESSUN QUIZ -->
       <div x-show="!loading && !fetchError && !profile" class="mt-16 text-center reveal">
         <div class="w-16 h-16 rounded-2xl bg-outline-variant/30 border border-outline-variant/40 flex items-center justify-center mx-auto mb-6">
           <span class="material-symbols-outlined text-on-surface-variant" style="font-size:32px">quiz</span>
@@ -148,8 +225,11 @@
         </a>
       </div>
 
+      <!-- CONTENUTO PROFILO -->
       <template x-if="profile">
         <div>
+
+          <!-- HEADER -->
           <div class="py-6 reveal">
             <div class="flex items-center gap-2 text-xs text-on-surface-variant mb-4">
               <a href="/dashboard/" class="hover:text-primary transition-colors">Area personale</a>
@@ -163,97 +243,255 @@
             <p class="text-on-surface-variant mt-2 text-sm" x-text="'Profilo ' + profileLetter + ' · Assegnato dal Quiz del Coraggio'"></p>
           </div>
 
-          <div class="profile-hero p-6 md:p-8 mb-8 reveal">
-            <div class="flex items-start gap-4 mb-5">
-              <div class="w-12 h-12 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-primary" style="font-size:24px">self_improvement</span>
-              </div>
+          <!-- ═══ TAB BAR — stile dossier cartaceo ═══ -->
+          <div class="dossier-tabs reveal">
+            <button @click="activeTab='profilo'"
+              class="dossier-tab"
+              :class="activeTab==='profilo' ? 'active-profilo' : ''">
+              <span class="material-symbols-outlined">person_pin</span>
+              Profilo
+            </button>
+            <button @click="activeTab='induzione'"
+              class="dossier-tab"
+              :class="activeTab==='induzione' ? 'active-induzione' : ''">
+              <span class="material-symbols-outlined">nightlight</span>
+              Induzione
+            </button>
+            <button @click="activeTab='esercizi'"
+              class="dossier-tab"
+              :class="activeTab==='esercizi' ? 'active-esercizi' : ''">
+              <span class="material-symbols-outlined">edit_note</span>
+              Esercizi
+            </button>
+          </div>
+
+          <!-- ═══ TAB: PROFILO ═══ -->
+          <div x-show="activeTab==='profilo'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+              <!-- Colonna sinistra: testo profilo -->
               <div>
-                <h2 class="font-bold text-lg text-on-surface" style="font-family:'Manrope',sans-serif;" x-text="profile.title"></h2>
-                <p class="text-on-surface-variant text-sm mt-1 leading-relaxed" x-text="profile.intro"></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-primary" style="font-size:20px">graphic_eq</span>
-              </div>
-              <div>
-                <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Descrizione del profilo</h3>
-                <p class="text-on-surface-variant text-xs">Ascolta la spiegazione del tuo pattern</p>
-              </div>
-            </div>
-            <template x-if="profile.audio_descrizione"><audio controls :src="profile.audio_descrizione"></audio></template>
-            <template x-if="!profile.audio_descrizione">
-              <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/30">
-                <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
-                <p class="text-on-surface-variant text-xs">Audio in arrivo a breve.</p>
-              </div>
-            </template>
-          </div>
-
-          <div class="glass-card rounded-2xl p-6 md:p-8 mb-8 reveal">
-            <h3 class="font-bold text-on-surface mb-5" style="font-family:'Manrope',sans-serif;">Come si manifesta in te</h3>
-            <div class="text-on-surface-variant text-sm leading-relaxed space-y-4" x-html="profile.testo_completo"></div>
-            <blockquote x-text="profile.citazione"></blockquote>
-            <p class="text-xs text-on-surface-variant mt-2">— Cristian Lecca</p>
-          </div>
-
-          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
-            <div class="flex items-center gap-3 mb-4">
-              <div class="w-10 h-10 rounded-xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-secondary" style="font-size:20px">nightlight</span>
-              </div>
-              <div>
-                <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Induzione ipnotica personalizzata</h3>
-                <p class="text-on-surface-variant text-xs">15 minuti · Ascolta in un momento di calma</p>
-              </div>
-            </div>
-            <template x-if="profile.audio_ipnotico"><audio controls class="blue-player" :src="profile.audio_ipnotico"></audio></template>
-            <template x-if="!profile.audio_ipnotico">
-              <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/30">
-                <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
-                <p class="text-on-surface-variant text-xs">Audio ipnotico in arrivo a breve.</p>
-              </div>
-            </template>
-          </div>
-
-          <div class="workbook-placeholder p-6 mb-8 reveal">
-            <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-tertiary" style="font-size:20px">menu_book</span>
-              </div>
-              <div class="flex-1">
-                <div class="flex items-center gap-3 flex-wrap mb-2">
-                  <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Workbook &mdash; Esercizi del tuo profilo</h3>
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary/12 text-tertiary border border-tertiary/20">
-                    <span class="material-symbols-outlined" style="font-size:12px">schedule</span>In arrivo
-                  </span>
+                <div class="profile-hero p-6 mb-6">
+                  <div class="flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-2xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-primary" style="font-size:22px">self_improvement</span>
+                    </div>
+                    <div>
+                      <h2 class="font-bold text-base text-on-surface mb-2" style="font-family:'Manrope',sans-serif;" x-text="profile.title"></h2>
+                      <p class="text-on-surface-variant text-sm leading-relaxed" x-text="profile.intro"></p>
+                    </div>
+                  </div>
                 </div>
-                <p class="text-on-surface-variant text-xs leading-relaxed">Gli esercizi pratici del tuo percorso saranno disponibili qui a breve. Riceverai una notifica via email non appena il workbook sarà pronto.</p>
+
+                <div class="glass-card rounded-2xl p-6">
+                  <h3 class="font-bold text-on-surface mb-4 text-sm" style="font-family:'Manrope',sans-serif;">Come si manifesta in te</h3>
+                  <div class="text-on-surface-variant text-sm leading-relaxed space-y-3" x-html="profile.testo_completo"></div>
+                  <blockquote x-text="profile.citazione"></blockquote>
+                  <p class="text-xs text-on-surface-variant">— Cristian Lecca</p>
+                </div>
               </div>
+
+              <!-- Colonna destra: audio descrizione -->
+              <div>
+                <div class="audio-card audio-glow h-full flex flex-col">
+                  <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl bg-primary/12 border border-primary/25 flex items-center justify-center flex-shrink-0">
+                      <span class="material-symbols-outlined text-primary" style="font-size:20px">graphic_eq</span>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Descrizione del profilo</h3>
+                      <p class="text-on-surface-variant text-xs mt-0.5">Ascolta la spiegazione del tuo pattern</p>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col justify-center">
+                    <template x-if="profile.audio_descrizione">
+                      <div>
+                        <p class="text-xs text-on-surface-variant mb-4 leading-relaxed">Cristian ti spiega perché questo è il tuo profilo, come si è formato e cosa significa nel tuo percorso di cambiamento.</p>
+                        <audio controls :src="profile.audio_descrizione"></audio>
+                      </div>
+                    </template>
+                    <template x-if="!profile.audio_descrizione">
+                      <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container border border-outline-variant/30">
+                        <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
+                        <p class="text-on-surface-variant text-xs">Audio in arrivo a breve.</p>
+                      </div>
+                    </template>
+                  </div>
+
+                  <div class="mt-6 pt-5 border-t border-outline-variant/20">
+                    <p class="text-xs text-on-surface-variant mb-3">Vuoi approfondire il tuo profilo con Cristian?</p>
+                    <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank"
+                       class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-xs transition-all hover:border-primary/40 hover:text-primary w-full justify-center" style="font-family:'Manrope',sans-serif;">
+                      <span class="material-symbols-outlined" style="font-size:16px">video_call</span>
+                      Prenota la Sessione di Svolta
+                    </a>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div class="glass-card rounded-2xl p-6 mb-8 reveal">
-            <h3 class="font-bold text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Prossimi passi</h3>
-            <p class="text-on-surface-variant text-sm mb-5">Porta il lavoro sul tuo profilo a un livello più profondo.</p>
-            <div class="flex flex-col sm:flex-row gap-3">
-              <a href="/reset-notturno/" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90" style="font-family:'Manrope',sans-serif;">
-                <span class="material-symbols-outlined" style="font-size:18px">bedtime</span>Inizia il Reset Notturno
-              </a>
-              <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm transition-all hover:border-primary/40 hover:text-primary" style="font-family:'Manrope',sans-serif;">
-                <span class="material-symbols-outlined" style="font-size:18px">video_call</span>Prenota la Sessione di Svolta
-              </a>
+          <!-- ═══ TAB: INDUZIONE ═══ -->
+          <div x-show="activeTab==='induzione'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+
+            <div class="audio-card audio-glow-blue mb-8">
+              <!-- Intestazione -->
+              <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-secondary" style="font-size:24px">nightlight</span>
+                </div>
+                <div>
+                  <h2 class="font-bold text-on-surface" style="font-family:'Manrope',sans-serif;">Induzione ipnotica personalizzata</h2>
+                  <p class="text-on-surface-variant text-sm mt-0.5">15 minuti · Progettata per il tuo profilo <span x-text="profileLetter"></span></p>
+                </div>
+              </div>
+
+              <!-- Istruzioni -->
+              <div class="bg-surface-container rounded-2xl border border-outline-variant/25 p-5 mb-6">
+                <p class="text-xs font-semibold text-secondary uppercase tracking-wider mb-3">Come usarla</p>
+                <ul class="space-y-2 text-sm text-on-surface-variant">
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Ascolta la sera, nel momento di riposo</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Usa le cuffie per massimizzare l\'effetto</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Non guidare o usare macchinari durante l\'ascolto</li>
+                  <li class="flex items-start gap-2"><span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:15px;margin-top:2px">check_circle</span>Ripeti l\'ascolto per almeno 7 giorni consecutivi</li>
+                </ul>
+              </div>
+
+              <!-- Player -->
+              <template x-if="profile.audio_ipnotico">
+                <audio controls class="blue-player" :src="profile.audio_ipnotico"></audio>
+              </template>
+              <template x-if="!profile.audio_ipnotico">
+                <div class="flex items-center gap-3 p-4 rounded-xl bg-surface-container border border-outline-variant/30">
+                  <span class="material-symbols-outlined text-on-surface-variant" style="font-size:18px">schedule</span>
+                  <p class="text-on-surface-variant text-sm">Audio ipnotico in arrivo a breve.</p>
+                </div>
+              </template>
+
+              <!-- CTA Reset -->
+              <div class="mt-8 pt-6 border-t border-outline-variant/20 flex flex-col sm:flex-row gap-3">
+                <a href="/reset-notturno/" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">bedtime</span>Inizia il Reset Notturno
+                </a>
+                <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank"
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm transition-all hover:border-primary/40 hover:text-primary" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">video_call</span>Prenota la Sessione di Svolta
+                </a>
+              </div>
             </div>
+
           </div>
+
+          <!-- ═══ TAB: ESERCIZI ═══ -->
+          <div x-show="activeTab==='esercizi'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+
+            <!-- Intro -->
+            <div class="mb-6">
+              <p class="text-on-surface-variant text-sm leading-relaxed">Gli esercizi sono progettati per rafforzare il lavoro dell\'induzione durante il giorno. Falli con costanza per consolidare il cambiamento.</p>
+            </div>
+
+            <!-- Esercizi digitali -->
+            <div class="mb-8">
+              <h3 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider" style="font-family:'Manrope',sans-serif;">Esercizi digitali</h3>
+              <div class="space-y-3">
+
+                <div class="esercizio-card flex items-start gap-4">
+                  <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:18px">edit_note</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                      <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Diario del pattern</p>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20">
+                        <span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo
+                      </span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs leading-relaxed">Ogni giorno annoti un momento in cui hai riconosciuto il tuo pattern. Diventa consapevole prima di diventare libero.</p>
+                  </div>
+                </div>
+
+                <div class="esercizio-card flex items-start gap-4">
+                  <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:18px">psychology_alt</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                      <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Riscrittura delle credenze</p>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20">
+                        <span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo
+                      </span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs leading-relaxed">Identifichi la credenza limitante, la osservi senza giudizio e la riscrivi in una nuova versione potenziante.</p>
+                  </div>
+                </div>
+
+                <div class="esercizio-card flex items-start gap-4">
+                  <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:18px">self_improvement</span>
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                      <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Ancora di risorsa</p>
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20">
+                        <span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo
+                      </span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs leading-relaxed">Una tecnica breve di ancoraggio corporeo da usare nei momenti critici per rompere il pattern in tempo reale.</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Workbook PDF -->
+            <div class="workbook-placeholder p-6 mb-8">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-tertiary" style="font-size:22px">menu_book</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Workbook &mdash; Esercizi del tuo profilo</h3>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary/12 text-tertiary border border-tertiary/20">
+                      <span class="material-symbols-outlined" style="font-size:12px">schedule</span>In arrivo
+                    </span>
+                  </div>
+                  <p class="text-on-surface-variant text-xs leading-relaxed mb-4">Il workbook PDF del tuo profilo raccoglie tutti gli esercizi in formato stampabile. Puoi scaricarlo e lavorarci offline, a tuo ritmo.</p>
+                  <button disabled
+                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-tertiary/10 text-tertiary/50 border border-tertiary/20 font-bold text-xs cursor-not-allowed" style="font-family:'Manrope',sans-serif;">
+                    <span class="material-symbols-outlined" style="font-size:16px">download</span>
+                    Scarica il Workbook PDF
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+              <h3 class="font-bold text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Porta il lavoro al livello successivo</h3>
+              <p class="text-on-surface-variant text-sm mb-5">Gli esercizi ti preparano. La sessione con Cristian ti trasforma.</p>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href="/reset-notturno/" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">bedtime</span>Inizia il Reset Notturno
+                </a>
+                <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank"
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm transition-all hover:border-primary/40 hover:text-primary" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">video_call</span>Prenota la Sessione di Svolta
+                </a>
+              </div>
+            </div>
+
+          </div>
+          <!-- fine template profile -->
         </div>
       </template>
     </div>
   </main>
 
+  <!-- BOTTOM NAV MOBILE -->
   <nav class="bottom-nav lg:hidden">
     <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
     <a href="/dashboard/#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
@@ -279,13 +517,11 @@
     var pb = new PocketBase(PB_URL);
     pb.autoCancellation(false);
 
-    // Stessa firma di impostazioni/index.html
     function buildAvatarUrl(userId, filename) {
       if (!userId || !filename) return null;
       return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
     }
 
-    // DOM imperativo — identico a impostazioni/index.html
     function renderNavAvatar(src, initial) {
       var wrap = document.getElementById('nav-avatar-wrap');
       if (!wrap) return;
@@ -356,6 +592,7 @@
         loading: true, fetchError: false,
         user: {}, showUserMenu: false,
         profile: null, profileLetter: '',
+        activeTab: 'profilo',
 
         async init() {
           if (this._loaded) return;
@@ -369,7 +606,6 @@
           }
           this.user = pb.authStore.model || {};
 
-          // Renderizza avatar nav — DOM imperativo, identico a impostazioni
           var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
           renderNavAvatar(avatarUrl, initial);
