@@ -68,58 +68,20 @@
     .workbook-placeholder { background: rgba(201,164,92,0.05); border: 1px solid rgba(201,164,92,0.2); border-radius: 16px; }
     blockquote { border-left: 3px solid #49C7A5; padding-left: 20px; margin: 24px 0; font-style: italic; color: #bccac3; }
     #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
-
-    /* ───── TAB BAR stile dossier — STICKY ───── */
-    .dossier-tabs {
-      display: flex;
-      align-items: flex-end;
-      gap: 4px;
-      padding: 0 0 0 2px;
-      border-bottom: 1.5px solid rgba(61,73,68,0.45);
-      margin-bottom: 32px;
-      position: sticky;
-      top: 65px;
-      z-index: 40;
-      background: #101416;
-      padding-top: 10px;
-    }
-    .dossier-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 10px 20px 11px;
-      border-radius: 10px 10px 0 0;
-      border: 1.5px solid transparent;
-      border-bottom: none;
-      font-family: 'Manrope', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      color: #86948e;
-      cursor: pointer;
-      transition: all 0.18s;
-      background: transparent;
-      position: relative;
-      bottom: -1.5px;
-      white-space: nowrap;
-    }
-    .dossier-tab:hover { color: #F5F7FA; background: rgba(61,73,68,0.18); }
-    .dossier-tab.active-profilo { color: #49C7A5; background: rgba(73,199,165,0.07); border-color: rgba(73,199,165,0.3); border-bottom-color: #101416; }
-    .dossier-tab.active-induzione { color: #aab8ff; background: rgba(58,99,255,0.07); border-color: rgba(58,99,255,0.3); border-bottom-color: #101416; }
-    .dossier-tab.active-esercizi { color: #C9A45C; background: rgba(201,164,92,0.07); border-color: rgba(201,164,92,0.3); border-bottom-color: #101416; }
-    .dossier-tab .material-symbols-outlined { font-size: 16px; }
-
-    /* ───── audio player ───── */
-    .audio-card { background: rgba(29,32,34,0.65); backdrop-filter: blur(12px); border: 1px solid rgba(61,73,68,0.4); border-radius: 20px; padding: 28px; }
-    .audio-glow { box-shadow: 0 0 40px -8px rgba(73,199,165,0.15); }
-    .audio-glow-blue { box-shadow: 0 0 40px -8px rgba(58,99,255,0.15); }
-
-    /* ───── esercizi card ───── */
-    .esercizio-card { background: rgba(29,32,34,0.55); border: 1px solid rgba(61,73,68,0.35); border-radius: 16px; padding: 20px 22px; transition: border-color 0.2s, background 0.2s; }
-    .esercizio-card:hover { border-color: rgba(201,164,92,0.25); background: rgba(201,164,92,0.025); }
-    .esercizio-card.open { border-color: rgba(201,164,92,0.3); background: rgba(201,164,92,0.04); }
-
-    /* ───── domanda potente ───── */
-    .domanda-potente { background: rgba(201,164,92,0.04); border: 1px solid rgba(201,164,92,0.25); border-left: 3px solid #C9A45C; border-radius: 16px; padding: 24px 28px; }
+    .dossier-tabs { display:flex; align-items:flex-end; gap:4px; padding:10px 0 0 2px; border-bottom:1.5px solid rgba(61,73,68,0.45); margin-bottom:32px; position:sticky; top:65px; z-index:40; background:#101416; }
+    .dossier-tab { display:inline-flex; align-items:center; gap:7px; padding:10px 20px 11px; border-radius:10px 10px 0 0; border:1.5px solid transparent; border-bottom:none; font-family:'Manrope',sans-serif; font-size:13px; font-weight:700; color:#86948e; cursor:pointer; transition:all 0.18s; background:transparent; position:relative; bottom:-1.5px; white-space:nowrap; }
+    .dossier-tab:hover { color:#F5F7FA; background:rgba(61,73,68,0.18); }
+    .dossier-tab.active-profilo { color:#49C7A5; background:rgba(73,199,165,0.07); border-color:rgba(73,199,165,0.3); border-bottom-color:#101416; }
+    .dossier-tab.active-induzione { color:#aab8ff; background:rgba(58,99,255,0.07); border-color:rgba(58,99,255,0.3); border-bottom-color:#101416; }
+    .dossier-tab.active-esercizi { color:#C9A45C; background:rgba(201,164,92,0.07); border-color:rgba(201,164,92,0.3); border-bottom-color:#101416; }
+    .dossier-tab .material-symbols-outlined { font-size:16px; }
+    .audio-card { background:rgba(29,32,34,0.65); backdrop-filter:blur(12px); border:1px solid rgba(61,73,68,0.4); border-radius:20px; padding:28px; }
+    .audio-glow { box-shadow:0 0 40px -8px rgba(73,199,165,0.15); }
+    .audio-glow-blue { box-shadow:0 0 40px -8px rgba(58,99,255,0.15); }
+    .esercizio-card { background:rgba(29,32,34,0.55); border:1px solid rgba(61,73,68,0.35); border-radius:16px; padding:20px 22px; transition:border-color 0.2s,background 0.2s; }
+    .esercizio-card:hover { border-color:rgba(201,164,92,0.25); background:rgba(201,164,92,0.025); }
+    .esercizio-card.open { border-color:rgba(201,164,92,0.3); background:rgba(201,164,92,0.04); }
+    .domanda-potente { background:rgba(201,164,92,0.04); border:1px solid rgba(201,164,92,0.25); border-left:3px solid #C9A45C; border-radius:16px; padding:24px 28px; }
   </style>
 </head>
 
@@ -365,7 +327,7 @@
                         <div x-show="open === 1" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
                           <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
                             <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
-                            <p class="text-on-surface-variant text-sm leading-relaxed">Scegli un compito che stai rimandando. Dì ad alta voce: <em>&ldquo;Lo faccio solo per 2 minuti, poi posso smettere.&rdquo;</em> Imposta un timer e inizia. Non importa quanto fai &mdash; importa che inizi. Spesso i 2 minuti diventano 20, ma anche se ti fermi, hai vinto: hai dimostrato al tuo sistema nervoso che il primo passo non &egrave; pericoloso.</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Scegli un compito che stai rimandando. D&igrave; ad alta voce: <em>&ldquo;Lo faccio solo per 2 minuti, poi posso smettere.&rdquo;</em> Imposta un timer e inizia. Non importa quanto fai &mdash; importa che inizi. Spesso i 2 minuti diventano 20, ma anche se ti fermi, hai vinto: hai dimostrato al tuo sistema nervoso che il primo passo non &egrave; pericoloso.</p>
                           </div>
                           <div class="p-4 rounded-xl bg-primary/5 border border-primary/15">
                             <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Il beneficio profondo</p>
@@ -569,7 +531,7 @@
                           </div>
                           <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0 transition-transform duration-200" :style="open === 1 ? 'transform:rotate(180deg);font-size:18px' : 'font-size:18px'">expand_more</span>
                         </div>
-                        <p class="text-on-surface-variant text-xs leading-relaxed">Dai un'identit&agrave; esterna e buffa alla voce critica per depotenziarne il controllo su di te.</p>
+                        <p class="text-on-surface-variant text-xs leading-relaxed">Dai un&rsquo;identit&agrave; esterna e buffa alla voce critica per depotenziarne il controllo su di te.</p>
                         <div x-show="open === 1" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
                           <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
                             <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
@@ -622,4 +584,277 @@
                           <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-xs font-semibold text-tertiary uppercase tracking-wider">Esercizio 3</span>
                             <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Il Cortocircuito del &ldquo;Meno Male!&rdquo;</p>
-                         
+                          </div>
+                          <span class="material-symbols-outlined text-on-surface-variant flex-shrink-0 transition-transform duration-200" :style="open === 3 ? 'transform:rotate(180deg);font-size:18px' : 'font-size:18px'">expand_more</span>
+                        </div>
+                        <p class="text-on-surface-variant text-xs leading-relaxed">Spezza il loop critico con una reazione potenziante e inaspettata, al cuore del Metodo IpnosiApplicata.</p>
+                        <div x-show="open === 3" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" class="mt-4 space-y-4" @click.stop>
+                          <div class="p-4 rounded-xl bg-surface-container border border-outline-variant/25">
+                            <p class="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Come praticarlo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Quando commetti un errore e il critico parte all&rsquo;attacco, rispondi ad alta voce con energia: <em>&ldquo;MENO MALE! FANTASTICO!&rdquo;</em>. Questo shock neurologico interrompe il loop. Poi trasforma l&rsquo;attacco in strategia: <em>&ldquo;...Fantastico, perch&eacute; questo errore &egrave; un&rsquo;informazione preziosa per la mia trasformazione.&rdquo;</em></p>
+                          </div>
+                          <div class="p-4 rounded-xl bg-primary/5 border border-primary/15">
+                            <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Il beneficio profondo</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed">Stai riprogrammando il tuo cervello a interpretare l&rsquo;errore non come una condanna, ma come un dato utile. Trasformi il veleno in medicina e il critico in un informatore.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="domanda-potente mb-8">
+                  <div class="flex items-center gap-3 mb-4">
+                    <span class="material-symbols-outlined text-tertiary" style="font-size:22px">auto_awesome</span>
+                    <p class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Una Domanda Potente per Te</p>
+                  </div>
+                  <p class="text-on-surface-variant text-sm leading-relaxed mb-5">Prenditi un momento di quiete. Immagina che al posto della voce critica, a commentare le tue azioni in questo esatto momento, ci fosse la persona che pi&ugrave; ti stima e ti vuole bene al mondo &mdash; un mentore, un amico, un familiare, o una versione futura e saggia di te.</p>
+                  <p class="text-on-surface font-semibold text-sm italic">&ldquo;Cosa mi direbbe questa persona amorevole, proprio adesso?&rdquo;</p>
+                  <p class="text-on-surface-variant text-xs mt-3">Lascia che le sue parole gentili e sagge riempiano lo spazio che prima era occupato dal giudizio.</p>
+                </div>
+              </div>
+            </template>
+
+            <!-- PLACEHOLDER per profilo D -->
+            <template x-if="profileLetter === 'D'">
+              <div>
+                <h3 class="font-bold text-on-surface mb-4 text-sm uppercase tracking-wider" style="font-family:'Manrope',sans-serif;">Esercizi del tuo profilo</h3>
+                <div class="space-y-3 mb-8">
+                  <div class="esercizio-card flex items-start gap-4">
+                    <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-tertiary" style="font-size:18px">edit_note</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Diario del pattern</p>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20"><span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo</span>
+                      </div>
+                      <p class="text-on-surface-variant text-xs leading-relaxed">Ogni giorno annoti un momento in cui hai riconosciuto il tuo pattern. Diventa consapevole prima di diventare libero.</p>
+                    </div>
+                  </div>
+                  <div class="esercizio-card flex items-start gap-4">
+                    <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-tertiary" style="font-size:18px">psychology_alt</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Riscrittura delle credenze</p>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20"><span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo</span>
+                      </div>
+                      <p class="text-on-surface-variant text-xs leading-relaxed">Identifichi la credenza limitante, la osservi senza giudizio e la riscrivi in una nuova versione potenziante.</p>
+                    </div>
+                  </div>
+                  <div class="esercizio-card flex items-start gap-4">
+                    <div class="w-9 h-9 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span class="material-symbols-outlined text-tertiary" style="font-size:18px">self_improvement</span>
+                    </div>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <p class="font-semibold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Ancora di risorsa</p>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary border border-tertiary/20"><span class="material-symbols-outlined" style="font-size:11px">schedule</span>In arrivo</span>
+                      </div>
+                      <p class="text-on-surface-variant text-xs leading-relaxed">Una tecnica breve di ancoraggio corporeo da usare nei momenti critici per rompere il pattern in tempo reale.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <!-- Workbook PDF -->
+            <div class="workbook-placeholder p-6 mb-8">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 rounded-xl bg-tertiary/12 border border-tertiary/25 flex items-center justify-center flex-shrink-0">
+                  <span class="material-symbols-outlined text-tertiary" style="font-size:22px">menu_book</span>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 flex-wrap mb-2">
+                    <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;">Workbook &mdash; Esercizi del tuo profilo</h3>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-tertiary/12 text-tertiary border border-tertiary/20">
+                      <span class="material-symbols-outlined" style="font-size:12px">picture_as_pdf</span>PDF
+                    </span>
+                  </div>
+                  <p class="text-on-surface-variant text-xs leading-relaxed mb-4">Il workbook del tuo profilo raccoglie tutti gli esercizi in formato stampabile. Scaricalo e lavoraci offline, a tuo ritmo.</p>
+                  <a :href="profile.workbook_pdf" download target="_blank"
+                     class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-tertiary text-on-tertiary font-bold text-xs transition-all hover:opacity-90" style="font-family:'Manrope',sans-serif;">
+                    <span class="material-symbols-outlined" style="font-size:16px">download</span>
+                    Scarica il Workbook PDF
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+              <h3 class="font-bold text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Porta il lavoro al livello successivo</h3>
+              <p class="text-on-surface-variant text-sm mb-5">Gli esercizi ti preparano. La sessione con Cristian ti trasforma.</p>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <a href="/reset-notturno/" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-primary text-on-primary font-bold text-sm transition-all hover:opacity-90" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">bedtime</span>Inizia il Reset Notturno
+                </a>
+                <a href="https://cristianlecca.it/sessione-di-svolta/" target="_blank"
+                   class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-outline-variant/50 text-on-surface-variant font-semibold text-sm transition-all hover:border-primary/40 hover:text-primary" style="font-family:'Manrope',sans-serif;">
+                  <span class="material-symbols-outlined" style="font-size:18px">video_call</span>Prenota la Sessione di Svolta
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV MOBILE -->
+  <nav class="bottom-nav lg:hidden">
+    <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
+    <a href="/dashboard/#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
+    <a href="/percorso/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
+    <a href="/dashboard/profilo-quiz/" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
+  </nav>
+
+  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-6 w-auto opacity-70">
+        <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      </a>
+      <div class="flex gap-5 text-xs">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var PB_URL = 'https://api.ipnosiapplicata.it';
+    var pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
+
+    function buildAvatarUrl(userId, filename) {
+      if (!userId || !filename) return null;
+      return PB_URL + '/api/files/_pb_users_auth_/' + userId + '/' + encodeURIComponent(filename) + '?t=' + Date.now();
+    }
+
+    function renderNavAvatar(src, initial) {
+      var wrap = document.getElementById('nav-avatar-wrap');
+      if (!wrap) return;
+      var existingImg  = wrap.querySelector('img');
+      var existingSpan = wrap.querySelector('span');
+      if (src) {
+        if (!existingImg) {
+          var img = document.createElement('img');
+          img.id  = 'nav-avatar-img';
+          img.alt = 'Avatar';
+          img.onerror = function() { renderNavAvatar(null, initial); };
+          if (existingSpan) existingSpan.style.display = 'none';
+          wrap.insertBefore(img, wrap.firstChild);
+          existingImg = img;
+        }
+        existingImg.src   = src;
+        existingImg.style.display = 'block';
+        if (existingSpan) existingSpan.style.display = 'none';
+      } else {
+        if (existingImg)  existingImg.style.display  = 'none';
+        if (existingSpan) { existingSpan.style.display = ''; existingSpan.textContent = initial || 'U'; }
+      }
+    }
+
+    function hideOverlay() {
+      var el = document.getElementById('loading-overlay');
+      if (el) { el.classList.add('hidden'); setTimeout(function(){ el.remove(); }, 350); }
+    }
+
+    var PROFILES = {
+      'A': {
+        title: 'Il Perfezionista Bloccato',
+        intro: 'Il tuo standard \u00e8 alto \u2014 cos\u00ec alto che spesso ti impedisce di partire. Il perfezionismo non \u00e8 un pregio: \u00e8 la paura del giudizio travestita da ambizione.',
+        testo_completo: '<p>Sai esattamente come dovrebbe andare. Hai una visione chiara, uno standard preciso, aspettative definite. Il problema \u00e8 che quella visione diventa una prigione: finch\u00e9 le condizioni non sono perfette, non ti muovi.</p><p>Rimandi. Rivedi. Aspetti il momento giusto. Ma il momento giusto non arriva mai, perch\u00e9 ogni volta che si avvicina, sposti l\'asticella un po\' pi\u00f9 in l\u00e0.</p><p>Questo pattern nasce da una convinzione profonda: che l\'errore sia pericoloso, che sbagliare significhi fallire, che il giudizio degli altri sia una minaccia reale. L\'ipnosi ti aiuta a ridefinire il rapporto con l\'imperfezione \u2014 non per abbassare gli standard, ma per smettere di usarli come scudo.</p>',
+        citazione: 'La perfezione \u00e8 la forma pi\u00f9 sofisticata di sabotaggio. Il tuo valore non dipende dal risultato.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Perfezionista%20Bloccato%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Perfezionista%20Bloccato%22.mp3',
+        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20IL%20PERFEZIONISTA%20BLOCCATO.pdf'
+      },
+      'B': {
+        title: 'Il Guardiano del Consenso',
+        intro: 'La tua forza \u00e8 nell\'empatia \u2014 ma stai usando quella forza per comprare la pace invece di costruire la tua strada. Il bisogno di approvazione ti tiene immobile.',
+        testo_completo: '<p>Sei sensibile a come gli altri ti percepiscono. Modifichi le tue posizioni in base al contesto. Eviti il conflitto perch\u00e9 senti il disagio altrui come se fosse tuo. Questo non \u00e8 un difetto \u2014 \u00e8 una forma di intelligenza emotiva. Ma quando diventa automatico, ti rende prigioniero delle aspettative degli altri.</p><p>Le decisioni pi\u00f9 importanti della tua vita vengono valutate attraverso il filtro del "cosa penseranno". E cos\u00ec aspetti. Cerchi conferme. Non osi disturbare.</p><p>Il lavoro ipnotico ti aiuta a distinguere la cura autentica per gli altri dalla dipendenza emotiva dal loro giudizio. Impari che deludere qualcuno non \u00e8 una catastrofe \u2014 e che la tua voce ha valore anche quando non \u00e8 accolta da tutti.</p>',
+        citazione: 'Non puoi costruire la tua vita sulla paura di deludere. Il tuo consenso interiore viene prima.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20per%20%22Il%20Guardiano%20del%20Consenso%22.mp3',
+        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20IL%20GUARDIANO%20DEL%20CONSENSO.pdf'
+      },
+      'C': {
+        title: 'Il Critico Instancabile',
+        intro: 'Hai una mente acutissima, capace di vedere ogni falla, ogni rischio, ogni possibilit\u00e0 di fallimento. Il problema \u00e8 che la usi soprattutto contro te stesso.',
+        testo_completo: '<p>Analizzi tutto. Scomponi ogni situazione, ogni scelta, ogni tua azione. Hai un dialogo interno costante \u2014 e quel dialogo \u00e8 spesso accusatorio. Ti giudichi prima che lo faccia qualcun altro. In questo modo, pensi di proteggerti dalla critica esterna. Ma il prezzo \u00e8 altissimo.</p><p>La voce interiore critica non ti rende pi\u00f9 bravo \u2014 ti prosciuga l\'energia e ti rende rigido. Ti fa dubitare delle tue capacit\u00e0 proprio nel momento in cui avresti bisogno di muoverti con fiducia.</p><p>Il lavoro ipnotico ti insegna a usare quella mente acuta in modo alleato, non antagonista. Impari a osservare i tuoi errori con la stessa lucidezza con cui analizzi tutto il resto \u2014 senza condanna.</p>',
+        citazione: 'La tua mente critica \u00e8 uno strumento potente. Il problema non \u00e8 lo strumento, \u00e8 la direzione in cui lo punti.',
+        audio_descrizione: 'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20PROFILI/Audio%3A%20Profilo%20%22Il%20Critico%20Instancabile%22.mp3',
+        audio_ipnotico:    'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/AUDIO%20IPNOTICI/IPNOTICOAudio%20%22Il%20Critico%20Instancabile%22.mp3',
+        workbook_pdf:      'https://pub-afc8a9299f664f2695584e30f457a84e.r2.dev/quiz-coraggio/PDF/PDF%20IL%20CRITICO%20INSTANCABILE.pdf'
+      },
+      'D': {
+        title: 'Il Fuggitivo dal Presente',
+        intro: 'Sei brillante nel pianificare il futuro o nel rivivere il passato. Il problema \u00e8 che nel frattempo il presente ti sfugge di mano \u2014 e con lui le opportunit\u00e0 di agire.',
+        testo_completo: '<p>La tua mente non si ferma mai. Vai avanti con i pensieri, costruisci scenari, elabori strategie. Oppure torni indietro, rianalizzando ci\u00f2 che \u00e8 stato. In entrambi i casi, il risultato \u00e8 lo stesso: sei altrove.</p><p>Questo non \u00e8 pigrizia. \u00c8 un meccanismo di protezione che ti consente di non sentirti sopraffatto dalla realt\u00e0 immediata. Ma il prezzo che paghi \u00e8 la disconnessione: dalle persone, dalle emozioni, dalle possibilit\u00e0 che esistono solo nell\'adesso.</p><p>Il lavoro ipnotico ti riporta nel corpo e nel momento presente. Ti insegna a tollerare l\'incertezza del \u201cqui e ora\u201d senza scappare, e a trovare in esso non una minaccia, ma una risorsa.</p>',
+        citazione: 'Il cambiamento non avviene nel futuro che immagini. Avviene nel momento che stai vivendo adesso.',
+        audio_descrizione: '',
+        audio_ipnotico:    '',
+        workbook_pdf:      ''
+      }
+    };
+
+    function profiloPage() {
+      return {
+        user: { first_name: '', email: '' },
+        profile: null,
+        profileLetter: '',
+        activeTab: 'profilo',
+        loading: true,
+        fetchError: false,
+        showUserMenu: false,
+
+        async init() {
+          const authData = pb.authStore;
+          if (!authData.isValid) { window.location.href = '/login/'; return; }
+
+          try {
+            const userId = authData.model.id;
+            const userData = await pb.collection('users').getOne(userId);
+            this.user = userData;
+
+            if (userData.avatar) {
+              const avatarUrl = buildAvatarUrl(userId, userData.avatar);
+              renderNavAvatar(avatarUrl, userData.first_name ? userData.first_name[0].toUpperCase() : 'U');
+            }
+
+            const letter = userData.quiz_profile || '';
+            this.profileLetter = letter.toUpperCase();
+
+            if (this.profileLetter && PROFILES[this.profileLetter]) {
+              this.profile = PROFILES[this.profileLetter];
+            }
+          } catch(e) {
+            console.error(e);
+            this.fetchError = true;
+          } finally {
+            this.loading = false;
+            hideOverlay();
+            this.$nextTick(() => {
+              document.querySelectorAll('.reveal').forEach(el => {
+                setTimeout(() => el.classList.add('visible'), 100);
+              });
+            });
+          }
+        },
+
+        logout() {
+          pb.authStore.clear();
+          window.location.href = '/login/';
+        }
+      };
+    }
+  </script>
+
+</body>
+</html>
