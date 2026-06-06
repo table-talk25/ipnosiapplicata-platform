@@ -191,16 +191,6 @@
         <p class="text-on-surface-variant text-sm">Il tuo percorso ti aspetta</p>
       </div>
 
-      <div class="flex gap-2 p-1 bg-surface-container-lowest rounded-xl mb-6">
-        <button class="tab-btn" :class="{ active: mode === 'password' }" @click="mode = 'password'; resetMessages()">
-          <span class="material-symbols-outlined text-sm mr-1" style="font-size:14px">lock</span>
-          Email e password
-        </button>
-        <button class="tab-btn" :class="{ active: mode === 'magic' }" @click="mode = 'magic'; resetMessages()">
-          <span class="material-symbols-outlined text-sm mr-1" style="font-size:14px">magic_button</span>
-          Link magico
-        </button>
-      </div>
 
       <div x-show="message.text" class="alert mb-5" :class="message.type" x-cloak>
         <span class="material-symbols-outlined flex-shrink-0" style="font-size:16px"
@@ -217,7 +207,7 @@
         <div>
           <div class="flex justify-between items-center mb-2">
             <label class="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Password</label>
-            <button type="button" @click="mode = 'magic'; form.email = form.email" class="text-xs text-primary hover:text-primary/80 transition-colors">Password dimenticata?</button>
+            <a href="mailto:info@cristianlecca.it" class="text-xs text-primary hover:text-primary/80 transition-colors">Password dimenticata?</a>
           </div>
           <div class="input-wrapper">
             <input :type="showPw ? 'text' : 'password'" class="input-field pr-12" :class="{ error: errors.password }" placeholder="La tua password" x-model="form.password" autocomplete="current-password" required />
@@ -235,50 +225,8 @@
           <span x-show="!loading" class="material-symbols-outlined" style="font-size:18px">login</span>
           <span x-text="loading ? 'Accesso in corso...' : 'Accedi alla piattaforma'"></span>
         </button>
-        <div class="divider text-xs">oppure</div>
-        <button type="button" @click="mode = 'magic'; resetMessages()"
-          class="w-full py-3 rounded-xl font-semibold text-sm border border-outline-variant/50 text-on-surface-variant hover:text-primary hover:border-primary/30 transition-all"
-          style="font-family:'Manrope',sans-serif;">
-          <span class="material-symbols-outlined" style="font-size:16px">magic_button</span>
-          Accedi con link magico
-        </button>
       </form>
 
-      <div x-show="mode === 'magic'">
-        <form x-show="!magicSent" @submit.prevent="sendMagicLink()" class="space-y-4">
-          <p class="text-on-surface-variant text-sm leading-relaxed mb-4">Inserisci la tua email. Ti mandiamo un link — clicchi e sei dentro. Nessuna password da ricordare.</p>
-          <div>
-            <label class="block text-xs font-semibold text-on-surface-variant mb-2 uppercase tracking-wider">Email</label>
-            <input type="email" class="input-field" :class="{ error: errors.email }" placeholder="la-tua@email.it" x-model="form.email" autocomplete="email" required />
-            <p x-show="errors.email" class="text-xs mt-1" style="color:#ffb4ab" x-text="errors.email"></p>
-          </div>
-          <button type="submit" :disabled="loading"
-            class="w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
-            :class="loading ? 'bg-primary/60 cursor-wait' : 'bg-primary hover:bg-primary/90 active:scale-95'"
-            style="color:#101416; font-family:'Manrope',sans-serif;">
-            <span x-show="loading" class="spinner"></span>
-            <span x-show="!loading" class="material-symbols-outlined" style="font-size:18px">send</span>
-            <span x-text="loading ? 'Invio in corso...' : 'Inviami il link magico'"></span>
-          </button>
-          <div class="divider text-xs">oppure</div>
-          <button type="button" @click="mode = 'password'; resetMessages()"
-            class="w-full py-3 rounded-xl font-semibold text-sm border border-outline-variant/50 text-on-surface-variant hover:text-primary hover:border-primary/30 transition-all"
-            style="font-family:'Manrope',sans-serif;">
-            <span class="material-symbols-outlined" style="font-size:16px">lock</span>
-            Accedi con password
-          </button>
-        </form>
-        <div x-show="magicSent" class="text-center py-4">
-          <div class="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
-            <span class="material-symbols-outlined text-primary" style="font-size:32px">mark_email_read</span>
-          </div>
-          <h2 class="font-bold text-lg text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Controlla la tua email</h2>
-          <p class="text-on-surface-variant text-sm leading-relaxed mb-2">Ti abbiamo inviato un link a</p>
-          <p class="text-primary font-semibold text-sm mb-5" x-text="form.email"></p>
-          <p class="text-on-surface-variant text-xs leading-relaxed mb-6">Clicca il link nell'email per accedere istantaneamente alla piattaforma. Il link è valido per <span class="text-tertiary font-semibold">30 minuti</span>.</p>
-          <button @click="magicSent = false; resetMessages()" class="text-sm text-on-surface-variant hover:text-primary transition-colors underline underline-offset-4">Non hai ricevuto l'email? Riprova</button>
-        </div>
-      </div>
 
       <p class="text-center text-xs text-on-surface-variant mt-6" x-show="!magicSent">
         Non hai ancora un account?
