@@ -234,7 +234,7 @@
           let hasPurchasedRN = false;
           try {
             const p = await pb.collection('purchases').getList(1, 1, {
-              filter: `user='${this.user.id}' && product='reset-notturno' && status='completed'`
+              filter: `user='${this.user.id}' && product='reset-notturno' && status='active'`
             });
             hasPurchasedRN = p.totalItems > 0;
           } catch(_) {}

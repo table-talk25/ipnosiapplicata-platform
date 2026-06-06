@@ -425,7 +425,7 @@
           try {
             var purchasesRes = await pb.collection('purchases').getList(1, 50, { filter: filterUser });
             if (purchasesRes && purchasesRes.items) {
-              activePurchases = purchasesRes.items.filter(function(p) { return p.status === 'completed'; }).map(function(p) { return p.product; }).filter(Boolean);
+              activePurchases = purchasesRes.items.filter(function(p) { return p.status === 'active'; }).map(function(p) { return p.product; }).filter(Boolean);
             }
           } catch(e) { console.warn('[purchases] errore:', e.message); this.fetchError = true; }
 

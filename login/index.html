@@ -198,7 +198,7 @@
         <span x-text="message.text"></span>
       </div>
 
-      <form x-show="mode === 'password'" @submit.prevent="loginWithPassword()" class="space-y-4">
+      <form @submit.prevent="loginWithPassword()" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-on-surface-variant mb-2 uppercase tracking-wider">Email</label>
           <input type="email" class="input-field" :class="{ error: errors.email }" placeholder="la-tua@email.it" x-model="form.email" autocomplete="email" required />
@@ -228,7 +228,7 @@
       </form>
 
 
-      <p class="text-center text-xs text-on-surface-variant mt-6" x-show="!magicSent">
+      <p class="text-center text-xs text-on-surface-variant mt-6">
         Non hai ancora un account?
         <span class="text-on-surface-variant"> Riceverai le credenziali via email dopo l'acquisto.</span>
       </p>
@@ -256,10 +256,8 @@
 
     function loginPage() {
       return {
-        mode: 'password',
         loading: false,
         showPw: false,
-        magicSent: false,
         form: { email: '', password: '' },
         errors: { email: '', password: '' },
         message: { type: '', text: '' },
@@ -269,9 +267,6 @@
             window.location.href = '/dashboard/';
             return;
           }
-          const params = new URLSearchParams(window.location.search);
-          const token = params.get('token');
-          if (token) this.handleOTPCallback(token);
         },
 
         resetMessages() {
@@ -286,7 +281,7 @@
             this.errors.email = 'Inserisci un indirizzo email valido.';
             ok = false;
           }
-          if (this.mode === 'password' && this.form.password.length < 6) {
+          if (this.form.password.length < 6) {
             this.errors.password = 'La password deve essere di almeno 6 caratteri.';
             ok = false;
           }
@@ -305,47 +300,11 @@
             this.message = {
               type: 'error',
               text: e.status === 400
-                ? 'Email o password non corretti. Riprova o usa il link magico.'
+                ? 'Email o password non corretti. Contatta info@cristianlecca.it se hai problemi di accesso.'
                 : 'Errore di connessione. Riprova tra qualche istante.'
             };
           } finally {
             this.loading = false;
-          }
-        },
-
-        async sendMagicLink() {
-          if (!this.validate()) return;
-          this.loading = true;
-          this.resetMessages();
-          try {
-            await pb.collection('users').requestOTP(this.form.email);
-            this.magicSent = true;
-          } catch (e) {
-            console.error('OTP error:', e);
-            this.message = {
-              type: 'error',
-              text: 'Impossibile inviare il link. Verifica l\'email inserita o riprova tra poco. (' + (e.message || e.status) + ')'
-            };
-          } finally {
-            this.loading = false;
-          }
-        },
-
-        async handleOTPCallback(token) {
-          this.loading = true;
-          this.message = { type: 'info', text: 'Verifica del link in corso...' };
-          try {
-            const otpId = new URLSearchParams(window.location.search).get('otpId') || '';
-            await pb.collection('users').authWithOTP(otpId, token);
-            window.location.href = '/dashboard/';
-          } catch (e) {
-            this.message = {
-              type: 'error',
-              text: 'Il link non è valido o è scaduto. Richiedi un nuovo link magico.'
-            };
-            this.mode = 'magic';
-            this.loading = false;
-            window.history.replaceState({}, '', '/login/');
           }
         }
       };

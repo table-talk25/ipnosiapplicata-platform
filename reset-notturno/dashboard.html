@@ -294,7 +294,7 @@
           let hasPurchased = false;
           try {
             const purchasesRes = await pb.collection('purchases').getList(1, 10, {
-              filter: `user='${uid}' && product='${PRODUCT_ID}' && status='completed'`
+              filter: `user='${uid}' && product='${PRODUCT_ID}' && status='active'`
             });
             hasPurchased = purchasesRes.totalItems > 0;
           } catch(e) {
