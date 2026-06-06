@@ -165,7 +165,7 @@
         IpnosiApplicata è la piattaforma del Metodo creato da Cristian Lecca. Corsi, sessioni 1:1, esercizi su misura, induzioni personalizzate. Un percorso che si adatta a te — e non ti lascia mai solo.
       </p>
       <div class="flex flex-wrap gap-4 reveal">
-        <a href="/registrazione/" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-lg shadow-primary/20">Inizia il percorso</a>
+        <button onclick="apriModale()" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-lg shadow-primary/20 cursor-pointer border-0">Inizia il percorso</button>
         <a href="/metodo/" class="border border-outline-variant/50 text-on-surface px-8 py-4 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Scopri il Metodo</a>
       </div>
       <p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2 reveal">
@@ -339,7 +339,7 @@
           <p>Quando entri nell'area riservata non trovi una lista di video da guardare. Trovi il tuo percorso: la mappa aggiornata, gli esercizi assegnati, le induzioni personalizzate, la data della prossima sessione.</p>
           <p>Ogni azione che compi lascia una traccia. Ogni sessione genera contenuti su misura. Il sistema sa dove sei — e ti supporta prima che tu ti perda.</p>
         </div>
-        <a href="/registrazione/" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block">Inizia il percorso</a>
+        <button onclick="apriModale()" class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block cursor-pointer border-0">Inizia il percorso</button>
       </div>
       <div class="space-y-4 reveal">
         <div class="glass-card rounded-xl p-6 flex items-start gap-5">
@@ -413,7 +413,7 @@
       Crea il tuo account. Il primo passo è gratuito.
     </p>
     <div class="flex flex-col sm:flex-row gap-6 justify-center">
-      <a href="/registrazione/" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-xl shadow-primary/15">Inizia il percorso</a>
+      <button onclick="apriModale()" class="bg-primary text-on-primary px-10 py-5 rounded-xl font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all inline-block shadow-xl shadow-primary/15 cursor-pointer border-0">Inizia il percorso</button>
       <a href="https://cristianlecca.it/quiz/" class="border border-outline-variant text-on-surface px-10 py-5 rounded-xl font-label-md text-label-md hover:bg-surface-container transition-colors inline-block">Fai prima il Quiz del Coraggio</a>
     </div>
   </div>
@@ -467,6 +467,77 @@
   </div>
 </footer>
 
+<!-- MODALE INIZIA IL PERCORSO -->
+<div id="inizia-modal"
+     style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px;"
+     onclick="if(event.target===this)chiudiModale()">
+  <div style="background:#1d2022; border:1px solid rgba(61,73,68,0.5); border-radius:24px; padding:40px; max-width:480px; width:100%; position:relative;">
+
+    <!-- Chiudi -->
+    <button onclick="chiudiModale()"
+            style="position:absolute; top:16px; right:16px; background:none; border:none; color:#bccac3; cursor:pointer; padding:4px;"
+            aria-label="Chiudi">
+      <span class="material-symbols-outlined" style="font-size:22px">close</span>
+    </button>
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:32px;">
+      <div style="width:48px; height:48px; background:rgba(73,199,165,0.1); border:1px solid rgba(73,199,165,0.25); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+        <span class="material-symbols-outlined" style="color:#49C7A5; font-size:24px">route</span>
+      </div>
+      <h2 style="font-family:'Manrope',sans-serif; font-size:22px; font-weight:700; color:#F5F7FA; margin:0 0 8px;">Da dove vuoi iniziare?</h2>
+      <p style="color:#bccac3; font-size:14px; line-height:1.6; margin:0;">Ogni percorso parte da un punto preciso. Scegli il tuo.</p>
+    </div>
+
+    <!-- Card 1: già loggato / ha già fatto il quiz -->
+    <a href="/login/"
+       style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(73,199,165,0.06); border:1px solid rgba(73,199,165,0.2); border-radius:16px; text-decoration:none; margin-bottom:12px; transition:all 0.2s ease;"
+       onmouseover="this.style.background='rgba(73,199,165,0.1)'; this.style.borderColor='rgba(73,199,165,0.35)'"
+       onmouseout="this.style.background='rgba(73,199,165,0.06)'; this.style.borderColor='rgba(73,199,165,0.2)'">
+      <div style="width:40px; height:40px; background:rgba(73,199,165,0.12); border:1px solid rgba(73,199,165,0.25); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <span class="material-symbols-outlined" style="color:#49C7A5; font-size:20px">person</span>
+      </div>
+      <div>
+        <p style="font-family:'Manrope',sans-serif; font-weight:700; color:#F5F7FA; font-size:14px; margin:0 0 4px;">Hai già fatto il Quiz del Coraggio?</p>
+        <p style="color:#bccac3; font-size:13px; line-height:1.5; margin:0;">Accedi con la tua email — il tuo percorso personalizzato è già pronto ad aspettarti.</p>
+      </div>
+      <span class="material-symbols-outlined" style="color:#49C7A5; font-size:18px; flex-shrink:0; margin-top:2px;">arrow_forward</span>
+    </a>
+
+    <!-- Card 2: non ha ancora fatto il quiz -->
+    <a href="https://cristianlecca.it/quiz/"
+       target="_blank"
+       style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(58,99,255,0.06); border:1px solid rgba(58,99,255,0.2); border-radius:16px; text-decoration:none; margin-bottom:12px; transition:all 0.2s ease;"
+       onmouseover="this.style.background='rgba(58,99,255,0.1)'; this.style.borderColor='rgba(58,99,255,0.35)'"
+       onmouseout="this.style.background='rgba(58,99,255,0.06)'; this.style.borderColor='rgba(58,99,255,0.2)'">
+      <div style="width:40px; height:40px; background:rgba(58,99,255,0.12); border:1px solid rgba(58,99,255,0.25); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <span class="material-symbols-outlined" style="color:#aab8ff; font-size:20px">quiz</span>
+      </div>
+      <div>
+        <p style="font-family:'Manrope',sans-serif; font-weight:700; color:#F5F7FA; font-size:14px; margin:0 0 4px;">Non conosci ancora il tuo profilo?</p>
+        <p style="color:#bccac3; font-size:13px; line-height:1.5; margin:0;">Fai il Quiz del Coraggio — è gratuito e ti dice esattamente da dove iniziare.</p>
+      </div>
+      <span class="material-symbols-outlined" style="color:#aab8ff; font-size:18px; flex-shrink:0; margin-top:2px;">open_in_new</span>
+    </a>
+
+    <!-- Card 3: vuole esplorare direttamente -->
+    <a href="/corsi/"
+       style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.2); border-radius:16px; text-decoration:none; transition:all 0.2s ease;"
+       onmouseover="this.style.background='rgba(201,164,92,0.1)'; this.style.borderColor='rgba(201,164,92,0.35)'"
+       onmouseout="this.style.background='rgba(201,164,92,0.06)'; this.style.borderColor='rgba(201,164,92,0.2)'">
+      <div style="width:40px; height:40px; background:rgba(201,164,92,0.12); border:1px solid rgba(201,164,92,0.25); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <span class="material-symbols-outlined" style="color:#C9A45C; font-size:20px">school</span>
+      </div>
+      <div>
+        <p style="font-family:'Manrope',sans-serif; font-weight:700; color:#F5F7FA; font-size:14px; margin:0 0 4px;">Sai già cosa vuoi?</p>
+        <p style="color:#bccac3; font-size:13px; line-height:1.5; margin:0;">Esplora i percorsi del Metodo e inizia da dove sei adesso.</p>
+      </div>
+      <span class="material-symbols-outlined" style="color:#C9A45C; font-size:18px; flex-shrink:0; margin-top:2px;">arrow_forward</span>
+    </a>
+
+  </div>
+</div>
+
 <script>
   // Auth check: se loggato mostra link area personale al posto di "Accedi"
   const PB_URL = 'https://api.ipnosiapplicata.it';
@@ -505,6 +576,21 @@
     });
   }, { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Modale
+  function apriModale() {
+    var m = document.getElementById('inizia-modal');
+    m.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+  function chiudiModale() {
+    var m = document.getElementById('inizia-modal');
+    m.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') chiudiModale();
+  });
 </script>
 </body>
 </html>
