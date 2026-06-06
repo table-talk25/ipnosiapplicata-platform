@@ -392,9 +392,11 @@
           </a>
         </div>
         <div class="shrink-0 text-center">
-          <div class="w-24 h-24 rounded-full bg-surface-container-high border-2 border-outline-variant/40 flex items-center justify-center mx-auto mb-4">
-            <span class="material-symbols-outlined text-primary" style="font-size:2.5rem;">link</span>
-          </div>
+          <img src="https://raw.githubusercontent.com/table-talk25/cristianlecca-site/main/assets/hero.png"
+               alt="Cristian Lecca"
+               width="96" height="96"
+               loading="lazy"
+               class="w-24 h-24 rounded-full border-2 object-cover mx-auto mb-4" style="border-color: rgba(73,199,165,0.4); object-position: center top;">
           <p class="font-label-md text-label-md text-on-surface-variant">Stesso metodo.<br/>Un unico ecosistema.</p>
         </div>
       </div>
@@ -472,15 +474,11 @@
      style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:24px;"
      onclick="if(event.target===this)chiudiModale()">
   <div style="background:#1d2022; border:1px solid rgba(61,73,68,0.5); border-radius:24px; padding:40px; max-width:480px; width:100%; position:relative;">
-
-    <!-- Chiudi -->
     <button onclick="chiudiModale()"
             style="position:absolute; top:16px; right:16px; background:none; border:none; color:#bccac3; cursor:pointer; padding:4px;"
             aria-label="Chiudi">
       <span class="material-symbols-outlined" style="font-size:22px">close</span>
     </button>
-
-    <!-- Header -->
     <div style="text-align:center; margin-bottom:32px;">
       <div style="width:48px; height:48px; background:rgba(73,199,165,0.1); border:1px solid rgba(73,199,165,0.25); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
         <span class="material-symbols-outlined" style="color:#49C7A5; font-size:24px">route</span>
@@ -488,8 +486,6 @@
       <h2 style="font-family:'Manrope',sans-serif; font-size:22px; font-weight:700; color:#F5F7FA; margin:0 0 8px;">Da dove vuoi iniziare?</h2>
       <p style="color:#bccac3; font-size:14px; line-height:1.6; margin:0;">Ogni percorso parte da un punto preciso. Scegli il tuo.</p>
     </div>
-
-    <!-- Card 1: già loggato / ha già fatto il quiz -->
     <a href="/login/"
        style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(73,199,165,0.06); border:1px solid rgba(73,199,165,0.2); border-radius:16px; text-decoration:none; margin-bottom:12px; transition:all 0.2s ease;"
        onmouseover="this.style.background='rgba(73,199,165,0.1)'; this.style.borderColor='rgba(73,199,165,0.35)'"
@@ -503,8 +499,6 @@
       </div>
       <span class="material-symbols-outlined" style="color:#49C7A5; font-size:18px; flex-shrink:0; margin-top:2px;">arrow_forward</span>
     </a>
-
-    <!-- Card 2: non ha ancora fatto il quiz -->
     <a href="https://cristianlecca.it/quiz/"
        target="_blank"
        style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(58,99,255,0.06); border:1px solid rgba(58,99,255,0.2); border-radius:16px; text-decoration:none; margin-bottom:12px; transition:all 0.2s ease;"
@@ -519,8 +513,6 @@
       </div>
       <span class="material-symbols-outlined" style="color:#aab8ff; font-size:18px; flex-shrink:0; margin-top:2px;">open_in_new</span>
     </a>
-
-    <!-- Card 3: vuole esplorare direttamente -->
     <a href="/corsi/"
        style="display:flex; align-items:flex-start; gap:16px; padding:18px; background:rgba(201,164,92,0.06); border:1px solid rgba(201,164,92,0.2); border-radius:16px; text-decoration:none; transition:all 0.2s ease;"
        onmouseover="this.style.background='rgba(201,164,92,0.1)'; this.style.borderColor='rgba(201,164,92,0.35)'"
@@ -534,12 +526,10 @@
       </div>
       <span class="material-symbols-outlined" style="color:#C9A45C; font-size:18px; flex-shrink:0; margin-top:2px;">arrow_forward</span>
     </a>
-
   </div>
 </div>
 
 <script>
-  // Auth check: se loggato mostra link area personale al posto di "Accedi"
   const PB_URL = 'https://api.ipnosiapplicata.it';
   const pb = new PocketBase(PB_URL);
   if (pb.authStore.isValid) {
@@ -549,7 +539,6 @@
     }
   }
 
-  // Menu mobile
   const btn = document.getElementById('hamburger-btn');
   const menu = document.getElementById('mobile-menu');
   const icon = document.getElementById('hamburger-icon');
@@ -566,7 +555,6 @@
     });
   });
 
-  // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -577,7 +565,6 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-  // Modale
   function apriModale() {
     var m = document.getElementById('inizia-modal');
     m.style.display = 'flex';
