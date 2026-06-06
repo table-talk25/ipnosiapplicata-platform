@@ -372,3 +372,301 @@ Spostare immediatamente in una variabile d'ambiente N8N:
 7. N8N Quiz — aggiungere nodo utente dormiente
 8. N8N Stripe — creare workflow pagamento
 9. Diario Reset — salvare su PocketBase
+
+---
+
+## Struttura completa del database PocketBase
+
+### Come importare una collection in PocketBase
+
+1. Vai su `https://api.ipnosiapplicata.it/_/`
+2. Settings → Import collections
+3. Incolla il JSON della collection (deve essere un array `[{...}]`)
+4. Clicca **merge** — non delete, non replace
+5. Se appare il messaggio "Replace with original IDs" clicca il pulsante
+6. Conferma l'import
+
+---
+
+### Mappa delle collection e relazioni
+
+```
+users (auth)
+├── quiz_responses (n) — ogni risposta al quiz è collegata a un utente
+├── purchases (n) — ogni acquisto è collegato a un utente
+├── progress (n) — un record per ogni prodotto acquistato
+├── journey (n) — log cronologico di ogni azione
+├── sessions (n) — sessioni 1:1 con Cristian
+│   ├── exercises (n) — esercizi assegnati dopo ogni sessione
+│   └── audio_tracks (n) — induzioni audio assegnate dopo ogni sessione
+└── maps (1) — una sola mappa per utente
+    └── map_updates (n) — ogni aggiornamento alla mappa è un record separato
+```
+
+---
+
+### Dettaglio collection — perché esiste e come si usa
+
+**`users`**
+Estende la collection auth nativa di PocketBase. Contiene tutti gli utenti della piattaforma.
+- `status: lead` → ha fatto il quiz ma non ha ancora acquistato
+- `status: active` → ha acquistato almeno un prodotto
+- `quiz_profile` → lettera A/B/C/D assegnata dal quiz
+- Creato da N8N quando l'utente completa il quiz (account dormiente)
+- Attivato da N8N quando arriva il pagamento Stripe
+
+**`quiz_responses`**
+Registra il risultato del quiz per ogni utente. Creato da N8N al completamento del quiz.
+- `profile_result` → lettera A/B/C/D
+- `funnel_stage` → traccia dove si trova il lead nel funnel
+- `user` → relazione con users (opzionale — viene collegato dopo la creazione dell'account)
+
+**`purchases`**
+Ogni acquisto confermato da Stripe. Creato da N8N al completamento del pagamento.
+- `product` → nome prodotto: `reset-notturno`, `autostima-21`, `sessioni-1to1`, `sessione-svolta`, `percorso-custom`
+- `status` → `pending` (in attesa), `active` (confermato), `completed` (percorso finito), `refunded`, `expired`
+- IMPORTANTE: nel codice frontend il campo si chiama `product` — NON `product_id`
+- IMPORTANTE: per verificare se un utente ha accesso a un prodotto filtrare per `status = "active"`
+
+**`progress`**
+Traccia l'avanzamento dell'utente in ogni corso. Un record per coppia utente+prodotto.
+- `product_id` → es. `reset-notturno` (qui si chiama `product_id`, diverso da purchases)
+- `completed_steps` → array JSON con i numeri degli step completati es. `[1, 2, 3]`
+- `current_step` → step corrente
+- Indice univoco su `user + product_id` — impossibile avere duplicati
+- Creato da N8N quando viene confermato l'acquisto
+- Aggiornato dal frontend quando l'utente completa un giorno/step
+
+**`journey`**
+Log cronologico immutabile di ogni azione dell'utente. Alimenta la pagina `/percorso/`.
+- `type` → testo libero con valori convenzionali: `quiz`, `acquisto`, `reset_giorno`, `sessione`, `esercizio`, `audio`, `sistema`
+- `updateRule` e `deleteRule` sono `null` — nessuno può modificare o cancellare eventi
+- Scritto da N8N per eventi automatici (acquisto, sessione)
+- Scritto dal frontend per azioni dell'utente (completamento giorno, ascolto audio)
+
+**`sessions`**
+Sessioni 1:1 tra utente e Cristian. Create e gestite solo da Cristian via admin o N8N.
+- `status` → `scheduled`, `live`, `completed`, `cancelled`
+- `video_url` → link Twilio generato prima della sessione
+- `recap_argomenti`, `recap_progressi`, `recap_followup` → compilati da N8N post sessione via AI
+- `recording_url`, `transcript_url` → usati da N8N per il flusso trascrizione → recap
+
+**`exercises`**
+Esercizi assegnati da Cristian dopo ogni sessione. 
+- Collegati a una sessione tramite relazione `session`
+- L'utente può aggiornare `completed`, `completed_at` e `notes`
+- L'utente NON può creare o cancellare esercizi — solo Cristian via admin o N8N
+
+**`audio_tracks`**
+Induzioni audio — sia generali che personalizzate.
+- `type: general` → visibile a tutti gli utenti autenticati
+- `type: personalized` → visibile solo all'utente proprietario
+- `product_id` → es. `reset-notturno` se l'induzione è parte di un corso
+- `day` → giorno di riferimento per corsi giornalieri
+- File audio protetto — non accessibile senza autenticazione
+
+**`maps`**
+La mappa personale del cliente. Una sola per utente (indice univoco).
+- `profilo` → testo narrativo del profilo di partenza
+- `profilo_tags` → JSON array con oggetti `{icon, label, value}`
+- Creata da N8N dopo il quiz
+- Aggiornata da Cristian via pannello admin dopo ogni sessione
+
+**`map_updates`**
+Ogni aggiornamento alla mappa è un record separato — permette di vedere la storia completa.
+- `type` → `blocco`, `credenza`, `progresso`, `profilo`
+- Per tipo `credenza`: `content_before` = credenza limitante, `content_after` = nuova verità
+- Per tipo `blocco`: `status` = `in_corso` o `lavorato`
+- `cascadeDelete: true` — se si cancella la mappa, si cancellano anche tutti gli aggiornamenti
+
+---
+
+### Collection che NON abbiamo creato noi
+
+Se nel pannello PocketBase trovi collection con nomi diversi da quelli elencati sopra (es. `enrollments`, `courses`, `modules` o altri), sono state create da sessioni precedenti con altri strumenti e non fanno parte dell'architettura attuale. Ignorale o chiedere conferma prima di usarle.
+
+---
+
+### Nota su `journal_entries`
+
+La collection `journal_entries` (per salvare le risposte al diario del Reset Notturno) non è ancora stata creata. Va aggiunta. Struttura:
+
+| Campo | Tipo | Note |
+|-------|------|------|
+| `user` | Relation → users | |
+| `product_id` | Text | Es. `reset-notturno` |
+| `day` | Number | Giorno 1-7 |
+| `s1` | Text | Il Respiro del Risveglio |
+| `s2a` | Text | Il Vecchio Seme |
+| `s2b` | Text | La Nuova Verità |
+| `s3` | Text | L'Evidenza del Cambiamento |
+| `s4` | Text | L'Ancoraggio e il Sigillo |
+| `completed` | Bool | Default false |
+| `completed_at` | Date | |
+
+Regole: `createRule` e `updateRule` = `user = @request.auth.id`. Indice univoco su `user + product_id + day`.
+
+
+---
+
+## Formato JSON corretto per importare collection in PocketBase
+
+**IMPORTANTE — Cowork non deve usare il formato semplificato.**
+
+Il formato semplificato con `options: {}` NON funziona con PocketBase. Genera errori di validazione.
+
+### Il formato corretto ha queste regole
+
+**Regola 1 — ogni campo deve avere un `id` univoco**
+L'id è una stringa alfanumerica di circa 10 caratteri. Non può essere vuoto o mancante.
+
+**Regola 2 — la struttura dei parametri è piatta, non dentro `options`**
+```json
+// SBAGLIATO — non funziona
+{
+  "name": "user",
+  "type": "relation",
+  "options": {
+    "collectionId": "_pb_users_auth_",
+    "maxSelect": 1
+  }
+}
+
+// CORRETTO — funziona
+{
+  "id": "relation2375276105",
+  "name": "user",
+  "type": "relation",
+  "collectionId": "_pb_users_auth_",
+  "maxSelect": 1,
+  "minSelect": 0,
+  "cascadeDelete": false,
+  "hidden": false,
+  "presentable": false,
+  "required": true,
+  "system": false
+}
+```
+
+**Regola 3 — ogni tipo di campo ha parametri specifici obbligatori**
+
+| Tipo | Parametri obbligatori aggiuntivi |
+|------|----------------------------------|
+| `text` | `autogeneratePattern`, `max`, `min`, `pattern`, `primaryKey` |
+| `number` | `max`, `min`, `onlyInt` |
+| `select` | `maxSelect`, `values: []` |
+| `relation` | `collectionId`, `maxSelect`, `minSelect`, `cascadeDelete` |
+| `bool` | nessuno aggiuntivo |
+| `date` | nessuno aggiuntivo |
+| `file` | `maxSelect`, `maxSize`, `mimeTypes`, `protected`, `thumbs` |
+| `json` | `maxSize` |
+| `email` | `exceptDomains`, `onlyDomains` |
+
+**Regola 4 — il JSON deve essere sempre un array**
+```json
+[ { ...collection... } ]
+```
+Mai un oggetto singolo senza le parentesi quadre.
+
+**Regola 5 — usare sempre `merge` in fase di import**
+Mai `delete` o `replace` — si perdono i dati esistenti.
+
+### Esempio di campo corretto per ogni tipo comune
+
+```json
+// TEXT
+{
+  "autogeneratePattern": "",
+  "help": "",
+  "hidden": false,
+  "id": "text1704208859",
+  "max": 0,
+  "min": 0,
+  "name": "nome_campo",
+  "pattern": "",
+  "presentable": false,
+  "primaryKey": false,
+  "required": false,
+  "system": false,
+  "type": "text"
+}
+
+// NUMBER
+{
+  "help": "",
+  "hidden": false,
+  "id": "number2349504346",
+  "max": null,
+  "min": 0,
+  "name": "nome_campo",
+  "onlyInt": true,
+  "presentable": false,
+  "required": false,
+  "system": false,
+  "type": "number"
+}
+
+// SELECT
+{
+  "help": "",
+  "hidden": false,
+  "id": "select3467104688",
+  "maxSelect": 1,
+  "name": "nome_campo",
+  "presentable": false,
+  "required": false,
+  "system": false,
+  "type": "select",
+  "values": ["valore1", "valore2", "valore3"]
+}
+
+// RELATION
+{
+  "cascadeDelete": false,
+  "collectionId": "_pb_users_auth_",
+  "help": "",
+  "hidden": false,
+  "id": "relation2375276105",
+  "maxSelect": 1,
+  "minSelect": 0,
+  "name": "user",
+  "presentable": false,
+  "required": true,
+  "system": false,
+  "type": "relation"
+}
+
+// BOOL
+{
+  "help": "",
+  "hidden": false,
+  "id": "bool3249243051",
+  "name": "nome_campo",
+  "presentable": false,
+  "required": false,
+  "system": false,
+  "type": "bool"
+}
+
+// DATE
+{
+  "help": "",
+  "hidden": false,
+  "id": "date1602912116",
+  "name": "nome_campo",
+  "presentable": false,
+  "required": false,
+  "system": false,
+  "type": "date"
+}
+```
+
+### Quando devi creare una collection nuova
+
+1. Copia uno degli esempi di collection esistenti in questo briefing
+2. Cambia `id` della collection con una stringa univoca es. `pbc_nome_collection_001`
+3. Aggiorna `name`, `listRule`, `viewRule`, `createRule`, `updateRule`, `deleteRule`
+4. Per ogni campo: copia il template del tipo corretto, assegna un `id` univoco, cambia `name`
+5. Aggiungi `indexes` se servono indici univoci
+6. Avvolgi tutto in `[...]`
+7. Importa con merge
