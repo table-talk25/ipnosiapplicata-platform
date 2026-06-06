@@ -380,7 +380,6 @@
             const rec = await pb.collection('maps').getFirstListItem(`user='${this.user.id}'`);
             this.map.profilo = rec.profilo || '';
             this.map.profiloTags = Array.isArray(rec.profilo_tags) ? rec.profilo_tags : [];
-            this.map.blocchi = Array.isArray(rec.blocchi) ? rec.blocchi : [];
             this.lastUpdate = rec.updated
               ? new Date(rec.updated).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'})
               : '—';
@@ -389,27 +388,33 @@
             console.warn('maps error:', e.message);
           }
 
-          // Carica aggiornamenti (credenze e progressi)
+          // Carica aggiornamenti (blocchi, credenze, progressi)
           try {
-            const upd = await pb.collection('map_updates').getList(1, 100, {
+            const upd = await pb.collection('map_updates').getFullList({
               filter: `user='${this.user.id}'`,
               sort: '-created'
             });
-            this.map.credenze = upd.items
+            this.map.blocchi = upd
+              .filter(u => u.type === 'blocco')
+              .map(u => ({
+                id: u.id, title: u.title || '', lavorato: u.status === 'lavorato',
+                desc: u.content || '', session: 'Sessione ' + (u.session_number || '—')
+              }));
+            this.map.credenze = upd
               .filter(u => u.type === 'credenza')
               .map(u => ({
-                id: u.id, before: u.before || '', after: u.after || '',
-                session: u.session_num || '', date: u.created
+                id: u.id, before: u.content_before || '', after: u.content_after || '',
+                session: u.session_number || '', date: u.created
                   ? new Date(u.created).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'}) : ''
               }));
-            this.map.progressi = upd.items
+            this.map.progressi = upd
               .filter(u => u.type === 'progresso')
               .map(u => ({
-                id: u.id, text: u.text || '',
-                session: u.session_num || '', date: u.created
+                id: u.id, text: u.content || '',
+                session: u.session_number || '', date: u.created
                   ? new Date(u.created).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'}) : ''
               }));
-            const sessionNums = upd.items.map(u => u.session_num).filter(Boolean);
+            const sessionNums = upd.map(u => u.session_number).filter(Boolean);
             if (sessionNums.length) this.sessionCount = Math.max(...sessionNums);
           } catch(e) {
             console.warn('map_updates error:', e.message);
