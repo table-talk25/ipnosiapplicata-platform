@@ -335,55 +335,65 @@
         showUserMenu: false,
         filter: 'all',
         startDate: '15 maggio 2026',
-        stats: { days: 15, sessions: 2, exercises: 5, audio: 6 },
-        events: [
-          { id:10, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 3', time:'29 mag, 07:12',
-            desc:'Sezione "L\'Evidenza del Cambiamento" completata. Reset Notturno Giorno 3.',
-            link:'/reset-notturno/giorno.html?day=3', note:null },
-          { id:9, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Induzione ascoltata — Notte 3', time:'28 mag, 23:05',
-            desc:'Induzione notturna Giorno 3 del Reset. Durata: 18 minuti.', link:null, note:null },
-          { id:8, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 2', time:'28 mag, 07:44',
-            desc:'Tutte e 4 le sezioni completate.', link:'/reset-notturno/giorno.html?day=2', note:null },
-          { id:7, month:'Maggio 2026', type:'sessione', typeLabel:'Sessione 1:1', chipColor:'blue', nodeColor:'blue', iconColor:'#3A63FF', icon:'video_call',
-            title:'Sessione 2 — Ancoraggio del Valore', time:'24 mag, 18:00',
-            desc:'Sessione di 60 minuti. Lavoro sulla credenza "Non merito di avere successo".',
-            link:null, note:'Marco ha avuto un momento di svolta significativo. La credenza limitante si è indebolita visibilmente nel corso della sessione.' },
-          { id:6, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Induzione ascoltata — Notte 2', time:'23 mag, 22:50',
-            desc:'Induzione notturna Giorno 2 del Reset. Durata: 18 minuti.', link:null, note:null },
-          { id:5, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 1', time:'16 mag, 08:01',
-            desc:'Primo diario completato.', link:'/reset-notturno/giorno.html?day=1', note:null },
-          { id:4, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Prima induzione ascoltata — Notte 1', time:'15 mag, 23:18',
-            desc:'Prima induzione notturna. Inizio del Reset Notturno.', link:null, note:null },
-          { id:3, month:'Maggio 2026', type:'corso', typeLabel:'Corso', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'school',
-            title:'Reset Notturno sbloccato', time:'15 mag, 20:14',
-            desc:'Accesso al programma Reset Notturno — 7 giorni di riprogrammazione notturna.', link:'/reset-notturno/dashboard.html', note:null },
-          { id:2, month:'Maggio 2026', type:'sessione', typeLabel:'Sessione 1:1', chipColor:'blue', nodeColor:'blue', iconColor:'#3A63FF', icon:'video_call',
-            title:'Sessione 1 — Mappatura iniziale', time:'15 mag, 18:00',
-            desc:'Prima sessione con Cristian. Costruzione del profilo di partenza.',
-            link:null, note:'Primo incontro molto promettente. Marco porta consapevolezza e motivazione genuina.' },
-          { id:1, month:'Maggio 2026', type:'corso', typeLabel:'Inizio', chipColor:'grey', nodeColor:'grey', iconColor:'#bccac3', icon:'flag',
-            title:'Iscrizione alla piattaforma', time:'15 mag, 10:32',
-            desc:'Account creato. Benvenuto nel percorso IpnosiApplicata.', link:null, note:null },
-        ],
+        stats: { days: 0, sessions: 0, exercises: 0, audio: 0 },
+        events: [],
         get filteredGroups() {
           const evs = this.filter === 'all' ? this.events : this.events.filter(e => e.type === this.filter);
           const grouped = {};
           evs.forEach(e => { if (!grouped[e.month]) grouped[e.month] = []; grouped[e.month].push(e); });
           return Object.entries(grouped).map(([month, events]) => ({ month, events }));
         },
-        init() {
+        async init() {
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
-          this.user = pb.authStore.model || {};
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+
+          this.user = pb.authStore.model;
+          const uid = this.user.id;
 
           var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
           renderNavAvatar(avatarUrl, initial);
+
+          // Carica journey reale
+          try {
+            const journeyRes = await pb.collection('journey').getFullList({
+              filter: `user='${uid}'`,
+              sort: '-created'
+            });
+
+            const typeLabel  = { quiz:'Quiz', acquisto:'Acquisto', reset_giorno:'Esercizio', sessione:'Sessione 1:1', esercizio:'Esercizio', audio:'Audio', sistema:'Sistema' };
+            const chipColor  = { sessione:'blue', acquisto:'teal', reset_giorno:'teal', audio:'gold', quiz:'teal', sistema:'grey' };
+            const iconColor  = { sessione:'#3A63FF', acquisto:'#49C7A5', reset_giorno:'#49C7A5', audio:'#C9A45C', quiz:'#49C7A5', sistema:'#bccac3' };
+
+            this.events = journeyRes.map(j => ({
+              id: j.id,
+              month: new Date(j.created).toLocaleDateString('it-IT', { month:'long', year:'numeric' }),
+              type: j.type,
+              typeLabel: typeLabel[j.type] || j.type,
+              chipColor: chipColor[j.type] || 'grey',
+              nodeColor: chipColor[j.type] || 'grey',
+              iconColor: iconColor[j.type] || '#bccac3',
+              icon: j.icon || 'circle',
+              title: j.title,
+              time: new Date(j.created).toLocaleDateString('it-IT', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }),
+              desc: j.description || '',
+              note: j.note || null,
+              link: j.link || null
+            }));
+
+            this.stats.sessions  = this.events.filter(e => e.type === 'sessione').length;
+            this.stats.exercises = this.events.filter(e => e.type === 'esercizio' || e.type === 'reset_giorno').length;
+            this.stats.audio     = this.events.filter(e => e.type === 'audio').length;
+
+            if (journeyRes.length > 0) {
+              const first = new Date(journeyRes[journeyRes.length - 1].created);
+              this.stats.days = Math.floor((new Date() - first) / (1000 * 60 * 60 * 24));
+              this.startDate  = first.toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+            }
+          } catch(e) {
+            console.warn('Journey non trovata:', e.message);
+          }
 
           setTimeout(() => {
             const obs = new IntersectionObserver(entries => {

@@ -365,6 +365,25 @@
             this.syncStatus = 'offline';
           }
 
+          // Salva il diario su PocketBase
+          try {
+            await pb.collection('journal_entries').create({
+              user: uid,
+              product_id: PRODUCT_ID,
+              day: this.day.num,
+              s1: this.journal.p1,
+              s2a: this.journal.p2a,
+              s2b: this.journal.p2b,
+              s3: this.journal.p3,
+              s4: this.journal.p4,
+              completed: true,
+              completed_at: new Date().toISOString()
+            });
+          } catch(e) {
+            console.warn('Salvataggio diario PocketBase fallito:', e.message);
+            // Il fallback localStorage è già stato salvato sopra
+          }
+
           this.isSaved = true;
           this.saving = false;
         },
