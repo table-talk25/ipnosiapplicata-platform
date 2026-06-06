@@ -1,0 +1,553 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "quiz-coraggio-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-400, -160],
+      "id": "53d58e3f-52e4-4b9d-ab16-b72ee7edd892",
+      "name": "Webhook1",
+      "webhookId": "d14780ac-cf64-4683-9821-3875ca15dfe3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "f3d27f27-2eae-4756-8fa2-86ebb1bc5cba", "name": "first_name", "value": "={{ $json.body.first_name }}", "type": "string"},
+            {"id": "6e08a30d-c5a7-429d-909f-5436adca9bd7", "name": "email", "value": "={{ $json.body.email }}", "type": "string"},
+            {"id": "680b23bd-c09d-4d8d-9e8d-23dc41ded757", "name": "source", "value": "={{ $json.body.source }}", "type": "string"},
+            {"id": "e3fdd01a-6eb8-42b3-a21c-dd6a8f485799", "name": "profile_result", "value": "={{ $json.body.profile_result }}", "type": "string"},
+            {"id": "c4c88ec9-b475-4e33-a11a-1f79ed6bdee5", "name": "quiz_answers_json", "value": "={{ $json.body.quiz_answers_json }}", "type": "string"},
+            {"id": "7b5f84f3-b444-41e8-8543-f67fbf1348bb", "name": "consent_privacy", "value": "={{ $json.body.consent_privacy }}", "type": "boolean"},
+            {"id": "bf27f325-101f-44d6-b096-e84a8f7396cd", "name": "consent_marketing", "value": "={{ $json.body.consent_marketing }}", "type": "boolean"},
+            {"id": "1c05ea89-f67b-4b6d-8dfd-f88fc692e45e", "name": "submitted_at", "value": "={{ $json.body.submitted_at }}", "type": "string"},
+            {"id": "732f337c-dde5-47c3-89f2-ad5ac15c13f8", "name": "website", "value": "={{ $json.body.website }}", "type": "string"},
+            {"id": "87a86994-73fe-4aa7-8b14-dfe2a96bec0a", "name": "funnel_stage", "value": "quiz_entered", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-200, -160],
+      "id": "b84556c5-8903-4f99-9492-1cfe61397b11",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+          "conditions": [
+            {"id": "a62b3d12-6c0c-4931-be10-9b629f9c3d68", "leftValue": "={{ $json.first_name }}", "rightValue": "", "operator": {"type": "string", "operation": "notEmpty", "singleValue": true}},
+            {"id": "ac2bdca1-5be8-4d53-9382-0b0dcbf0cc09", "leftValue": "={{$json.email}}", "rightValue": "", "operator": {"type": "string", "operation": "notEmpty", "singleValue": true}},
+            {"id": "cbe02cc2-5734-4c40-a4c5-406527a78cf8", "leftValue": "={{$json.consent_privacy}}", "rightValue": "true", "operator": {"type": "boolean", "operation": "true", "singleValue": true}}
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [0, -160],
+      "id": "765afb9a-996d-4b68-b0db-138a28f1fab8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false,\n  \"message\": \"Dati mancanti o non validi.\"\n}",
+        "options": {"responseCode": 400}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [200, 0],
+      "id": "87ac8042-80ab-4eff-bfc1-59b82427488b",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true,\n  \"message\": \"Lead registrato correttamente\"\n}",
+        "options": {"responseCode": 200}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [200, -320],
+      "id": "b55205ca-5536-4db7-8bd5-22ecd9c5b305",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uUT75FR5j1MFSTwGDXUFYJLIKNjtFOVkG_KxvyCdVy0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uUT75FR5j1MFSTwGDXUFYJLIKNjtFOVkG_KxvyCdVy0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Foglio1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uUT75FR5j1MFSTwGDXUFYJLIKNjtFOVkG_KxvyCdVy0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "created_at": "={{$json.submitted_at}}",
+            "first_name": "={{$json.first_name}}",
+            "email": "={{$json.email}}",
+            "source": "={{$json.source}}",
+            "profile_result": "={{$json.profile_result}}",
+            "quiz_answers_json": "={{$json.quiz_answers_json}}",
+            "consent_privacy": "={{$json.consent_privacy}}",
+            "consent_marketing": "={{$json.consent_marketing}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {"id": "created_at", "displayName": "created_at", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "first_name", "displayName": "first_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "email", "displayName": "email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "source", "displayName": "source", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "profile_result", "displayName": "profile_result", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "quiz_answers_json", "displayName": "quiz_answers_json", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "consent_privacy", "displayName": "consent_privacy", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true},
+            {"id": "consent_marketing", "displayName": "consent_marketing", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true}
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [400, -320],
+      "id": "2cd88c95-e2f2-4c60-a7a4-1cfcfbd273a9",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {"id": "lK5NnHQ2FC0YS0fH", "name": "Google Sheets account"}
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/_superusers/auth-with-password",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"identity\": \"{{ $env.PB_ADMIN_EMAIL }}\",\n  \"password\": \"{{ $env.PB_ADMIN_PASSWORD }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [600, -320],
+      "id": "b4ae4c2d-0a3f-46c2-871a-51845afcfbec",
+      "name": "PocketBase – Login"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/quiz_responses/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "email", "value": "={{ $('Edit Fields1').item.json.email }}"},
+            {"name": "first_name", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
+            {"name": "profile_result", "value": "={{ $('Edit Fields1').item.json.profile_result }}"},
+            {"name": "quiz_answers_json", "value": "={{ $('Edit Fields1').item.json.quiz_answers_json }}"},
+            {"name": "consent_privacy", "value": "={{ $('Edit Fields1').item.json.consent_privacy }}"},
+            {"name": "consent_marketing", "value": "={{ $('Edit Fields1').item.json.consent_marketing }}"},
+            {"name": "source", "value": "={{ $('Edit Fields1').item.json.source }}"},
+            {"name": "funnel_stage", "value": "={{ $('Edit Fields1').item.json.funnel_stage }}"},
+            {"name": "submitted_at", "value": "={{ $('Edit Fields1').item.json.submitted_at }}"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [800, -320],
+      "id": "95d6fb26-3c0f-4de7-b936-b1ab228c7b0c",
+      "name": "PocketBase – Salva Quiz Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "gen-pw-001", "name": "random_password", "value": "={{ $randomString(32) }}", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, -320],
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "name": "Genera Password"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.ipnosiapplicata.it/api/collections/users/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"}
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {"name": "filter", "value": "={{ \"email='\" + $('Edit Fields1').item.json.email + \"'\" }}"},
+            {"name": "perPage", "value": "1"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1200, -320],
+      "id": "a1b2c3d4-0002-0002-0002-000000000002",
+      "name": "Cerca Utente PB"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
+          "conditions": [
+            {"id": "check-exists-001", "leftValue": "={{ $json.totalItems }}", "rightValue": 0, "operator": {"type": "number", "operation": "gt"}}
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [1400, -320],
+      "id": "a1b2c3d4-0003-0003-0003-000000000003",
+      "name": "IF Utente Esiste"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ \"https://api.ipnosiapplicata.it/api/collections/users/records/\" + $('Cerca Utente PB').item.json.items[0].id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "quiz_profile", "value": "={{ $('Edit Fields1').item.json.profile_result }}"},
+            {"name": "quiz_completed_at", "value": "={{ $('Edit Fields1').item.json.submitted_at }}"},
+            {"name": "consent_privacy", "value": "={{ $('Edit Fields1').item.json.consent_privacy }}"},
+            {"name": "consent_marketing", "value": "={{ $('Edit Fields1').item.json.consent_marketing }}"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1600, -160],
+      "id": "a1b2c3d4-0004-0004-0004-000000000004",
+      "name": "Aggiorna Utente Lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/users/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {"name": "email", "value": "={{ $('Edit Fields1').item.json.email }}"},
+            {"name": "first_name", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
+            {"name": "quiz_profile", "value": "={{ $('Edit Fields1').item.json.profile_result }}"},
+            {"name": "quiz_completed_at", "value": "={{ $('Edit Fields1').item.json.submitted_at }}"},
+            {"name": "status", "value": "lead"},
+            {"name": "source", "value": "={{ $('Edit Fields1').item.json.source }}"},
+            {"name": "consent_privacy", "value": "={{ $('Edit Fields1').item.json.consent_privacy }}"},
+            {"name": "consent_marketing", "value": "={{ $('Edit Fields1').item.json.consent_marketing }}"},
+            {"name": "password", "value": "={{ $('Genera Password').item.json.random_password }}"},
+            {"name": "passwordConfirm", "value": "={{ $('Genera Password').item.json.random_password }}"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1600, -480],
+      "id": "a1b2c3d4-0005-0005-0005-000000000005",
+      "name": "Crea Utente Dormiente"
+    },
+    {
+      "parameters": {
+        "chatId": "5827745221",
+        "text": "=🔥 Nuovo lead Quiz Coraggio\n👤 Nome: {{ $('Edit Fields1').item.json.first_name }}\n📧 Email: {{ $('Edit Fields1').item.json.email }}\n🧠 Profilo: {{ $('Edit Fields1').item.json.profile_result }} – {{ $('Edit Fields1').item.json.profile_result === 'A' ? 'Il Perfezionista Bloccato' : $('Edit Fields1').item.json.profile_result === 'B' ? 'Il Guardiano del Consenso' : $('Edit Fields1').item.json.profile_result === 'C' ? 'Il Critico Instancabile' : \"L'Esploratore Esitante\" }}\n🕒 {{ $now.setZone('Europe/Rome').toFormat('dd/MM/yyyy') }} alle {{ $now.setZone('Europe/Rome').toFormat('HH:mm') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1800, -320],
+      "id": "da218016-4792-4c7d-904e-f53bd1159e51",
+      "name": "Send a text message1",
+      "webhookId": "d0a1b98b-519f-40eb-9cb5-9c8d075766f9",
+      "credentials": {
+        "telegramApi": {"id": "tq99ELJVT7yul1td", "name": "Telegram account"}
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $('Edit Fields1').item.json.profile_result }}", "rightValue": "A", "operator": {"type": "string", "operation": "equals"}, "id": "f945db60-1a0b-42c0-b4f0-3bfaa89c45a5"}],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $('Edit Fields1').item.json.profile_result }}", "rightValue": "B", "operator": {"type": "string", "operation": "equals"}, "id": "8b1662e2-c7dd-4273-9989-b517fed26bd6"}],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $('Edit Fields1').item.json.profile_result }}", "rightValue": "C", "operator": {"type": "string", "operation": "equals"}, "id": "108fed74-9ac3-4077-bb5d-12c852ba260b"}],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+                "conditions": [{"leftValue": "={{ $('Edit Fields1').item.json.profile_result }}", "rightValue": "D", "operator": {"type": "string", "operation": "equals"}, "id": "9815c20b-3992-4407-96a9-168b68a9e79d"}],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [2000, -320],
+      "id": "87e264a8-868d-4c39-b788-fd136f52ef77",
+      "name": "Switch Profilo"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "set-url-a", "name": "profilo_url", "value": "https://cristianlecca.it/il-perfezionista-bloccato/", "type": "string"},
+            {"id": "set-nome-a", "name": "profilo_nome", "value": "Il Perfezionista Bloccato", "type": "string"},
+            {"id": "set-intro-a", "name": "profilo_intro", "value": "Cerchi condizioni perfette prima di agire. Ma la perfezione non arriva mai — e intanto il tempo passa.", "type": "string"},
+            {"id": "set-blocco-titolo-a", "name": "blocco_titolo", "value": "Il perfezionismo come prigione", "type": "string"},
+            {"id": "set-blocco-desc-a", "name": "blocco_descrizione", "value": "La tua mente impone standard impossibili. Ogni azione sembra insufficiente, ogni risultato migliorabile. Questo loop mentale ti esaurisce e ti tiene fermo proprio quando vorresti andare avanti.", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2200, -480],
+      "id": "0bce3656-65cd-475d-a93c-d74586a46061",
+      "name": "Set URL - Perfezionista"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "set-url-b", "name": "profilo_url", "value": "https://cristianlecca.it/il-guardiano-del-consenso/", "type": "string"},
+            {"id": "set-nome-b", "name": "profilo_nome", "value": "Il Guardiano del Consenso", "type": "string"},
+            {"id": "set-intro-b", "name": "profilo_intro", "value": "Il giudizio degli altri pesa piu delle tue scelte. Vivi per approvazione invece che per direzione.", "type": "string"},
+            {"id": "set-blocco-titolo-b", "name": "blocco_titolo", "value": "La paura del giudizio come bussola", "type": "string"},
+            {"id": "set-blocco-desc-b", "name": "blocco_descrizione", "value": "Ogni decisione passa prima dal filtro di cosa penseranno gli altri. Dici si quando vorresti dire no. Ti esponi meno per evitare di deludere. Il risultato: perdi te stesso cercando di accontentare tutti.", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2200, -320],
+      "id": "d224bd89-fecb-49f2-a015-f8ed416c9943",
+      "name": "Set URL - Guardiano"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "set-url-c", "name": "profilo_url", "value": "https://cristianlecca.it/il-critico-instancabile/", "type": "string"},
+            {"id": "set-nome-c", "name": "profilo_nome", "value": "Il Critico Instancabile", "type": "string"},
+            {"id": "set-intro-c", "name": "profilo_intro", "value": "Hai una voce interna che non si ferma mai. Critica, sminuisce, dubita. E non ti lascia in pace.", "type": "string"},
+            {"id": "set-blocco-titolo-c", "name": "blocco_titolo", "value": "Il sabotatore interiore", "type": "string"},
+            {"id": "set-blocco-desc-c", "name": "blocco_descrizione", "value": "Il tuo critico interno lavora senza sosta. Trasforma ogni successo in fortuna e ogni errore in conferma di non essere abbastanza. Non e lucidita — e un pattern mentale che si puo riscrivere.", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2200, -160],
+      "id": "369d92a3-1a89-4e66-83b6-cd98b03f07d5",
+      "name": "Set URL - Critico"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {"id": "set-url-d", "name": "profilo_url", "value": "https://cristianlecca.it/l-esploratore-esitante/", "type": "string"},
+            {"id": "set-nome-d", "name": "profilo_nome", "value": "L'Esploratore Esitante", "type": "string"},
+            {"id": "set-intro-d", "name": "profilo_intro", "value": "Vedi chiaramente dove vuoi andare. Ma qualcosa ti frena proprio sul punto di partire.", "type": "string"},
+            {"id": "set-blocco-titolo-d", "name": "blocco_titolo", "value": "Il blocco della partenza", "type": "string"},
+            {"id": "set-blocco-desc-d", "name": "blocco_descrizione", "value": "Hai la visione, forse anche il piano. Ma quando arriva il momento di agire, scatta una resistenza sottile. La distrazione, il rimandare, il cercare ancora un po' di chiarezza. Il blocco non e la mancanza di coraggio — e dove vive quel blocco.", "type": "string"}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2200, 0],
+      "id": "115bfc44-b7cb-40dd-9290-5d8eec0d55ef",
+      "name": "Set URL - Esploratore"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d3e712e5-cc50-4f96-9bf5-b8a3a39a1aed",
+              "name": "email_params",
+              "value": "={{ JSON.stringify({ \"first_name\": $('Edit Fields1').item.json.first_name, \"profile_name\": $json.profilo_nome, \"profile_intro\": $json.profilo_intro, \"block_title\": $json.blocco_titolo, \"block_description\": $json.blocco_descrizione, \"profile_url\": $json.profilo_url }) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [2400, -320],
+      "id": "55d92e98-5c53-427f-94a6-bf6d2ce920df",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"to\": [\n    {\n      \"email\": \"{{ $('Edit Fields1').item.json.email }}\",\n      \"name\": \"{{ $('Edit Fields1').item.json.first_name }}\"\n    }\n  ],\n  \"templateId\": 1,\n  \"params\": {{ $json.email_params }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2600, -320],
+      "id": "53bc248a-50d2-4d7f-b801-7caee50086e9",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {"id": "KbelHAg011Z4ek1D", "name": "Brevo Email"},
+        "sendInBlueApi": {"id": "2owiAhK5rQwPPldt", "name": "Brevo account 2"}
+      }
+    }
+  ],
+  "connections": {
+    "Webhook1": {
+      "main": [[{"node": "Edit Fields1", "type": "main", "index": 0}]]
+    },
+    "Edit Fields1": {
+      "main": [[{"node": "If1", "type": "main", "index": 0}]]
+    },
+    "If1": {
+      "main": [
+        [{"node": "Respond to Webhook1", "type": "main", "index": 0}],
+        [{"node": "Respond to Webhook3", "type": "main", "index": 0}]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [[{"node": "Append row in sheet1", "type": "main", "index": 0}]]
+    },
+    "Append row in sheet1": {
+      "main": [[{"node": "PocketBase – Login", "type": "main", "index": 0}]]
+    },
+    "PocketBase – Login": {
+      "main": [[{"node": "PocketBase – Salva Quiz Response", "type": "main", "index": 0}]]
+    },
+    "PocketBase – Salva Quiz Response": {
+      "main": [[{"node": "Genera Password", "type": "main", "index": 0}]]
+    },
+    "Genera Password": {
+      "main": [[{"node": "Cerca Utente PB", "type": "main", "index": 0}]]
+    },
+    "Cerca Utente PB": {
+      "main": [[{"node": "IF Utente Esiste", "type": "main", "index": 0}]]
+    },
+    "IF Utente Esiste": {
+      "main": [
+        [{"node": "Aggiorna Utente Lead", "type": "main", "index": 0}],
+        [{"node": "Crea Utente Dormiente", "type": "main", "index": 0}]
+      ]
+    },
+    "Aggiorna Utente Lead": {
+      "main": [[{"node": "Send a text message1", "type": "main", "index": 0}]]
+    },
+    "Crea Utente Dormiente": {
+      "main": [[{"node": "Send a text message1", "type": "main", "index": 0}]]
+    },
+    "Send a text message1": {
+      "main": [[{"node": "Switch Profilo", "type": "main", "index": 0}]]
+    },
+    "Switch Profilo": {
+      "main": [
+        [{"node": "Set URL - Perfezionista", "type": "main", "index": 0}],
+        [{"node": "Set URL - Guardiano", "type": "main", "index": 0}],
+        [{"node": "Set URL - Critico", "type": "main", "index": 0}],
+        [{"node": "Set URL - Esploratore", "type": "main", "index": 0}]
+      ]
+    },
+    "Set URL - Perfezionista": {
+      "main": [[{"node": "Edit Fields", "type": "main", "index": 0}]]
+    },
+    "Set URL - Guardiano": {
+      "main": [[{"node": "Edit Fields", "type": "main", "index": 0}]]
+    },
+    "Set URL - Critico": {
+      "main": [[{"node": "Edit Fields", "type": "main", "index": 0}]]
+    },
+    "Set URL - Esploratore": {
+      "main": [[{"node": "Edit Fields", "type": "main", "index": 0}]]
+    },
+    "Edit Fields": {
+      "main": [[{"node": "HTTP Request", "type": "main", "index": 0}]]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b74b6912e462770d08e66395db5d0a1ab58e4d1e9c1891b47c6a692abb2b49dd"
+  }
+}

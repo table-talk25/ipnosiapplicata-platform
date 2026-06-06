@@ -347,44 +347,75 @@
 
     function mappaPage() {
       return {
-        user: { name: 'Marco Bianchi' },
+        user: null,
         open1: true, open2: true, open3: true, open4: true,
-        lastUpdate: '27 maggio 2026',
-        sessionCount: 2,
+        lastUpdate: '—',
+        sessionCount: 0,
+        loading: true,
+        noMap: false,
         map: {
-          profilo: 'Marco arriva al percorso con una storia di autosabotaggio nelle relazioni professionali e una profonda difficoltà a riconoscere il proprio valore. Presenta una struttura di pensiero orientata all\'esterno (cerca validazione esterna) e una voce critica interna molto attiva.',
-          profiloTags: [
-            { icon:'psychology',      label:'Modalità prevalente', value:'Iperanalitico, cerca conferme esterne' },
-            { icon:'favorite',        label:'Bisogno primario',     value:'Riconoscimento e senso di appartenenza' },
-            { icon:'warning',         label:'Pattern ricorrente',   value:'Autosabotaggio al momento del successo' },
-            { icon:'self_improvement',label:'Risorsa identificata', value:'Alta capacità empatica e riflessiva' },
-          ],
-          blocchi: [
-            { id:1, title:'Autosabotaggio professionale', lavorato:true,
-              desc:'Tendenza a interrompere o sminuire i successi nel momento in cui si manifestano.',
-              session:'Sessione 1' },
-            { id:2, title:'Conflitto con la figura di autorità', lavorato:false,
-              desc:'Pattern relazionale con i superiori che riattiva dinamiche infantili di approvazione.',
-              session:'Sessione 2' },
-          ],
-          credenze: [
-            { id:1,
-              before:'Non merito di avere successo, prima o poi qualcuno se ne accorge.',
-              after: 'Il mio valore è reale e indipendente dal giudizio degli altri.',
-              session:2, date:'24 maggio 2026' },
-            { id:2,
-              before:'Se mostro debolezza, gli altri ne approfitteranno.',
-              after: 'La vulnerabilità autentica crea connessione. La mia apertura è una forza.',
-              session:1, date:'17 maggio 2026' },
-          ],
-          progressi: [
-            { id:1, text:'Marco dimostra una notevole capacità di insight. Nel giro di due sessioni ha ri-inquadrato completamente il suo rapporto con il successo.', session:2, date:'24 maggio 2026' },
-            { id:2, text:'Primo segnale concreto di cambiamento: ha accettato un riconoscimento professionale senza minimizzarlo.', session:2, date:'24 maggio 2026' },
-            { id:3, text:'L\'ascolto delle induzioni notturne è costante. Marco riporta sogni più vividi e un senso di leggerezza al risveglio.', session:1, date:'17 maggio 2026' },
-          ]
+          profilo: '',
+          profiloTags: [],
+          blocchi: [],
+          credenze: [],
+          progressi: []
         },
-        init() {
-          // TODO: if (!pb.authStore.isValid) window.location.href = '/login/';
+
+        async init() {
+          if (!pb.authStore.isValid) {
+            window.location.href = '/login/';
+            return;
+          }
+          try {
+            await pb.collection('users').authRefresh();
+          } catch(e) {
+            pb.authStore.clear();
+            window.location.href = '/login/';
+            return;
+          }
+          this.user = pb.authStore.model;
+
+          // Carica mappa
+          try {
+            const rec = await pb.collection('maps').getFirstListItem(`user='${this.user.id}'`);
+            this.map.profilo = rec.profilo || '';
+            this.map.profiloTags = Array.isArray(rec.profilo_tags) ? rec.profilo_tags : [];
+            this.map.blocchi = Array.isArray(rec.blocchi) ? rec.blocchi : [];
+            this.lastUpdate = rec.updated
+              ? new Date(rec.updated).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'})
+              : '—';
+          } catch(e) {
+            if (e.status === 404) this.noMap = true;
+            console.warn('maps error:', e.message);
+          }
+
+          // Carica aggiornamenti (credenze e progressi)
+          try {
+            const upd = await pb.collection('map_updates').getList(1, 100, {
+              filter: `user='${this.user.id}'`,
+              sort: '-created'
+            });
+            this.map.credenze = upd.items
+              .filter(u => u.type === 'credenza')
+              .map(u => ({
+                id: u.id, before: u.before || '', after: u.after || '',
+                session: u.session_num || '', date: u.created
+                  ? new Date(u.created).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'}) : ''
+              }));
+            this.map.progressi = upd.items
+              .filter(u => u.type === 'progresso')
+              .map(u => ({
+                id: u.id, text: u.text || '',
+                session: u.session_num || '', date: u.created
+                  ? new Date(u.created).toLocaleDateString('it-IT', {day:'numeric',month:'long',year:'numeric'}) : ''
+              }));
+            const sessionNums = upd.items.map(u => u.session_num).filter(Boolean);
+            if (sessionNums.length) this.sessionCount = Math.max(...sessionNums);
+          } catch(e) {
+            console.warn('map_updates error:', e.message);
+          }
+
+          this.loading = false;
           setTimeout(() => {
             const obs = new IntersectionObserver(entries => {
               entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
