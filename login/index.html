@@ -366,18 +366,22 @@
         },
 
         async sendMagicLink() {
-          if (!this.validate()) return;
-          this.loading = true;
-          this.resetMessages();
-          try {
-            await pb.collection('users').requestOTP(this.form.email);
-            this.magicSent = true;
-          } catch (e) {
-            this.magicSent = true;
-          } finally {
-            this.loading = false;
-          }
-        },
+  if (!this.validate()) return;
+  this.loading = true;
+  this.resetMessages();
+  try {
+    await pb.collection('users').requestOTP(this.form.email);
+    this.magicSent = true;
+  } catch (e) {
+    console.error('OTP error:', e);
+    this.message = {
+      type: 'error',
+      text: 'Impossibile inviare il link. Verifica l\'email inserita o riprova tra poco. (' + (e.message || e.status) + ')'
+    };
+  } finally {
+    this.loading = false;
+  }
+},
 
         async handleOTPCallback(token) {
           this.loading = true;
