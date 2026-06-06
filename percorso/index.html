@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.22.0/dist/pocketbase.umd.js"></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -145,7 +145,6 @@
       </a>
       <div class="flex items-center gap-3 relative">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
-          <!-- Avatar nav: DOM imperativo — foto reale o iniziali -->
           <div id="nav-avatar-wrap" class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center overflow-hidden flex-shrink-0">
             <span id="nav-avatar-initials" class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;"
                   x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
@@ -382,7 +381,6 @@
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
           this.user = pb.authStore.model || {};
 
-          // Renderizza avatar nav — DOM imperativo, identico a impostazioni
           var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
           renderNavAvatar(avatarUrl, initial);
