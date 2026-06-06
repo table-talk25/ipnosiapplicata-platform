@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.25.1/dist/pocketbase.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.22.0/dist/pocketbase.umd.js"></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -275,7 +275,7 @@
                 <div class="credenza-card after" style="border-radius:0;margin-bottom:0;">
                   <p class="text-xs font-semibold text-primary uppercase tracking-wider mb-1">Nuova verità</p>
                   <p class="text-on-surface text-sm font-semibold" x-text="'\u201c' + c.after + '\u201d'"></p>
-                  <p class="ts mt-2" x-text="'Sessione ' + c.session + ' — ' + c.date"></p>
+                  <p class="ts mt-2" x-text="'Sessione ' + c.session + ' \u2014 ' + c.date"></p>
                 </div>
               </div>
             </template>
@@ -304,7 +304,7 @@
                 <span class="material-symbols-outlined text-primary flex-shrink-0" style="font-size:18px">star</span>
                 <div>
                   <p class="text-on-surface text-sm leading-relaxed" x-text="p.text"></p>
-                  <p class="ts mt-1.5" x-text="'Sessione ' + p.session + ' — ' + p.date"></p>
+                  <p class="ts mt-1.5" x-text="'Sessione ' + p.session + ' \u2014 ' + p.date"></p>
                 </div>
               </div>
             </template>
