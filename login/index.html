@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.0/dist/pocketbase.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.22.0/dist/pocketbase.umd.js"></script>
 
   <script id="tailwind-config">
     tailwind.config = {
@@ -366,22 +366,22 @@
         },
 
         async sendMagicLink() {
-  if (!this.validate()) return;
-  this.loading = true;
-  this.resetMessages();
-  try {
-    await pb.collection('users').requestOTP(this.form.email);
-    this.magicSent = true;
-  } catch (e) {
-    console.error('OTP error:', e);
-    this.message = {
-      type: 'error',
-      text: 'Impossibile inviare il link. Verifica l\'email inserita o riprova tra poco. (' + (e.message || e.status) + ')'
-    };
-  } finally {
-    this.loading = false;
-  }
-},
+          if (!this.validate()) return;
+          this.loading = true;
+          this.resetMessages();
+          try {
+            await pb.collection('users').requestOTP(this.form.email);
+            this.magicSent = true;
+          } catch (e) {
+            console.error('OTP error:', e);
+            this.message = {
+              type: 'error',
+              text: 'Impossibile inviare il link. Verifica l\'email inserita o riprova tra poco. (' + (e.message || e.status) + ')'
+            };
+          } finally {
+            this.loading = false;
+          }
+        },
 
         async handleOTPCallback(token) {
           this.loading = true;
