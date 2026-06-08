@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<title>La tua sessione è confermata | Cristian Lecca</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background-color: #101416; color: #F5F7FA; font-family: "Inter", Arial, sans-serif; font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+.email-wrapper { width: 100%; background-color: #101416; padding: 40px 16px; }
+.email-container { max-width: 600px; margin: 0 auto; background-color: #101416; }
+.email-header { text-align: center; padding-bottom: 32px; border-bottom: 1px solid rgba(61,73,68,0.5); margin-bottom: 40px; }
+.email-header a { display: inline-block; }
+.email-header img { height: 36px; width: auto; filter: brightness(2) drop-shadow(0 0 8px rgba(73,199,165,0.25)); }
+.badge { display: inline-block; padding: 6px 16px; background-color: rgba(58,99,255,0.1); border: 1px solid rgba(58,99,255,0.25); border-radius: 99px; font-family: "Inter", Arial, sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #aab8ff; margin-bottom: 24px; }
+.hero-section { text-align: center; margin-bottom: 40px; }
+.greeting { font-family: "Inter", Arial, sans-serif; font-size: 16px; color: #bccac3; margin-bottom: 16px; }
+.hero-title { font-family: "Manrope", Arial, sans-serif; font-weight: 800; font-size: 32px; line-height: 1.2; letter-spacing: -0.02em; color: #F5F7FA; margin-bottom: 20px; }
+.hero-subtitle { font-family: "Inter", Arial, sans-serif; font-size: 16px; line-height: 1.7; color: #bccac3; max-width: 480px; margin: 0 auto; }
+.profile-card { background: rgba(29,32,34,0.6); border: 1px solid rgba(58,99,255,0.2); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+.profile-card-label { font-family: "Inter", Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #C9A45C; margin-bottom: 12px; }
+.profile-card-title { font-family: "Manrope", Arial, sans-serif; font-weight: 700; font-size: 18px; color: #F5F7FA; margin-bottom: 8px; line-height: 1.4; }
+.profile-card-value { font-family: monospace; font-size: 16px; font-weight: 600; color: #F5F7FA; background: rgba(58,99,255,0.08); border: 1px solid rgba(58,99,255,0.15); border-radius: 8px; padding: 10px 16px; display: block; margin-top: 6px; letter-spacing: 0.03em; }
+.divider-line { width: 40px; height: 2px; background-color: #3A63FF; margin: 20px 0; border-radius: 99px; }
+.profile-card-text { font-family: "Inter", Arial, sans-serif; font-size: 15px; line-height: 1.7; color: #bccac3; }
+.steps { margin: 0; padding: 0; list-style: none; }
+.step { display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; border-bottom: 1px solid rgba(61,73,68,0.3); }
+.step:last-child { border-bottom: none; }
+.step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(58,99,255,0.15); border: 1px solid rgba(58,99,255,0.3); color: #aab8ff; font-family: "Manrope", Arial, sans-serif; font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.step-text { font-family: "Inter", Arial, sans-serif; font-size: 14px; color: #bccac3; line-height: 1.6; }
+.step-text strong { color: #F5F7FA; font-weight: 600; }
+.cta-section { text-align: center; margin-bottom: 40px; }
+.cta-button { display: inline-block; background-color: #3A63FF; color: #ffffff !important; font-family: "Inter", Arial, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; text-decoration: none; padding: 16px 36px; border-radius: 99px; text-align: center; }
+.cta-subtext { font-family: "Inter", Arial, sans-serif; font-size: 13px; color: #86948e; margin-top: 12px; }
+.separator { border: none; border-top: 1px solid rgba(61,73,68,0.4); margin: 40px 0; }
+.email-footer { text-align: center; padding-top: 32px; border-top: 1px solid rgba(61,73,68,0.4); }
+.footer-logo img { height: 24px; width: auto; filter: brightness(1.6); margin-bottom: 12px; }
+.footer-text { font-family: "Inter", Arial, sans-serif; font-size: 12px; color: #86948e; line-height: 1.6; margin-bottom: 16px; }
+.footer-links { margin-bottom: 16px; }
+.footer-links a { font-family: "Inter", Arial, sans-serif; font-size: 12px; color: #86948e !important; text-decoration: none; margin: 0 10px; }
+.footer-piva { font-family: "Inter", Arial, sans-serif; font-size: 11px; color: rgba(134,148,142,0.6); }
+</style>
+</head>
+<body>
+<div class="email-wrapper">
+  <div class="email-container">
+
+    <!-- HEADER -->
+    <div class="email-header">
+      <a href="https://cristianlecca.it">
+        <img src="https://img.mailinblue.com/11342390/images/content_library/original/6a1c4d198ffad0a885d9f826.png" alt="Cristian Lecca"/>
+      </a>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero-section">
+      <div class="badge">Sessione 1:1 — Confermata</div>
+      <p class="greeting">Ciao {{ params.first_name }},</p>
+      <h1 class="hero-title">La tua sessione<br/>è confermata.</h1>
+      <p class="hero-subtitle">Hai scelto il tuo slot. Ci vediamo alla data e all'orario che hai selezionato — preparati a fare il lavoro vero.</p>
+    </div>
+
+    <!-- BOX DETTAGLI SESSIONE -->
+    <div class="profile-card">
+      <div class="profile-card-label">Dettagli della sessione</div>
+      <div class="profile-card-title">{{ params.session_date }}</div>
+      <div class="divider-line"></div>
+      <ul class="steps">
+        <li class="step">
+          <div class="step-num">📅</div>
+          <div class="step-text"><strong>Data e orario</strong> — {{ params.session_date }} alle {{ params.session_time }}. La sessione dura 60 minuti.</div>
+        </li>
+        <li class="step">
+          <div class="step-num">💻</div>
+          <div class="step-text"><strong>Videochiamata</strong> — trovi il link di accesso nella tua area riservata, nella sezione Sessioni.</div>
+        </li>
+        <li class="step">
+          <div class="step-num">✏️</div>
+          <div class="step-text"><strong>Prima di arrivare</strong> — pensa a una situazione concreta su cui vuoi lavorare. Più è specifico, meglio lavoriamo.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- BOX CREDENZIALI -->
+    <div class="profile-card">
+      <div class="profile-card-label">I tuoi dati di accesso alla piattaforma</div>
+      <div class="profile-card-title">Email</div>
+      <span class="profile-card-value">{{ params.email }}</span>
+      <div style="margin-top:20px;">
+        <div class="profile-card-title">Password</div>
+        <span class="profile-card-value">{{ params.password }}</span>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <a href="{{ params.login_url }}" class="cta-button">Accedi alla tua area riservata →</a>
+      <p class="cta-subtext">ipnosiapplicata.it</p>
+    </div>
+
+    <hr class="separator"/>
+
+    <!-- FOOTER -->
+    <div class="email-footer">
+      <div class="footer-logo">
+        <img src="https://img.mailinblue.com/11342390/images/content_library/original/6a1c4d198ffad0a885d9f826.png" alt="Cristian Lecca"/>
+      </div>
+      <p class="footer-text">
+        Hypno Mental Coach · Metodo IpnosiApplicata<br/>
+        Hai ricevuto questa email perché hai acquistato una sessione su ipnosiapplicata.it
+      </p>
+      <div class="footer-links">
+        <a href="https://cristianlecca.it/privacy/">Privacy</a>
+        <a href="https://ipnosiapplicata.it/">Sito</a>
+        <a href="{{ unsubscribe }}">Disiscriviti</a>
+      </div>
+      <div class="footer-piva">&copy; 2026 Cristian Lecca — IpnosiApplicata. P.IVA IT12632010018</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

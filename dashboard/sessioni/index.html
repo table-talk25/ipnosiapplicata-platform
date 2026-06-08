@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Le mie Sessioni | IpnosiApplicata</title>
+  <link rel="icon" type="image/png" href="/assets/logoIpnoApp.png">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.22.0/dist/pocketbase.umd.js"></script>
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "background": "#101416", "on-background": "#F5F7FA",
+            "surface": "#101416", "on-surface": "#F5F7FA",
+            "primary": "#49C7A5", "on-primary": "#101416",
+            "secondary": "#3A63FF", "on-secondary": "#FFFFFF",
+            "tertiary": "#C9A45C", "on-tertiary": "#101416",
+            "outline": "#86948e", "outline-variant": "#3d4944",
+            "surface-container": "#1d2022",
+            "surface-container-low": "#191c1e",
+            "surface-container-high": "#272a2d",
+            "surface-container-highest": "#323538",
+            "surface-container-lowest": "#0b0f11",
+            "surface-variant": "#323538",
+            "on-surface-variant": "#bccac3"
+          },
+          borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          fontFamily: { "label-md": ["Inter"], "body-md": ["Inter"], "headline-md": ["Manrope"], "display-lg": ["Manrope"] }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color:#101416; color:#F5F7FA; font-family:'Inter',sans-serif; min-height:100vh; }
+    .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 24; display:inline-block; vertical-align:middle; }
+    .dashboard-nav { position:fixed; top:0; width:100%; z-index:50; background:rgba(16,20,22,0.92); backdrop-filter:blur(20px); border-bottom:1px solid rgba(61,73,68,0.4); }
+    .glass-card { background:rgba(29,32,34,0.6); backdrop-filter:blur(12px); border:1px solid rgba(245,247,250,0.08); }
+    .sidebar { position:fixed; left:0; top:0; height:100vh; width:220px; background:rgba(16,20,22,0.97); border-right:1px solid rgba(61,73,68,0.3); padding-top:80px; z-index:40; display:none; }
+    @media(min-width:1024px){ .sidebar { display:flex; flex-direction:column; padding:80px 16px 24px; } }
+    .sidebar-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; font-size:14px; font-weight:500; color:#bccac3; transition:all 0.2s; cursor:pointer; text-decoration:none; }
+    .sidebar-item:hover { background:rgba(73,199,165,0.08); color:#F5F7FA; }
+    .sidebar-item.active { background:rgba(73,199,165,0.12); color:#49C7A5; }
+    .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:50; background:rgba(16,20,22,0.97); border-top:1px solid rgba(61,73,68,0.3); display:flex; justify-content:space-around; padding:8px 0 max(8px,env(safe-area-inset-bottom)); }
+    @media(min-width:1024px){ .bottom-nav { display:none; } }
+    .bottom-nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:600; color:#bccac3; text-decoration:none; padding:4px 12px; border-radius:8px; transition:color 0.2s; }
+    .bottom-nav-item.active { color:#49C7A5; }
+    .reveal { opacity:0; transform:translateY(16px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+    .session-card { background:rgba(29,32,34,0.6); border:1px solid rgba(245,247,250,0.08); border-radius:20px; transition:all 0.3s ease; }
+    .session-card.upcoming { border-color:rgba(58,99,255,0.25); background:rgba(58,99,255,0.04); }
+    .session-card.live-now { border-color:rgba(73,199,165,0.4); background:rgba(73,199,165,0.06); animation:pulse-border 2s infinite; }
+    @keyframes pulse-border { 0%,100%{ box-shadow:0 0 0 0 rgba(73,199,165,0.2); } 50%{ box-shadow:0 0 0 6px rgba(73,199,165,0); } }
+    .session-card.completed { border-color:rgba(61,73,68,0.4); }
+    .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:99px; font-size:11px; font-weight:600; letter-spacing:0.04em; }
+    .badge.blue { background:rgba(58,99,255,0.12); color:#aab8ff; border:1px solid rgba(58,99,255,0.2); }
+    .badge.teal { background:rgba(73,199,165,0.12); color:#49C7A5; border:1px solid rgba(73,199,165,0.2); }
+    .badge.gold { background:rgba(201,164,92,0.12); color:#C9A45C; border:1px solid rgba(201,164,92,0.2); }
+    .badge.grey { background:rgba(134,148,142,0.1); color:#86948e; border:1px solid rgba(134,148,142,0.2); }
+    .badge.live { background:rgba(73,199,165,0.15); color:#49C7A5; border:1px solid rgba(73,199,165,0.3); }
+    .stat-box { background:rgba(29,32,34,0.6); border:1px solid rgba(245,247,250,0.08); border-radius:16px; padding:20px; text-align:center; }
+    .calendly-wrapper { border-radius:20px; overflow:hidden; border:1px solid rgba(61,73,68,0.4); background:#101416; }
+    .recap-section { background:rgba(16,20,22,0.6); border:1px solid rgba(61,73,68,0.3); border-radius:12px; padding:16px; }
+    .recap-label { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#86948e; margin-bottom:8px; }
+  </style>
+</head>
+
+<body x-data="sessioniPage()" x-init="init()" x-cloak>
+
+  <!-- TOP NAV -->
+  <nav class="dashboard-nav">
+    <div class="flex justify-between items-center px-5 py-4 max-w-6xl mx-auto lg:pl-[240px]">
+      <div class="flex items-center gap-3">
+        <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-7 w-auto">
+        <span class="font-bold text-sm hidden sm:block" style="background:linear-gradient(135deg,#49C7A5,#3A63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-secondary/15 border border-secondary/30 flex items-center justify-center">
+          <span class="material-symbols-outlined text-secondary" style="font-size:16px">person</span>
+        </div>
+        <span class="text-sm font-semibold text-on-surface hidden sm:block" x-text="user?.first_name || ''"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined" style="font-size:20px">home</span> Dashboard</a>
+    <a href="/corsi/" class="sidebar-item"><span class="material-symbols-outlined" style="font-size:20px">school</span> Corsi</a>
+    <a href="/mappa/" class="sidebar-item"><span class="material-symbols-outlined" style="font-size:20px">map</span> La mia Mappa</a>
+    <a href="/percorso/" class="sidebar-item"><span class="material-symbols-outlined" style="font-size:20px">route</span> Percorso</a>
+    <a href="/dashboard/sessioni/" class="sidebar-item active"><span class="material-symbols-outlined" style="font-size:20px">video_call</span> Sessioni</a>
+    <div class="mt-auto pt-4 border-t border-outline-variant/30 space-y-1">
+      <a href="/dashboard/impostazioni/" class="sidebar-item"><span class="material-symbols-outlined" style="font-size:20px">manage_accounts</span> Impostazioni</a>
+      <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400"><span class="material-symbols-outlined" style="font-size:20px">logout</span> Esci</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="pt-20 pb-24 lg:pb-10 px-5 lg:pl-[240px] max-w-6xl mx-auto">
+    <div class="max-w-3xl">
+
+      <!-- HEADER -->
+      <div class="py-8 reveal">
+        <p class="text-secondary font-semibold text-xs uppercase tracking-widest mb-2">Area personale</p>
+        <h1 class="font-bold text-3xl md:text-4xl text-on-surface" style="font-family:'Manrope',sans-serif;">Le mie Sessioni</h1>
+        <p class="text-on-surface-variant mt-2 text-sm">Il tuo percorso individuale con Cristian.</p>
+      </div>
+
+      <!-- STAT BOXES -->
+      <div class="grid grid-cols-3 gap-3 mb-8 reveal">
+        <div class="stat-box">
+          <p class="text-2xl font-extrabold text-secondary" style="font-family:'Manrope',sans-serif;" x-text="totalSessions"></p>
+          <p class="text-on-surface-variant text-xs mt-1">Sessioni totali</p>
+        </div>
+        <div class="stat-box">
+          <p class="text-2xl font-extrabold text-primary" style="font-family:'Manrope',sans-serif;" x-text="completedCount"></p>
+          <p class="text-on-surface-variant text-xs mt-1">Completate</p>
+        </div>
+        <div class="stat-box">
+          <p class="text-2xl font-extrabold text-tertiary" style="font-family:'Manrope',sans-serif;" x-text="remainingCount"></p>
+          <p class="text-on-surface-variant text-xs mt-1">Rimanenti</p>
+        </div>
+      </div>
+
+      <!-- LIVE NOW -->
+      <template x-if="liveSessions.length > 0">
+        <div class="mb-6 reveal">
+          <template x-for="s in liveSessions" :key="s.id">
+            <div class="session-card live-now p-5">
+              <div class="flex items-center gap-3 mb-3">
+                <span class="badge live"><span class="w-1.5 h-1.5 rounded-full bg-primary inline-block mr-1"></span>In corso ora</span>
+              </div>
+              <h3 class="font-bold text-on-surface text-lg" style="font-family:'Manrope',sans-serif;" x-text="s.title || 'Sessione #' + s.number"></h3>
+              <p class="text-on-surface-variant text-sm mt-1" x-text="formatDate(s.scheduled_at) + ' alle ' + formatTime(s.scheduled_at)"></p>
+              <template x-if="s.video_url">
+                <a :href="s.video_url" target="_blank" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-on-primary font-bold text-sm hover:opacity-90 transition-all">
+                  <span class="material-symbols-outlined" style="font-size:18px">video_call</span> Entra nella sessione
+                </a>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <!-- UPCOMING SESSIONS -->
+      <template x-if="upcomingSessions.length > 0">
+        <div class="mb-8 reveal">
+          <h2 class="font-bold text-base text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">Prossime sessioni</h2>
+          <div class="space-y-3">
+            <template x-for="s in upcomingSessions" :key="s.id">
+              <div class="session-card upcoming p-5">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
+                      <span class="material-symbols-outlined text-secondary" style="font-size:20px">event</span>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;" x-text="s.title || 'Sessione #' + s.number"></h3>
+                      <p class="text-on-surface-variant text-xs mt-0.5" x-text="formatDate(s.scheduled_at)"></p>
+                      <p class="text-secondary text-xs font-semibold mt-0.5" x-text="'ore ' + formatTime(s.scheduled_at)"></p>
+                    </div>
+                  </div>
+                  <span class="badge blue flex-shrink-0">Confermata</span>
+                </div>
+                <template x-if="s.video_url">
+                  <div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-on-surface-variant" style="font-size:16px">link</span>
+                    <a :href="s.video_url" target="_blank" class="text-secondary text-xs font-semibold hover:underline">Link videochiamata</a>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- PRENOTA -->
+      <div class="mb-8 reveal" x-show="remainingCount > 0">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-base text-on-surface" style="font-family:'Manrope',sans-serif;">Prenota la tua sessione</h2>
+          <span class="badge teal" x-text="remainingCount + ' slot disponibili'"></span>
+        </div>
+        <p class="text-on-surface-variant text-sm mb-5">Scegli il giorno e l'orario che preferisci tra quelli disponibili. La sessione dura 60 minuti.</p>
+        <div class="calendly-wrapper">
+          <div class="calendly-inline-widget"
+               data-url="https://calendly.com/ipnosiapplicata/sessione-1-1-60-minuti?background_color=101416&text_color=F5F7FA&primary_color=49C7A5&hide_gdpr_banner=1"
+               style="min-width:320px;height:680px;"></div>
+        </div>
+      </div>
+
+      <!-- NO SLOTS LEFT -->
+      <template x-if="remainingCount === 0 && !loading">
+        <div class="mb-8 glass-card rounded-2xl p-6 text-center reveal">
+          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:32px">check_circle</span>
+          <p class="font-bold text-on-surface mt-3 mb-1" style="font-family:'Manrope',sans-serif;">Hai utilizzato tutte le sessioni del pacchetto.</p>
+          <p class="text-on-surface-variant text-sm">Vuoi continuare il percorso? Scrivi a Cristian.</p>
+          <a href="mailto:info@cristianlecca.it" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary text-white font-bold text-sm hover:opacity-90 transition-all">
+            <span class="material-symbols-outlined" style="font-size:16px">mail</span> Contatta Cristian
+          </a>
+        </div>
+      </template>
+
+      <!-- SESSIONI PASSATE -->
+      <template x-if="pastSessions.length > 0">
+        <div class="mb-8 reveal">
+          <h2 class="font-bold text-base text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">Sessioni completate</h2>
+          <div class="space-y-4">
+            <template x-for="s in pastSessions" :key="s.id">
+              <div class="session-card completed p-5">
+                <div class="flex items-start gap-4">
+                  <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary" style="font-size:20px">check_circle</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 class="font-bold text-on-surface text-sm" style="font-family:'Manrope',sans-serif;" x-text="s.title || 'Sessione #' + s.number"></h3>
+                      <span class="badge teal">Completata</span>
+                    </div>
+                    <p class="text-on-surface-variant text-xs" x-text="formatDate(s.scheduled_at)"></p>
+
+                    <!-- Recap -->
+                    <template x-if="s.recap_argomenti || s.recap_progressi || s.recap_followup">
+                      <div class="mt-4 space-y-3">
+                        <template x-if="s.recap_argomenti">
+                          <div class="recap-section">
+                            <p class="recap-label">Cosa abbiamo lavorato</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed" x-text="s.recap_argomenti"></p>
+                          </div>
+                        </template>
+                        <template x-if="s.recap_progressi">
+                          <div class="recap-section">
+                            <p class="recap-label">Progressi osservati</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed" x-text="s.recap_progressi"></p>
+                          </div>
+                        </template>
+                        <template x-if="s.recap_followup">
+                          <div class="recap-section">
+                            <p class="recap-label">Per la prossima volta</p>
+                            <p class="text-on-surface-variant text-sm leading-relaxed" x-text="s.recap_followup"></p>
+                          </div>
+                        </template>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- EMPTY STATE -->
+      <template x-if="sessions.length === 0 && !loading">
+        <div class="glass-card rounded-2xl p-8 text-center reveal">
+          <div class="w-14 h-14 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-secondary" style="font-size:28px">video_call</span>
+          </div>
+          <p class="font-bold text-on-surface mb-1" style="font-family:'Manrope',sans-serif;">Nessuna sessione ancora programmata.</p>
+          <p class="text-on-surface-variant text-sm">Usa il calendario qui sopra per prenotare la tua prima sessione.</p>
+        </div>
+      </template>
+
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav lg:hidden">
+    <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
+    <a href="/corsi/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
+    <a href="/percorso/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
+    <a href="/dashboard/sessioni/" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">video_call</span>Sessioni</a>
+  </nav>
+
+  <!-- FOOTER -->
+  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+      <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
+      <div class="flex gap-5 text-xs">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Calendly script -->
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <script>
+    const PB_URL = 'https://api.ipnosiapplicata.it';
+    const pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
+
+    function sessioniPage() {
+      return {
+        user: null,
+        sessions: [],
+        loading: true,
+        totalSessions: 6,
+
+        get liveSessions()     { return this.sessions.filter(s => s.status === 'live'); },
+        get upcomingSessions() { return this.sessions.filter(s => s.status === 'scheduled'); },
+        get pastSessions()     { return this.sessions.filter(s => s.status === 'completed'); },
+        get completedCount()   { return this.pastSessions.length; },
+        get remainingCount()   { return Math.max(0, this.totalSessions - this.sessions.filter(s => s.status !== 'cancelled').length); },
+
+        async init() {
+          if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+
+          this.user = pb.authStore.model;
+          const uid = this.user.id;
+
+          // Verifica acquisto sessioni-1to1
+          try {
+            const purchases = await pb.collection('purchases').getList(1, 10, {
+              filter: `user='${uid}' && product='sessioni-1to1' && status='active'`
+            });
+            if (purchases.totalItems === 0) {
+              window.location.href = '/dashboard/';
+              return;
+            }
+            this.totalSessions = purchases.totalItems * 6;
+          } catch(e) {
+            window.location.href = '/dashboard/';
+            return;
+          }
+
+          // Carica sessioni
+          try {
+            const res = await pb.collection('sessions').getFullList({
+              filter: `user='${uid}'`,
+              sort: '-scheduled_at'
+            });
+            this.sessions = res;
+          } catch(e) {
+            console.warn('sessions error:', e.message);
+          }
+
+          this.loading = false;
+          setTimeout(() => {
+            const obs = new IntersectionObserver(entries => {
+              entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+            }, { threshold: 0.06 });
+            document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+          }, 80);
+        },
+
+        logout() { pb.authStore.clear(); window.location.href = '/login/'; },
+
+        formatDate(iso) {
+          if (!iso) return '—';
+          return new Date(iso).toLocaleDateString('it-IT', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+        },
+        formatTime(iso) {
+          if (!iso) return '—';
+          return new Date(iso).toLocaleTimeString('it-IT', { hour:'2-digit', minute:'2-digit' });
+        }
+      };
+    }
+  </script>
+</body>
+</html>
