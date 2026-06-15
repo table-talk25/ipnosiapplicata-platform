@@ -2,37 +2,72 @@
   "nodes": [
     {
       "parameters": {
-        "events": ["checkout.session.completed"],
+        "events": [
+          "checkout.session.completed"
+        ],
         "apiVersion": "2026-04-22.dahlia"
       },
       "type": "n8n-nodes-base.stripeTrigger",
       "typeVersion": 1,
-      "position": [400, -272],
-      "id": "22029cab-1e0a-4a2c-8d92-0d27ec140436",
+      "position": [256, -288],
+      "id": "70bfe6af-5630-48a3-a01c-4643179d0199",
       "name": "Stripe Trigger",
       "webhookId": "6050f03b-7711-4ba3-bb5b-f78f6bb24819",
       "credentials": {
-        "stripeApi": {"id": "YWJ506gPOBh3xRhl", "name": "Stripe account"}
+        "stripeApi": {
+          "id": "YWJ506gPOBh3xRhl",
+          "name": "Stripe account"
+        }
       }
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
-            {"id": "a1", "name": "email", "value": "={{ $json.data.object.customer_details.email }}", "type": "string"},
-            {"id": "a2", "name": "first_name", "value": "={{ $json.data.object.customer_details.name }}", "type": "string"},
-            {"id": "a3", "name": "stripe_customer_id", "value": "={{ $json.data.object.customer }}", "type": "string"},
-            {"id": "a4", "name": "stripe_payment_id", "value": "={{ $json.data.object.id }}", "type": "string"},
-            {"id": "a5", "name": "amount", "value": "={{ $json.data.object.amount_total }}", "type": "number"},
-            {"id": "a6", "name": "product_id", "value": "={{ $json.data.object.metadata.product_id }}", "type": "string"}
+            {
+              "id": "a1",
+              "name": "email",
+              "value": "={{ $json.data.object.customer_details.email }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "first_name",
+              "value": "={{ $json.data.object.customer_details.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "stripe_customer_id",
+              "value": "={{ $json.data.object.customer }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "stripe_payment_id",
+              "value": "={{ $json.data.object.id }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "amount",
+              "value": "={{ $json.data.object.amount_total }}",
+              "type": "number"
+            },
+            {
+              "id": "75411aa3-7ff8-449d-9447-ccb6840d676f",
+              "name": "product_id",
+              "value": "={{ $json.data.object.metadata.product_id }}",
+              "type": "string"
+            }
           ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [600, -272],
-      "id": "fee4107e-932c-4e99-af1a-be5e66d95bc7",
+      "position": [416, -288],
+      "id": "7d7cd931-b70a-426b-b46a-e6e90b42aff3",
       "name": "Edit Fields1"
     },
     {
@@ -46,8 +81,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [800, -272],
-      "id": "a2b0645c-7a1b-40ea-b7cf-2014859a1d8a",
+      "position": [592, -288],
+      "id": "376f48cb-be55-4a3f-b5bf-4e0454e626a2",
       "name": "PocketBase – Login1"
     },
     {
@@ -55,42 +90,69 @@
         "url": "=https://api.ipnosiapplicata.it/api/collections/users/records?filter=(email=\"{{ $('Edit Fields1').item.json.email }}\")",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1000, -272],
-      "id": "260c3660-da24-42ef-8f49-5943a1e848d3",
+      "position": [768, -288],
+      "id": "36a2b5c4-a348-4963-b064-d1d77076f08c",
       "name": "PocketBase – Cerca Utente"
     },
     {
       "parameters": {
         "conditions": {
-          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3},
-          "conditions": [{"id": "7bcf86f2-0bc3-4cd6-8d28-de903777e04e", "leftValue": "={{ $json.totalItems }}", "rightValue": 0, "operator": {"type": "number", "operation": "gt"}}],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7bcf86f2-0bc3-4cd6-8d28-de903777e04e",
+              "leftValue": "={{ $json.totalItems }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
           "combinator": "and"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [1200, -272],
-      "id": "1a926ed4-cab9-4360-8399-5a75b0ed2170",
+      "position": [944, -288],
+      "id": "5536c317-0c9d-44c6-bf79-60a8bbd42028",
       "name": "If"
     },
     {
       "parameters": {
         "assignments": {
-          "assignments": [{"id": "29c24b71-7b13-4ff5-9319-464479cd4c07", "name": "user_id", "value": "={{ $('PocketBase – Cerca Utente').item.json.items[0].id }}", "type": "string"}]
+          "assignments": [
+            {
+              "id": "29c24b71-7b13-4ff5-9319-464479cd4c07",
+              "name": "user_id",
+              "value": "={{ $('PocketBase – Cerca Utente').item.json.items[0].id }}",
+              "type": "string"
+            }
+          ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [1400, -420],
-      "id": "33549b6d-759e-4bff-8e62-5495541d573b",
+      "position": [1120, -416],
+      "id": "b7890bb8-7325-40aa-94b8-727e7ba2979a",
       "name": "Set – ID Utente Esistente"
     },
     {
@@ -99,7 +161,12 @@
         "url": "=https://api.ipnosiapplicata.it/api/collections/users/records/{{ $json.user_id }}",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -108,8 +175,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1600, -420],
-      "id": "patch-user-active",
+      "position": [1312, -416],
+      "id": "0191eb90-4d39-44d8-a23b-4c744b766c50",
       "name": "PocketBase – Attiva Utente"
     },
     {
@@ -118,7 +185,12 @@
         "url": "https://api.ipnosiapplicata.it/api/collections/users/records",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -127,8 +199,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1400, -130],
-      "id": "e94af013-b5e2-4d77-af43-b819180d045e",
+      "position": [1152, -176],
+      "id": "fc6b40d5-a8fd-409f-9805-297c8f3ed2f3",
       "name": "PocketBase – Crea Utente"
     },
     {
@@ -137,7 +209,12 @@
         "url": "https://api.ipnosiapplicata.it/api/collections/purchases/records",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -146,18 +223,33 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1800, -272],
-      "id": "3b5f0cf1-ca3e-46f8-b064-34a7e81f32af",
+      "position": [1504, -288],
+      "id": "5ff4938c-c80f-482c-a671-64d3f9231823",
       "name": "PocketBase – Crea Purchase"
     },
     {
       "parameters": {
         "rules": {
-          "rules": [
+          "values": [
             {
               "conditions": {
-                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
-                "conditions": [{"id": "sw-r1", "leftValue": "={{ $('Edit Fields1').item.json.product_id }}", "rightValue": "reset-notturno", "operator": {"type": "string", "operation": "equals"}}],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "sw-r1",
+                    "leftValue": "={{ $('Edit Fields1').item.json.product_id }}",
+                    "rightValue": "reset-notturno",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
                 "combinator": "and"
               },
               "renameOutput": true,
@@ -165,17 +257,23 @@
             },
             {
               "conditions": {
-                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
-                "conditions": [{"id": "sw-r2", "leftValue": "={{ $('Edit Fields1').item.json.product_id }}", "rightValue": "sessioni-1to1", "operator": {"type": "string", "operation": "equals"}}],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Sessioni 1:1"
-            },
-            {
-              "conditions": {
-                "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
-                "conditions": [{"id": "sw-r3", "leftValue": "={{ $('Edit Fields1').item.json.product_id }}", "rightValue": "sessione-svolta", "operator": {"type": "string", "operation": "equals"}}],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "sw-r3",
+                    "leftValue": "={{ $('Edit Fields1').item.json.product_id }}",
+                    "rightValue": "sessione-svolta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
                 "combinator": "and"
               },
               "renameOutput": true,
@@ -187,8 +285,8 @@
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
-      "position": [2000, -272],
-      "id": "switch-prodotto",
+      "position": [1680, -288],
+      "id": "switch-per-prodotto",
       "name": "Switch – Per Prodotto"
     },
     {
@@ -197,7 +295,12 @@
         "url": "https://api.ipnosiapplicata.it/api/collections/progress/records",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -206,8 +309,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2200, -500],
-      "id": "297e7fc9-832a-4c36-a30f-fe6cecf1a6e8",
+      "position": [1920, -480],
+      "id": "439d903b-efff-4473-badd-cb3639715dd6",
       "name": "PocketBase – Crea Progress"
     },
     {
@@ -216,7 +319,12 @@
         "url": "https://api.ipnosiapplicata.it/api/collections/journey/records",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -225,9 +333,9 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2400, -500],
-      "id": "pb-journey-rn",
-      "name": "PocketBase – Crea Journey RN"
+      "position": [2120, -480],
+      "id": "79857fba-cc64-4a89-b98f-55c5e234f2cc",
+      "name": "PocketBase – Crea Journey"
     },
     {
       "parameters": {
@@ -238,73 +346,48 @@
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            {"name": "to[0][email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "to[0][name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "templateId", "value": "={{ 2 }}"},
-            {"name": "params[first_name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "params[email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "params[password]", "value": "={{ $('Edit Fields1').item.json.email.split('@')[0] + 'Reset25!' }}"},
-            {"name": "params[login_url]", "value": "https://ipnosiapplicata.it/login"}
+            {
+              "name": "to[0][email]",
+              "value": "={{ $('Edit Fields1').item.json.email }}"
+            },
+            {
+              "name": "templateId",
+              "value": "={{ 2 }}"
+            },
+            {
+              "name": "params[first_name]",
+              "value": "={{ $('Edit Fields1').item.json.first_name }}"
+            },
+            {
+              "name": "params[email]",
+              "value": "={{ $('Edit Fields1').item.json.email }}"
+            },
+            {
+              "name": "params[password]",
+              "value": "={{ $('Edit Fields1').item.json.email.split('@')[0] + 'Reset25!' }}"
+            },
+            {
+              "name": "params[login_url]",
+              "value": "https://ipnosiapplicata.it/login"
+            },
+            {
+              "name": "to[0][name]",
+              "value": "={{ $('Edit Fields1').item.json.first_name }}"
+            }
           ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2600, -500],
-      "id": "brevo-rn",
-      "name": "Brevo – Email Reset Notturno",
+      "position": [2320, -480],
+      "id": "dfeaffa0-d8c4-4e05-9818-2d6d978560a1",
+      "name": "Brevo – Email Accesso1",
       "credentials": {
-        "httpHeaderAuth": {"id": "KbelHAg011Z4ek1D", "name": "Brevo Email"}
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.ipnosiapplicata.it/api/collections/journey/records",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"user\": \"{{ $('PocketBase – Crea Purchase').item.json.user }}\",\n  \"type\": \"acquisto\",\n  \"title\": \"Sessione 1:1 acquistata\",\n  \"icon\": \"calendar_month\"\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [2200, -272],
-      "id": "pb-journey-s11",
-      "name": "PocketBase – Crea Journey Sessione 1:1"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.brevo.com/v3/smtp/email",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {"name": "to[0][email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "to[0][name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "templateId", "value": "={{ 3 }}"},
-            {"name": "params[first_name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "params[email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "params[password]", "value": "={{ $('Edit Fields1').item.json.email.split('@')[0] + 'Reset25!' }}"},
-            {"name": "params[login_url]", "value": "https://ipnosiapplicata.it/login"},
-            {"name": "params[session_type]", "value": "1:1"}
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [2400, -272],
-      "id": "brevo-s11",
-      "name": "Brevo – Email Sessione 1:1",
-      "credentials": {
-        "httpHeaderAuth": {"id": "KbelHAg011Z4ek1D", "name": "Brevo Email"}
+        "httpHeaderAuth": {
+          "id": "KbelHAg011Z4ek1D",
+          "name": "Brevo Email"
+        }
       }
     },
     {
@@ -313,7 +396,12 @@
         "url": "=https://api.ipnosiapplicata.it/api/collections/users/records/{{ $('PocketBase – Crea Purchase').item.json.user }}",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -322,7 +410,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2000, -50],
+      "position": [1920, -96],
       "id": "patch-user-lead",
       "name": "PocketBase – Imposta Lead"
     },
@@ -332,7 +420,12 @@
         "url": "https://api.ipnosiapplicata.it/api/collections/journey/records",
         "sendHeaders": true,
         "headerParameters": {
-          "parameters": [{"name": "Authorization", "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"}]
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login1').item.json.token }}"
+            }
+          ]
         },
         "sendBody": true,
         "specifyBody": "json",
@@ -341,7 +434,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2200, -50],
+      "position": [2120, -96],
       "id": "pb-journey-svolta",
       "name": "PocketBase – Crea Journey Svolta"
     },
@@ -354,25 +447,52 @@
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
-            {"name": "to[0][email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "to[0][name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "templateId", "value": "={{ 3 }}"},
-            {"name": "params[first_name]", "value": "={{ $('Edit Fields1').item.json.first_name }}"},
-            {"name": "params[email]", "value": "={{ $('Edit Fields1').item.json.email }}"},
-            {"name": "params[password]", "value": "={{ $('Edit Fields1').item.json.email.split('@')[0] + 'Reset25!' }}"},
-            {"name": "params[login_url]", "value": "https://ipnosiapplicata.it/login"},
-            {"name": "params[session_type]", "value": "di Svolta"}
+            {
+              "name": "to[0][email]",
+              "value": "={{ $('Edit Fields1').item.json.email }}"
+            },
+            {
+              "name": "to[0][name]",
+              "value": "={{ $('Edit Fields1').item.json.first_name }}"
+            },
+            {
+              "name": "templateId",
+              "value": "={{ 3 }}"
+            },
+            {
+              "name": "params[first_name]",
+              "value": "={{ $('Edit Fields1').item.json.first_name }}"
+            },
+            {
+              "name": "params[email]",
+              "value": "={{ $('Edit Fields1').item.json.email }}"
+            },
+            {
+              "name": "params[password]",
+              "value": "={{ $('Edit Fields1').item.json.email.split('@')[0] + 'Reset25!' }}"
+            },
+            {
+              "name": "params[login_url]",
+              "value": "https://ipnosiapplicata.it/login"
+            },
+            {
+              "name": "params[session_type]",
+              "value": "di Svolta"
+            }
           ]
         },
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2400, -50],
+      "position": [2320, -96],
       "id": "brevo-svolta",
       "name": "Brevo – Email Sessione Svolta",
       "credentials": {
-        "httpHeaderAuth": {"id": "KbelHAg011Z4ek1D", "name": "Brevo Email"}
+        "httpHeaderAuth": {
+          "id": "KbelHAg011Z4ek1D",
+          "name": "Brevo Email"
+        }
       }
     },
     {
@@ -383,45 +503,137 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [2800, -272],
-      "id": "telegram-notifica",
+      "position": [2560, -288],
+      "id": "37862ea8-05d6-402d-a200-a6d654cd7a2e",
       "name": "Telegram – Notifica",
       "webhookId": "114570bc-6c2a-4c26-bd75-d1ac65e5ab0f",
       "credentials": {
-        "telegramApi": {"id": "tq99ELJVT7yul1td", "name": "Telegram account"}
+        "telegramApi": {
+          "id": "tq99ELJVT7yul1td",
+          "name": "Telegram account"
+        }
       }
     }
   ],
   "connections": {
-    "Stripe Trigger": {"main": [[{"node": "Edit Fields1", "type": "main", "index": 0}]]},
-    "Edit Fields1": {"main": [[{"node": "PocketBase – Login1", "type": "main", "index": 0}]]},
-    "PocketBase – Login1": {"main": [[{"node": "PocketBase – Cerca Utente", "type": "main", "index": 0}]]},
-    "PocketBase – Cerca Utente": {"main": [[{"node": "If", "type": "main", "index": 0}]]},
+    "Stripe Trigger": {
+      "main": [
+        [
+          { "node": "Edit Fields1", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          { "node": "PocketBase – Login1", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Login1": {
+      "main": [
+        [
+          { "node": "PocketBase – Cerca Utente", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Cerca Utente": {
+      "main": [
+        [
+          { "node": "If", "type": "main", "index": 0 }
+        ]
+      ]
+    },
     "If": {
       "main": [
-        [{"node": "Set – ID Utente Esistente", "type": "main", "index": 0}],
-        [{"node": "PocketBase – Crea Utente", "type": "main", "index": 0}]
+        [
+          { "node": "Set – ID Utente Esistente", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "PocketBase – Crea Utente", "type": "main", "index": 0 }
+        ]
       ]
     },
-    "Set – ID Utente Esistente": {"main": [[{"node": "PocketBase – Attiva Utente", "type": "main", "index": 0}]]},
-    "PocketBase – Attiva Utente": {"main": [[{"node": "PocketBase – Crea Purchase", "type": "main", "index": 0}]]},
-    "PocketBase – Crea Utente": {"main": [[{"node": "PocketBase – Crea Purchase", "type": "main", "index": 0}]]},
-    "PocketBase – Crea Purchase": {"main": [[{"node": "Switch – Per Prodotto", "type": "main", "index": 0}]]},
+    "Set – ID Utente Esistente": {
+      "main": [
+        [
+          { "node": "PocketBase – Attiva Utente", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Attiva Utente": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Purchase", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Utente": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Purchase", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Purchase": {
+      "main": [
+        [
+          { "node": "Switch – Per Prodotto", "type": "main", "index": 0 }
+        ]
+      ]
+    },
     "Switch – Per Prodotto": {
       "main": [
-        [{"node": "PocketBase – Crea Progress", "type": "main", "index": 0}],
-        [{"node": "PocketBase – Crea Journey Sessione 1:1", "type": "main", "index": 0}],
-        [{"node": "PocketBase – Imposta Lead", "type": "main", "index": 0}]
+        [
+          { "node": "PocketBase – Crea Progress", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "PocketBase – Imposta Lead", "type": "main", "index": 0 }
+        ]
       ]
     },
-    "PocketBase – Crea Progress": {"main": [[{"node": "PocketBase – Crea Journey RN", "type": "main", "index": 0}]]},
-    "PocketBase – Crea Journey RN": {"main": [[{"node": "Brevo – Email Reset Notturno", "type": "main", "index": 0}]]},
-    "Brevo – Email Reset Notturno": {"main": [[{"node": "Telegram – Notifica", "type": "main", "index": 0}]]},
-    "PocketBase – Crea Journey Sessione 1:1": {"main": [[{"node": "Brevo – Email Sessione 1:1", "type": "main", "index": 0}]]},
-    "Brevo – Email Sessione 1:1": {"main": [[{"node": "Telegram – Notifica", "type": "main", "index": 0}]]},
-    "PocketBase – Imposta Lead": {"main": [[{"node": "PocketBase – Crea Journey Svolta", "type": "main", "index": 0}]]},
-    "PocketBase – Crea Journey Svolta": {"main": [[{"node": "Brevo – Email Sessione Svolta", "type": "main", "index": 0}]]},
-    "Brevo – Email Sessione Svolta": {"main": [[{"node": "Telegram – Notifica", "type": "main", "index": 0}]]}
+    "PocketBase – Crea Progress": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Journey", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Journey": {
+      "main": [
+        [
+          { "node": "Brevo – Email Accesso1", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Brevo – Email Accesso1": {
+      "main": [
+        [
+          { "node": "Telegram – Notifica", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Imposta Lead": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Journey Svolta", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Journey Svolta": {
+      "main": [
+        [
+          { "node": "Brevo – Email Sessione Svolta", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Brevo – Email Sessione Svolta": {
+      "main": [
+        [
+          { "node": "Telegram – Notifica", "type": "main", "index": 0 }
+        ]
+      ]
+    }
   },
   "pinData": {},
   "meta": {

@@ -125,8 +125,8 @@
           <p class="text-on-surface-variant text-xs mt-1">Completate</p>
         </div>
         <div class="stat-box">
-          <p class="text-2xl font-extrabold text-tertiary" style="font-family:'Manrope',sans-serif;" x-text="remainingCount"></p>
-          <p class="text-on-surface-variant text-xs mt-1">Rimanenti</p>
+          <p class="text-2xl font-extrabold text-tertiary" style="font-family:'Manrope',sans-serif;" x-text="upcomingSessions.length + liveSessions.length"></p>
+          <p class="text-on-surface-variant text-xs mt-1">In programma</p>
         </div>
       </div>
 
@@ -182,31 +182,17 @@
         </div>
       </template>
 
-      <!-- PRENOTA -->
-      <div class="mb-8 reveal" x-show="remainingCount > 0">
+      <!-- PRENOTA NUOVA SESSIONE -->
+      <div class="mb-8 reveal">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="font-bold text-base text-on-surface" style="font-family:'Manrope',sans-serif;">Prenota la tua sessione</h2>
-          <span class="badge teal" x-text="remainingCount + ' slot disponibili'"></span>
+          <h2 class="font-bold text-base text-on-surface" style="font-family:'Manrope',sans-serif;">Prenota una nuova sessione</h2>
+          <span class="badge teal">130€ a sessione</span>
         </div>
-        <p class="text-on-surface-variant text-sm mb-5">Scegli il giorno e l'orario che preferisci tra quelli disponibili. La sessione dura 60 minuti.</p>
+        <p class="text-on-surface-variant text-sm mb-5">Scegli il giorno e l'orario che preferisci tra quelli disponibili. La sessione dura 60 minuti — la prenotazione si conferma al pagamento.</p>
         <div class="calendly-wrapper">
-          <div class="calendly-inline-widget"
-               data-url="https://calendly.com/ipnosiapplicata/sessione-1-1-60-minuti?background_color=101416&text_color=F5F7FA&primary_color=49C7A5&hide_gdpr_banner=1"
-               style="min-width:320px;height:680px;"></div>
+          <div id="cal-booking-placeholder" style="min-width:320px;height:680px;"></div>
         </div>
       </div>
-
-      <!-- NO SLOTS LEFT -->
-      <template x-if="remainingCount === 0 && !loading">
-        <div class="mb-8 glass-card rounded-2xl p-6 text-center reveal">
-          <span class="material-symbols-outlined text-on-surface-variant" style="font-size:32px">check_circle</span>
-          <p class="font-bold text-on-surface mt-3 mb-1" style="font-family:'Manrope',sans-serif;">Hai utilizzato tutte le sessioni del pacchetto.</p>
-          <p class="text-on-surface-variant text-sm">Vuoi continuare il percorso? Scrivi a Cristian.</p>
-          <a href="mailto:info@cristianlecca.it" class="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-secondary text-white font-bold text-sm hover:opacity-90 transition-all">
-            <span class="material-symbols-outlined" style="font-size:16px">mail</span> Contatta Cristian
-          </a>
-        </div>
-      </template>
 
       <!-- SESSIONI PASSATE -->
       <template x-if="pastSessions.length > 0">
@@ -290,8 +276,38 @@
     </div>
   </footer>
 
-  <!-- Calendly script -->
-  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <!-- Cal.com embed script -->
+  <script type="text/javascript">
+    (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if (typeof namespace === "string") { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ["initNamespace", namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, "https://app.cal.eu/embed/embed.js", "init");
+    Cal("init", "sessione-1-1", { origin: "https://cal.eu" });
+    Cal.ns["sessione-1-1"]("inline", {
+      elementOrSelector: "#cal-booking-placeholder",
+      config: { layout: "month_view", theme: "dark" },
+      calLink: "cristianlecca/sessione-1-1"
+    });
+    Cal.ns["sessione-1-1"]("ui", {
+      theme: "dark",
+      cssVarsPerTheme: {
+        dark: {
+          "cal-brand": "#3A63FF",
+          "cal-brand-emphasis": "#5478FF",
+          "cal-brand-text": "#FFFFFF",
+          "cal-bg": "#101416",
+          "cal-bg-emphasis": "#1d2022",
+          "cal-bg-muted": "#191c1e",
+          "cal-border": "#3d4944",
+          "cal-border-emphasis": "#3d4944",
+          "cal-border-booker": "#3d4944",
+          "cal-text": "#F5F7FA",
+          "cal-text-emphasis": "#F5F7FA",
+          "cal-text-muted": "#bccac3",
+          "cal-radius": "16px"
+        }
+      },
+      hideEventTypeDetails: false,
+      layout: "month_view"
+    });
+  </script>
 
   <script>
     const PB_URL = 'https://api.ipnosiapplicata.it';
@@ -303,13 +319,12 @@
         user: null,
         sessions: [],
         loading: true,
-        totalSessions: 6,
+        totalSessions: 0,
 
         get liveSessions()     { return this.sessions.filter(s => s.status === 'live'); },
         get upcomingSessions() { return this.sessions.filter(s => s.status === 'scheduled'); },
         get pastSessions()     { return this.sessions.filter(s => s.status === 'completed'); },
         get completedCount()   { return this.pastSessions.length; },
-        get remainingCount()   { return Math.max(0, this.totalSessions - this.sessions.filter(s => s.status !== 'cancelled').length); },
 
         async init() {
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
@@ -328,7 +343,7 @@
               window.location.href = '/dashboard/';
               return;
             }
-            this.totalSessions = purchases.totalItems * 6;
+            this.totalSessions = purchases.totalItems;
           } catch(e) {
             window.location.href = '/dashboard/';
             return;

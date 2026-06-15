@@ -1,0 +1,483 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "calcom-prenotazione-pagata",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [256, -288],
+      "id": "calcom-webhook-trigger",
+      "name": "Cal.com – Webhook",
+      "webhookId": "calcom-prenotazione-pagata"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "email",
+              "value": "={{ $json.body.payload.attendees[0].email }}",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "first_name",
+              "value": "={{ $json.body.payload.attendees[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "start_time",
+              "value": "={{ $json.body.payload.startTime }}",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "booking_uid",
+              "value": "={{ $json.body.payload.uid }}",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "video_url",
+              "value": "={{ $json.body.payload.location || $json.body.payload.videoCallUrl || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "c6",
+              "name": "amount",
+              "value": "={{ 13000 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [432, -288],
+      "id": "calcom-edit-fields",
+      "name": "Edit Fields – Cal.com"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/_superusers/auth-with-password",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"identity\": \"info@cristianlecca.it\",\n  \"password\": \"Criswolf25!\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [608, -288],
+      "id": "calcom-pb-login",
+      "name": "PocketBase – Login"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.ipnosiapplicata.it/api/collections/users/records?filter=(email=\"{{ $('Edit Fields – Cal.com').item.json.email }}\")",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [784, -288],
+      "id": "calcom-pb-cerca-utente",
+      "name": "PocketBase – Cerca Utente"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "calcom-if-1",
+              "leftValue": "={{ $json.totalItems }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [960, -288],
+      "id": "calcom-if-utente-esiste",
+      "name": "If – Utente Esiste"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "calcom-set-uid-1",
+              "name": "user_id",
+              "value": "={{ $('PocketBase – Cerca Utente').item.json.items[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "calcom-set-uid-2",
+              "name": "is_new_user",
+              "value": "={{ false }}",
+              "type": "boolean"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1136, -416],
+      "id": "calcom-set-utente-esistente",
+      "name": "Set – ID Utente Esistente"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://api.ipnosiapplicata.it/api/collections/users/records/{{ $json.user_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"status\": \"active\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1312, -416],
+      "id": "calcom-pb-attiva-utente",
+      "name": "PocketBase – Attiva Utente"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/users/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"email\": \"{{ $('Edit Fields – Cal.com').item.json.email }}\",\n  \"first_name\": \"{{ $('Edit Fields – Cal.com').item.json.first_name }}\",\n  \"status\": \"active\",\n  \"source\": \"calcom\",\n  \"password\": \"{{ $('Edit Fields – Cal.com').item.json.email.split('@')[0] + 'Reset25!' }}\",\n  \"passwordConfirm\": \"{{ $('Edit Fields – Cal.com').item.json.email.split('@')[0] + 'Reset25!' }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1136, -160],
+      "id": "calcom-pb-crea-utente",
+      "name": "PocketBase – Crea Utente"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/purchases/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user\": \"{{ $json.user_id ?? $json.id }}\",\n  \"product\": \"sessioni-1to1\",\n  \"stripe_payment_id\": \"{{ $('Edit Fields – Cal.com').item.json.booking_uid }}\",\n  \"stripe_customer_id\": \"\",\n  \"amount\": {{ $('Edit Fields – Cal.com').item.json.amount }},\n  \"currency\": \"eur\",\n  \"status\": \"active\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1504, -288],
+      "id": "calcom-pb-crea-purchase",
+      "name": "PocketBase – Crea Purchase"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.ipnosiapplicata.it/api/collections/sessions/records?filter=(user=\"{{ $('PocketBase – Crea Purchase').item.json.user }}\")&perPage=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1680, -288],
+      "id": "calcom-pb-conta-sessioni",
+      "name": "PocketBase – Conta Sessioni"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/sessions/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user\": \"{{ $('PocketBase – Crea Purchase').item.json.user }}\",\n  \"number\": {{ $json.totalItems + 1 }},\n  \"title\": \"Sessione 1:1 con Cristian\",\n  \"scheduled_at\": \"{{ $('Edit Fields – Cal.com').item.json.start_time }}\",\n  \"status\": \"scheduled\",\n  \"video_url\": \"{{ $('Edit Fields – Cal.com').item.json.video_url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1856, -288],
+      "id": "calcom-pb-crea-sessione",
+      "name": "PocketBase – Crea Sessione"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ipnosiapplicata.it/api/collections/journey/records",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('PocketBase – Login').item.json.token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user\": \"{{ $('PocketBase – Crea Purchase').item.json.user }}\",\n  \"type\": \"acquisto\",\n  \"title\": \"Sessione 1:1 prenotata e confermata\",\n  \"icon\": \"video_call\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2032, -288],
+      "id": "calcom-pb-crea-journey",
+      "name": "PocketBase – Crea Journey"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "to[0][email]",
+              "value": "={{ $('Edit Fields – Cal.com').item.json.email }}"
+            },
+            {
+              "name": "to[0][name]",
+              "value": "={{ $('Edit Fields – Cal.com').item.json.first_name }}"
+            },
+            {
+              "name": "templateId",
+              "value": "={{ 3 }}"
+            },
+            {
+              "name": "params[first_name]",
+              "value": "={{ $('Edit Fields – Cal.com').item.json.first_name }}"
+            },
+            {
+              "name": "params[email]",
+              "value": "={{ $('Edit Fields – Cal.com').item.json.email }}"
+            },
+            {
+              "name": "params[password]",
+              "value": "={{ $('Edit Fields – Cal.com').item.json.email.split('@')[0] + 'Reset25!' }}"
+            },
+            {
+              "name": "params[login_url]",
+              "value": "https://ipnosiapplicata.it/login"
+            },
+            {
+              "name": "params[session_type]",
+              "value": "1:1"
+            },
+            {
+              "name": "params[session_date]",
+              "value": "={{ DateTime.fromISO($('Edit Fields – Cal.com').item.json.start_time).setZone('Europe/Rome').setLocale('it').toFormat('cccc d MMMM yyyy') }}"
+            },
+            {
+              "name": "params[session_time]",
+              "value": "={{ DateTime.fromISO($('Edit Fields – Cal.com').item.json.start_time).setZone('Europe/Rome').toFormat('HH:mm') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2208, -288],
+      "id": "calcom-brevo-email",
+      "name": "Brevo – Email Conferma Sessione",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KbelHAg011Z4ek1D",
+          "name": "Brevo Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5827745221",
+        "text": "=🎉 NUOVA PRENOTAZIONE PAGATA!\n📦 Prodotto: Sessione 1:1\n👤 Nome: {{ $('Edit Fields – Cal.com').item.json.first_name }}\n📧 Email: {{ $('Edit Fields – Cal.com').item.json.email }}\n💰 Importo: €130.00\n📅 Data: {{ DateTime.fromISO($('Edit Fields – Cal.com').item.json.start_time).setZone('Europe/Rome').toFormat('dd/MM/yyyy') }} alle {{ DateTime.fromISO($('Edit Fields – Cal.com').item.json.start_time).setZone('Europe/Rome').toFormat('HH:mm') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2384, -288],
+      "id": "calcom-telegram-notifica",
+      "name": "Telegram – Notifica",
+      "webhookId": "114570bc-6c2a-4c26-bd75-d1ac65e5ab0f",
+      "credentials": {
+        "telegramApi": {
+          "id": "tq99ELJVT7yul1td",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cal.com – Webhook": {
+      "main": [
+        [
+          { "node": "Edit Fields – Cal.com", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Edit Fields – Cal.com": {
+      "main": [
+        [
+          { "node": "PocketBase – Login", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Login": {
+      "main": [
+        [
+          { "node": "PocketBase – Cerca Utente", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Cerca Utente": {
+      "main": [
+        [
+          { "node": "If – Utente Esiste", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "If – Utente Esiste": {
+      "main": [
+        [
+          { "node": "Set – ID Utente Esistente", "type": "main", "index": 0 }
+        ],
+        [
+          { "node": "PocketBase – Crea Utente", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Set – ID Utente Esistente": {
+      "main": [
+        [
+          { "node": "PocketBase – Attiva Utente", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Attiva Utente": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Purchase", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Utente": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Purchase", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Purchase": {
+      "main": [
+        [
+          { "node": "PocketBase – Conta Sessioni", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Conta Sessioni": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Sessione", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Sessione": {
+      "main": [
+        [
+          { "node": "PocketBase – Crea Journey", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "PocketBase – Crea Journey": {
+      "main": [
+        [
+          { "node": "Brevo – Email Conferma Sessione", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Brevo – Email Conferma Sessione": {
+      "main": [
+        [
+          { "node": "Telegram – Notifica", "type": "main", "index": 0 }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b74b6912e462770d08e66395db5d0a1ab58e4d1e9c1891b47c6a692abb2b49dd"
+  }
+}
