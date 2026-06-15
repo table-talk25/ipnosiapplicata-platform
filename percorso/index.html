@@ -177,7 +177,7 @@
     <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
     <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span> Area personale</a>
     <a href="/percorso/" class="sidebar-item active"><span class="material-symbols-outlined">route</span> Il mio Percorso</a>
-    <a href="/dashboard/#corsi" class="sidebar-item"><span class="material-symbols-outlined">school</span> Corsi</a>
+    <a href="/corsi/" class="sidebar-item"><span class="material-symbols-outlined">school</span> Corsi</a>
     <a href="/dashboard/profilo-quiz/" class="sidebar-item"><span class="material-symbols-outlined">psychology</span> Profilo Quiz</a>
     <div class="border-t border-outline-variant/30 my-3"></div>
     <a href="/dashboard/impostazioni/" class="sidebar-item"><span class="material-symbols-outlined">manage_accounts</span> Impostazioni</a>
@@ -222,6 +222,12 @@
         <button @click="filter='audio'" class="chip transition-all cursor-pointer border" :class="filter==='audio' ? 'chip-gold border-tertiary/30' : 'chip-grey border-outline-variant/40 hover:text-on-surface'">Audio</button>
         <button @click="filter='corso'" class="chip transition-all cursor-pointer border" :class="filter==='corso' ? 'chip-teal border-primary/30' : 'chip-grey border-outline-variant/40 hover:text-on-surface'">Corsi</button>
       </div>
+
+      <template x-if="!loading && filteredGroups.length === 0">
+        <div class="evento-card text-center -ml-10">
+          <p class="text-on-surface-variant text-sm">Nessuna attività registrata ancora in questa categoria.</p>
+        </div>
+      </template>
 
       <div class="timeline reveal">
         <template x-for="(group, gi) in filteredGroups" :key="group.month">
@@ -281,7 +287,7 @@
   <!-- BOTTOM NAV MOBILE -->
   <nav class="bottom-nav lg:hidden">
     <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
-    <a href="/dashboard/#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
+    <a href="/corsi/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
     <a href="/dashboard/profilo-quiz/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
     <a href="/percorso/" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
   </nav>
@@ -299,6 +305,23 @@
   <script>
     const PB_URL = 'https://api.ipnosiapplicata.it';
     const pb = new PocketBase(PB_URL);
+    pb.autoCancellation(false);
+
+    const MONTH_NAMES = ['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+
+    function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+    function monthLabel(date) {
+      return capitalize(MONTH_NAMES[date.getMonth()]) + ' ' + date.getFullYear();
+    }
+
+    function timeLabel(date) {
+      const day = date.getDate();
+      const month = MONTH_NAMES[date.getMonth()].slice(0, 3);
+      const hh = String(date.getHours()).padStart(2, '0');
+      const mm = String(date.getMinutes()).padStart(2, '0');
+      return day + ' ' + month + ', ' + hh + ':' + mm;
+    }
 
     function buildAvatarUrl(userId, filename) {
       if (!userId || !filename) return null;
@@ -334,56 +357,39 @@
         user: {},
         showUserMenu: false,
         filter: 'all',
-        startDate: '15 maggio 2026',
-        stats: { days: 15, sessions: 2, exercises: 5, audio: 6 },
-        events: [
-          { id:10, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 3', time:'29 mag, 07:12',
-            desc:'Sezione "L\'Evidenza del Cambiamento" completata. Reset Notturno Giorno 3.',
-            link:'/reset-notturno/giorno.html?day=3', note:null },
-          { id:9, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Induzione ascoltata — Notte 3', time:'28 mag, 23:05',
-            desc:'Induzione notturna Giorno 3 del Reset. Durata: 18 minuti.', link:null, note:null },
-          { id:8, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 2', time:'28 mag, 07:44',
-            desc:'Tutte e 4 le sezioni completate.', link:'/reset-notturno/giorno.html?day=2', note:null },
-          { id:7, month:'Maggio 2026', type:'sessione', typeLabel:'Sessione 1:1', chipColor:'blue', nodeColor:'blue', iconColor:'#3A63FF', icon:'video_call',
-            title:'Sessione 2 — Ancoraggio del Valore', time:'24 mag, 18:00',
-            desc:'Sessione di 60 minuti. Lavoro sulla credenza "Non merito di avere successo".',
-            link:null, note:'Marco ha avuto un momento di svolta significativo. La credenza limitante si è indebolita visibilmente nel corso della sessione.' },
-          { id:6, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Induzione ascoltata — Notte 2', time:'23 mag, 22:50',
-            desc:'Induzione notturna Giorno 2 del Reset. Durata: 18 minuti.', link:null, note:null },
-          { id:5, month:'Maggio 2026', type:'esercizio', typeLabel:'Esercizio', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'edit_note',
-            title:'Diario del Mattino — Giorno 1', time:'16 mag, 08:01',
-            desc:'Primo diario completato.', link:'/reset-notturno/giorno.html?day=1', note:null },
-          { id:4, month:'Maggio 2026', type:'audio', typeLabel:'Audio', chipColor:'gold', nodeColor:'gold', iconColor:'#C9A45C', icon:'bedtime',
-            title:'Prima induzione ascoltata — Notte 1', time:'15 mag, 23:18',
-            desc:'Prima induzione notturna. Inizio del Reset Notturno.', link:null, note:null },
-          { id:3, month:'Maggio 2026', type:'corso', typeLabel:'Corso', chipColor:'teal', nodeColor:'teal', iconColor:'#49C7A5', icon:'school',
-            title:'Reset Notturno sbloccato', time:'15 mag, 20:14',
-            desc:'Accesso al programma Reset Notturno — 7 giorni di riprogrammazione notturna.', link:'/reset-notturno/dashboard.html', note:null },
-          { id:2, month:'Maggio 2026', type:'sessione', typeLabel:'Sessione 1:1', chipColor:'blue', nodeColor:'blue', iconColor:'#3A63FF', icon:'video_call',
-            title:'Sessione 1 — Mappatura iniziale', time:'15 mag, 18:00',
-            desc:'Prima sessione con Cristian. Costruzione del profilo di partenza.',
-            link:null, note:'Primo incontro molto promettente. Marco porta consapevolezza e motivazione genuina.' },
-          { id:1, month:'Maggio 2026', type:'corso', typeLabel:'Inizio', chipColor:'grey', nodeColor:'grey', iconColor:'#bccac3', icon:'flag',
-            title:'Iscrizione alla piattaforma', time:'15 mag, 10:32',
-            desc:'Account creato. Benvenuto nel percorso IpnosiApplicata.', link:null, note:null },
-        ],
+        loading: true,
+        startDate: '',
+        stats: { days: 0, sessions: 0, exercises: 0, audio: 0 },
+        events: [],
+
         get filteredGroups() {
           const evs = this.filter === 'all' ? this.events : this.events.filter(e => e.type === this.filter);
           const grouped = {};
           evs.forEach(e => { if (!grouped[e.month]) grouped[e.month] = []; grouped[e.month].push(e); });
           return Object.entries(grouped).map(([month, events]) => ({ month, events }));
         },
-        init() {
+
+        async init() {
           if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) {
+            if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; }
+            console.warn('authRefresh non critico:', e.message);
+          }
           this.user = pb.authStore.model || {};
 
           var initial   = this.user.first_name ? this.user.first_name[0].toUpperCase() : 'U';
           var avatarUrl = buildAvatarUrl(this.user.id, this.user.avatar);
           renderNavAvatar(avatarUrl, initial);
+
+          if (this.user.created) {
+            const created = new Date(this.user.created);
+            this.startDate = created.getDate() + ' ' + MONTH_NAMES[created.getMonth()] + ' ' + created.getFullYear();
+            this.stats.days = Math.max(1, Math.floor((Date.now() - created) / 86400000) + 1);
+          }
+
+          await this.loadData();
+          this.loading = false;
 
           setTimeout(() => {
             const obs = new IntersectionObserver(entries => {
@@ -392,6 +398,69 @@
             document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
           }, 80);
         },
+
+        async loadData() {
+          const uid = this.user.id;
+          const filterUser = "user='" + uid + "'";
+          const evs = [];
+
+          try {
+            const journeyRes = await pb.collection('journey').getFullList({ filter: filterUser, sort: '-created' });
+            journeyRes.forEach(j => {
+              const date = new Date(j.created);
+              evs.push({
+                id: 'j-' + j.id,
+                date: date,
+                month: monthLabel(date),
+                time: timeLabel(date),
+                type: 'corso',
+                typeLabel: 'Acquisto',
+                chipColor: 'gold', nodeColor: 'gold', iconColor: '#C9A45C',
+                icon: j.icon || 'star',
+                title: j.title,
+                desc: 'Hai sbloccato un nuovo contenuto del tuo percorso.',
+                link: null, note: null
+              });
+            });
+          } catch(e) { console.warn('[journey] errore:', e.message); }
+
+          try {
+            const sessionsRes = await pb.collection('sessions').getFullList({ filter: filterUser, sort: '-scheduled_at' });
+            this.stats.sessions = sessionsRes.length;
+            sessionsRes.forEach(s => {
+              const date = new Date(s.scheduled_at);
+              const completed = s.status === 'completed';
+              evs.push({
+                id: 's-' + s.id,
+                date: date,
+                month: monthLabel(date),
+                time: timeLabel(date),
+                type: 'sessione',
+                typeLabel: 'Sessione 1:1',
+                chipColor: 'blue', nodeColor: 'blue', iconColor: '#3A63FF',
+                icon: 'video_call',
+                title: s.title || ('Sessione ' + s.number),
+                desc: completed
+                  ? (s.recap_argomenti || 'Sessione completata.')
+                  : (s.status === 'cancelled' ? 'Sessione annullata.' : 'Sessione programmata con Cristian.'),
+                link: completed ? '/dashboard/sessioni/' : null,
+                note: completed ? (s.recap_progressi || null) : null
+              });
+            });
+          } catch(e) { console.warn('[sessions] errore:', e.message); }
+
+          try {
+            const progressRes = await pb.collection('progress').getFullList({ filter: filterUser });
+            let totalCompleted = 0;
+            progressRes.forEach(p => { totalCompleted += (p.completed_steps ? p.completed_steps.length : 0); });
+            this.stats.exercises = totalCompleted;
+            this.stats.audio = totalCompleted;
+          } catch(e) { console.warn('[progress] errore:', e.message); }
+
+          evs.sort((a, b) => b.date - a.date);
+          this.events = evs;
+        },
+
         logout() { pb.authStore.clear(); window.location.href = '/login/'; }
       };
     }

@@ -139,7 +139,7 @@
     <a href="/percorso/" class="sidebar-item">
       <span class="material-symbols-outlined">route</span> Il mio Percorso
     </a>
-    <a href="#corsi" class="sidebar-item">
+    <a href="/corsi/" class="sidebar-item">
       <span class="material-symbols-outlined">school</span> Corsi
     </a>
     <a href="/dashboard/profilo-quiz/" class="sidebar-item">
@@ -204,6 +204,23 @@
           </div>
         </template>
       </div>
+
+      <!-- Prossima sessione 1:1 -->
+      <template x-if="nextSession">
+        <div class="mb-8 reveal">
+          <a href="/dashboard/sessioni/" class="profilo-card p-5 flex items-center gap-4 cursor-pointer block no-underline">
+            <div class="w-11 h-11 rounded-2xl bg-secondary/12 border border-secondary/25 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-size:22px">video_call</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold text-secondary uppercase tracking-widest mb-0.5">Prossima sessione 1:1</p>
+              <p class="font-bold text-on-surface text-sm truncate" style="font-family:'Manrope',sans-serif;" x-text="nextSession.title"></p>
+              <p class="text-on-surface-variant text-xs mt-0.5" x-text="nextSession.dateLabel + ' alle ' + nextSession.timeLabel"></p>
+            </div>
+            <span class="material-symbols-outlined text-secondary flex-shrink-0" style="font-size:20px">arrow_forward</span>
+          </a>
+        </div>
+      </template>
 
       <!-- I miei percorsi -->
       <div id="corsi" class="mb-10 reveal">
@@ -298,7 +315,7 @@
 
   <nav class="bottom-nav lg:hidden">
     <a href="/dashboard/" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
-    <a href="#corsi" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
+    <a href="/corsi/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
     <a href="/percorso/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
     <a href="/dashboard/profilo-quiz/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
   </nav>
@@ -371,6 +388,7 @@
         avatarUrl: null,
         corsi: [], journey: [],
         quizProfile: null, quizProfileLetter: '',
+        nextSession: null,
 
         get greeting() {
           var h = new Date().getHours();
@@ -420,6 +438,22 @@
               }
             }
           } catch(e) { console.warn('[quiz_responses] errore:', e.message); }
+
+          try {
+            var sessionsRes = await pb.collection('sessions').getList(1, 10, { filter: filterUser + " && status='scheduled'", sort: 'scheduled_at' });
+            if (sessionsRes && sessionsRes.items && sessionsRes.items.length > 0) {
+              var s = sessionsRes.items[0];
+              var d = new Date(s.scheduled_at);
+              var giorni = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+              var mesi = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+              this.nextSession = {
+                title: s.title || ('Sessione ' + s.number),
+                dateLabel: giorni[d.getDay()] + ' ' + d.getDate() + ' ' + mesi[d.getMonth()],
+                timeLabel: ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2),
+                video_url: s.video_url || ''
+              };
+            }
+          } catch(e) { console.warn('[sessions] errore:', e.message); }
 
           var activePurchases = [];
           try {
