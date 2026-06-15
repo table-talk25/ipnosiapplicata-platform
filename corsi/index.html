@@ -133,9 +133,9 @@
 
   <main :class="isLoggedIn ? 'pt-20 pb-24 lg:pb-12 px-5 lg:pl-[240px] max-w-6xl mx-auto' : 'pt-20 pb-24 lg:pb-12 px-5 max-w-6xl mx-auto'">
     <div class="py-8 reveal">
-      <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">I tuoi percorsi</p>
+      <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2" x-text="isLoggedIn ? 'I tuoi percorsi' : 'I percorsi del Metodo'"></p>
       <h1 class="font-bold text-3xl md:text-4xl text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">Corsi &amp; Percorsi</h1>
-      <p class="text-on-surface-variant leading-relaxed max-w-xl">Ogni programma che hai sbloccato appare qui. Continua da dove hai lasciato o esplora cosa ti aspetta.</p>
+      <p class="text-on-surface-variant leading-relaxed max-w-xl" x-text="isLoggedIn ? 'Ogni programma che hai sbloccato appare qui. Continua da dove hai lasciato o esplora cosa ti aspetta.' : 'Scopri i percorsi disponibili. Accedi o registrati per sbloccarli e seguire i tuoi progressi.'"></p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
@@ -169,8 +169,8 @@
             <template x-if="corso.unlocked">
               <a :href="corso.link" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95"
                  :style="'background:' + corso.color + ';color:#101416'">
-                <span class="material-symbols-outlined text-base" x-text="corso.progress > 0 ? 'play_circle' : 'rocket_launch'"></span>
-                <span x-text="corso.progress > 0 ? 'Continua' : 'Inizia'"></span>
+                <span class="material-symbols-outlined text-base" x-text="corso.ctaIcon || (corso.progress > 0 ? 'play_circle' : 'rocket_launch')"></span>
+                <span x-text="corso.ctaLabel || (corso.progress > 0 ? 'Continua' : 'Inizia')"></span>
               </a>
             </template>
             <template x-if="!corso.unlocked">
@@ -238,12 +238,14 @@
                 color: '#49C7A5',
                 iconBg: 'rgba(73,199,165,0.12)',
                 iconColor: '#49C7A5',
-                badgeClass: 'badge-grey',
-                badgeLabel: 'Accedi per sbloccare',
-                unlocked: false,
+                badgeClass: 'badge-teal',
+                badgeLabel: 'Scopri',
+                unlocked: true,
                 progress: null,
-                link: '/login/',
-                lockLabel: 'Accedi per sbloccare'
+                link: '/reset-notturno/',
+                ctaLabel: 'Scopri il corso',
+                ctaIcon: 'arrow_forward',
+                lockLabel: ''
               },
               {
                 id: 'autostima-applicata',
@@ -271,11 +273,13 @@
                 iconBg: 'rgba(58,99,255,0.12)',
                 iconColor: '#aab8ff',
                 badgeClass: 'badge-blue',
-                badgeLabel: 'Accedi per prenotare',
-                unlocked: false,
+                badgeLabel: 'Scopri',
+                unlocked: true,
                 progress: null,
-                link: '/login/',
-                lockLabel: 'Accedi per prenotare'
+                link: '/sessioni/',
+                ctaLabel: 'Scopri di più',
+                ctaIcon: 'arrow_forward',
+                lockLabel: ''
               }
             ];
 
