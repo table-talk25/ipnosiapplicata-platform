@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /mappa/
+Disallow: /percorso/
+
+Sitemap: https://ipnosiapplicata.it/sitemap.xml
