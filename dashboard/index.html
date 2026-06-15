@@ -139,6 +139,12 @@
     <a href="/percorso/" class="sidebar-item">
       <span class="material-symbols-outlined">route</span> Il mio Percorso
     </a>
+    <a href="/mappa/" class="sidebar-item">
+      <span class="material-symbols-outlined">map</span> La mia Mappa
+    </a>
+    <a href="/dashboard/sessioni/" class="sidebar-item">
+      <span class="material-symbols-outlined">video_call</span> Sessioni 1:1
+    </a>
     <a href="/corsi/" class="sidebar-item">
       <span class="material-symbols-outlined">school</span> Corsi
     </a>
@@ -440,7 +446,8 @@
           } catch(e) { console.warn('[quiz_responses] errore:', e.message); }
 
           try {
-            var sessionsRes = await pb.collection('sessions').getList(1, 10, { filter: filterUser + " && status='scheduled'", sort: 'scheduled_at' });
+            var nowIso = new Date().toISOString().replace('T', ' ').slice(0, 19);
+            var sessionsRes = await pb.collection('sessions').getList(1, 10, { filter: filterUser + " && status='scheduled' && scheduled_at >= '" + nowIso + "'", sort: 'scheduled_at' });
             if (sessionsRes && sessionsRes.items && sessionsRes.items.length > 0) {
               var s = sessionsRes.items[0];
               var d = new Date(s.scheduled_at);

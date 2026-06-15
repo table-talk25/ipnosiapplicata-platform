@@ -154,13 +154,15 @@
 
   <aside class="sidebar hidden lg:block">
     <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
-    <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span>Area personale</a>
-    <a href="/mappa/" class="sidebar-item active"><span class="material-symbols-outlined">map</span>La mia Mappa</a>
-    <a href="/percorso/" class="sidebar-item"><span class="material-symbols-outlined">route</span>Il mio Percorso</a>
-    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">video_call</span>Sessioni</a>
-    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">edit_note</span>Esercizi</a>
-    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">bedtime</span>Induzioni Audio</a>
-    <a href="#" class="sidebar-item"><span class="material-symbols-outlined">school</span>Corsi</a>
+    <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span> Area personale</a>
+    <a href="/percorso/" class="sidebar-item"><span class="material-symbols-outlined">route</span> Il mio Percorso</a>
+    <a href="/mappa/" class="sidebar-item active"><span class="material-symbols-outlined">map</span> La mia Mappa</a>
+    <a href="/dashboard/sessioni/" class="sidebar-item"><span class="material-symbols-outlined">video_call</span> Sessioni 1:1</a>
+    <a href="/corsi/" class="sidebar-item"><span class="material-symbols-outlined">school</span> Corsi</a>
+    <a href="/dashboard/profilo-quiz/" class="sidebar-item"><span class="material-symbols-outlined">psychology</span> Profilo Quiz</a>
+    <div class="border-t border-outline-variant/30 my-3"></div>
+    <a href="/dashboard/impostazioni/" class="sidebar-item"><span class="material-symbols-outlined">manage_accounts</span> Impostazioni</a>
+    <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400"><span class="material-symbols-outlined">logout</span> Esci</button>
   </aside>
 
   <main class="pt-20 pb-24 lg:pb-12 px-5 lg:pl-[240px] max-w-6xl mx-auto">
@@ -427,7 +429,9 @@
             }, { threshold:0.06 });
             document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
           }, 80);
-        }
+        },
+
+        logout() { pb.authStore.clear(); window.location.href = '/login/'; }
       };
     }
   </script>
