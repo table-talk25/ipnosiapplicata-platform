@@ -847,9 +847,11 @@
         showUserMenu: false,
 
         async init() {
-          const authData = pb.authStore;
-          if (!authData.isValid) { window.location.href = '/login/'; return; }
+          if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
+          try { await pb.collection('users').authRefresh(); }
+          catch(e) { if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; } }
 
+          const authData = pb.authStore;
           try {
             const userId = authData.model.id;
             const userData = await pb.collection('users').getOne(userId);
