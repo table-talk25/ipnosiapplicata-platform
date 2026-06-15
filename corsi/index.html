@@ -87,7 +87,7 @@
         <img src="/assets/logoIpnoApp.png" alt="IpnosiApplicata" class="h-8 w-auto">
         <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;">IpnosiApplicata</span>
       </a>
-      <div class="flex items-center gap-3 relative">
+      <div class="flex items-center gap-3 relative" x-show="isLoggedIn">
         <div class="flex items-center gap-2 cursor-pointer" @click="showUserMenu = !showUserMenu">
           <div class="w-9 h-9 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
             <span class="text-primary font-bold text-sm" style="font-family:'Manrope',sans-serif;" x-text="user.first_name ? user.first_name[0].toUpperCase() : 'U'"></span>
@@ -112,10 +112,14 @@
           </button>
         </div>
       </div>
+      <div class="flex items-center gap-3" x-show="!isLoggedIn">
+        <a href="/login/" class="text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors px-4 py-2">Accedi</a>
+        <a href="/login/" class="text-sm font-bold px-4 py-2 rounded-full bg-primary text-on-primary">Registrati</a>
+      </div>
     </div>
   </nav>
 
-  <aside class="sidebar hidden lg:block">
+  <aside class="sidebar hidden lg:block" x-show="isLoggedIn">
     <p class="text-xs font-semibold text-on-surface-variant uppercase tracking-widest px-3 mb-3">Menu</p>
     <a href="/dashboard/" class="sidebar-item"><span class="material-symbols-outlined">home</span> Area personale</a>
     <a href="/percorso/" class="sidebar-item"><span class="material-symbols-outlined">route</span> Il mio Percorso</a>
@@ -127,7 +131,7 @@
     <button @click="logout()" class="sidebar-item w-full text-left hover:text-red-400"><span class="material-symbols-outlined">logout</span> Esci</button>
   </aside>
 
-  <main class="pt-20 pb-24 lg:pb-12 px-5 lg:pl-[240px] max-w-6xl mx-auto">
+  <main :class="isLoggedIn ? 'pt-20 pb-24 lg:pb-12 px-5 lg:pl-[240px] max-w-6xl mx-auto' : 'pt-20 pb-24 lg:pb-12 px-5 max-w-6xl mx-auto'">
     <div class="py-8 reveal">
       <p class="text-secondary font-label-md text-label-md uppercase tracking-widest mb-2">I tuoi percorsi</p>
       <h1 class="font-bold text-3xl md:text-4xl text-on-surface mb-3" style="font-family:'Manrope',sans-serif;">Corsi &amp; Percorsi</h1>
@@ -182,14 +186,14 @@
     </div>
   </main>
 
-  <nav class="bottom-nav lg:hidden">
+  <nav class="bottom-nav lg:hidden" x-show="isLoggedIn">
     <a href="/dashboard/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">home</span>Home</a>
     <a href="/corsi/" class="bottom-nav-item active"><span class="material-symbols-outlined" style="font-size:22px">school</span>Corsi</a>
     <a href="/percorso/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">route</span>Percorso</a>
     <a href="/dashboard/profilo-quiz/" class="bottom-nav-item"><span class="material-symbols-outlined" style="font-size:22px">psychology</span>Profilo</a>
   </nav>
 
-  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25 lg:pl-[240px]">
+  <footer class="bg-surface-container-lowest w-full py-7 px-6 border-t border-outline-variant/25" :class="isLoggedIn ? 'lg:pl-[240px]' : ''">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
       <span class="text-xs text-on-surface-variant">&copy; 2026 Cristian Lecca &mdash; IpnosiApplicata. Tutti i diritti riservati. P.IVA IT12632010018</span>
       <div class="flex gap-5 text-xs">
@@ -213,13 +217,81 @@
       return {
         user: {},
         showUserMenu: false,
+        isLoggedIn: false,
         corsi: [],
 
         async init() {
-          if (!pb.authStore.isValid) { window.location.href = '/login/'; return; }
-          try { await pb.collection('users').authRefresh(); }
-          catch(e) { if (e.status === 401) { pb.authStore.clear(); window.location.href = '/login/'; return; } }
+          if (pb.authStore.isValid) {
+            try { await pb.collection('users').authRefresh(); }
+            catch(e) { if (e.status === 401) { pb.authStore.clear(); } }
+          }
 
+          if (!pb.authStore.isValid) {
+            this.isLoggedIn = false;
+            this.corsi = [
+              {
+                id: 'reset-notturno',
+                title: 'Reset Notturno',
+                subtitle: '7 giorni · Autostima Applicata',
+                desc: 'Riprogramma le tue credenze limitanti mentre dormi. Audio ipnotici + diario del mattino per 7 giorni consecutivi.',
+                icon: 'bedtime',
+                color: '#49C7A5',
+                iconBg: 'rgba(73,199,165,0.12)',
+                iconColor: '#49C7A5',
+                badgeClass: 'badge-grey',
+                badgeLabel: 'Accedi per sbloccare',
+                unlocked: false,
+                progress: null,
+                link: '/login/',
+                lockLabel: 'Accedi per sbloccare'
+              },
+              {
+                id: 'autostima-applicata',
+                title: 'Autostima Applicata',
+                subtitle: '21 giorni · Livello 2',
+                desc: 'Il percorso avanzato. Costruisci una nuova identità solida in 21 giorni con tecniche ipnotiche e esercizi quotidiani.',
+                icon: 'workspace_premium',
+                color: '#C9A45C',
+                iconBg: 'rgba(201,164,92,0.12)',
+                iconColor: '#C9A45C',
+                badgeClass: 'badge-gold',
+                badgeLabel: 'Prossimamente',
+                unlocked: false,
+                progress: null,
+                link: '#',
+                lockLabel: 'Disponibile dopo il Reset'
+              },
+              {
+                id: 'sessioni-11',
+                title: 'Sessioni 1:1',
+                subtitle: 'Con Cristian Lecca',
+                desc: 'Lavoro personale e profondo. Cristian ti guida direttamente nel tuo percorso di trasformazione.',
+                icon: 'video_call',
+                color: '#3A63FF',
+                iconBg: 'rgba(58,99,255,0.12)',
+                iconColor: '#aab8ff',
+                badgeClass: 'badge-blue',
+                badgeLabel: 'Accedi per prenotare',
+                unlocked: false,
+                progress: null,
+                link: '/login/',
+                lockLabel: 'Accedi per prenotare'
+              }
+            ];
+
+            hideOverlay();
+            this.$nextTick(() => {
+              setTimeout(() => {
+                const obs = new IntersectionObserver(entries => {
+                  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+                }, { threshold: 0.06 });
+                document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+              }, 80);
+            });
+            return;
+          }
+
+          this.isLoggedIn = true;
           this.user = pb.authStore.model || {};
 
           let completedRN = 0;
