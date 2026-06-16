@@ -115,7 +115,7 @@
       </div>
 
       <!-- STAT BOXES -->
-      <div class="grid grid-cols-3 gap-3 mb-8 reveal">
+      <div class="grid grid-cols-3 gap-3 mb-8 reveal" x-show="hasPurchase">
         <div class="stat-box">
           <p class="text-2xl font-extrabold text-secondary" style="font-family:'Manrope',sans-serif;" x-text="totalSessions"></p>
           <p class="text-on-surface-variant text-xs mt-1">Sessioni totali</p>
@@ -130,8 +130,23 @@
         </div>
       </div>
 
+      <!-- CTA PER CHI NON HA ACQUISTATO -->
+      <template x-if="!hasPurchase && !loading">
+        <div class="glass-card rounded-2xl p-8 text-center reveal">
+          <div class="w-14 h-14 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-secondary" style="font-size:28px">video_call</span>
+          </div>
+          <h2 class="font-bold text-on-surface mb-2" style="font-family:'Manrope',sans-serif;">Sessioni 1:1 con Cristian</h2>
+          <p class="text-on-surface-variant text-sm mb-6 max-w-sm mx-auto">Il lavoro individuale più intensivo: mappa aggiornata, esercizi su misura e induzioni personalizzate dopo ogni incontro.</p>
+          <a href="/sessioni/" class="inline-flex items-center gap-2 bg-secondary text-[#101416] px-7 py-3 rounded-full font-bold text-sm transition-all hover:bg-secondary/90 active:scale-95">
+            <span class="material-symbols-outlined" style="font-size:18px">arrow_forward</span>
+            Scopri e prenota
+          </a>
+        </div>
+      </template>
+
       <!-- LIVE NOW -->
-      <template x-if="liveSessions.length > 0">
+      <template x-if="hasPurchase && liveSessions.length > 0">
         <div class="mb-6 reveal">
           <template x-for="s in liveSessions" :key="s.id">
             <div class="session-card live-now p-5">
@@ -151,7 +166,7 @@
       </template>
 
       <!-- UPCOMING SESSIONS -->
-      <template x-if="upcomingSessions.length > 0">
+      <template x-if="hasPurchase && upcomingSessions.length > 0">
         <div class="mb-8 reveal">
           <h2 class="font-bold text-base text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">Prossime sessioni</h2>
           <div class="space-y-3">
@@ -195,7 +210,7 @@
       </div>
 
       <!-- SESSIONI PASSATE -->
-      <template x-if="pastSessions.length > 0">
+      <template x-if="hasPurchase && pastSessions.length > 0">
         <div class="mb-8 reveal">
           <h2 class="font-bold text-base text-on-surface mb-4" style="font-family:'Manrope',sans-serif;">Sessioni completate</h2>
           <div class="space-y-4">
@@ -244,7 +259,7 @@
       </template>
 
       <!-- EMPTY STATE -->
-      <template x-if="sessions.length === 0 && !loading">
+      <template x-if="hasPurchase && sessions.length === 0 && !loading">
         <div class="glass-card rounded-2xl p-8 text-center reveal">
           <div class="w-14 h-14 rounded-2xl bg-secondary/10 border border-secondary/20 flex items-center justify-center mx-auto mb-4">
             <span class="material-symbols-outlined text-secondary" style="font-size:28px">video_call</span>
@@ -319,6 +334,7 @@
         user: null,
         sessions: [],
         loading: true,
+        hasPurchase: false,
         totalSessions: 0,
 
         get liveSessions()     { return this.sessions.filter(s => s.status === 'live'); },
@@ -339,25 +355,23 @@
             const purchases = await pb.collection('purchases').getList(1, 10, {
               filter: `user='${uid}' && product='sessioni-1to1' && status='active'`
             });
-            if (purchases.totalItems === 0) {
-              window.location.href = '/dashboard/';
-              return;
-            }
+            this.hasPurchase = purchases.totalItems > 0;
             this.totalSessions = purchases.totalItems;
           } catch(e) {
-            window.location.href = '/dashboard/';
-            return;
+            this.hasPurchase = false;
           }
 
-          // Carica sessioni
-          try {
-            const res = await pb.collection('sessions').getFullList({
-              filter: `user='${uid}'`,
-              sort: '-scheduled_at'
-            });
-            this.sessions = res;
-          } catch(e) {
-            console.warn('sessions error:', e.message);
+          // Carica sessioni solo se ha acquistato
+          if (this.hasPurchase) {
+            try {
+              const res = await pb.collection('sessions').getFullList({
+                filter: `user='${uid}'`,
+                sort: '-scheduled_at'
+              });
+              this.sessions = res;
+            } catch(e) {
+              console.warn('sessions error:', e.message);
+            }
           }
 
           this.loading = false;
