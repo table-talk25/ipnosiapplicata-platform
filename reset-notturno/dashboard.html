@@ -307,15 +307,16 @@
           }
 
           let completedSteps = [];
+          const lsKey = `rn_completed_${uid}`;
           try {
             const prog = await pb.collection('progress').getFirstListItem(
               `user='${uid}' && product_id='${PRODUCT_ID}'`
             );
             completedSteps = prog.completed_steps || [];
             const maxStep = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
-            localStorage.setItem('rn_completed', maxStep);
+            localStorage.setItem(lsKey, maxStep);
           } catch(e) {
-            const saved = parseInt(localStorage.getItem('rn_completed') || '0');
+            const saved = parseInt(localStorage.getItem(lsKey) || '0');
             for (let i = 1; i <= saved; i++) completedSteps.push(i);
           }
 

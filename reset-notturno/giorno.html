@@ -299,6 +299,7 @@
 
         async loadProgress() {
           const uid = pb.authStore.model.id;
+          const lsKey = `rn_completed_${uid}`;
           try {
             const rec = await pb.collection('progress').getFirstListItem(
               `user='${uid}' && product_id='${PRODUCT_ID}'`
@@ -307,9 +308,9 @@
             const completedSteps = rec.completed_steps || [];
             const maxCompleted = completedSteps.length > 0 ? Math.max(...completedSteps) : 0;
             this.isSaved = completedSteps.includes(this.day.num);
-            localStorage.setItem('rn_completed', maxCompleted);
+            localStorage.setItem(lsKey, maxCompleted);
           } catch(e) {
-            const completed = parseInt(localStorage.getItem('rn_completed') || '0');
+            const completed = parseInt(localStorage.getItem(lsKey) || '0');
             this.isSaved = this.day.num <= completed;
           }
 
@@ -324,6 +325,7 @@
           localStorage.setItem(`rn_journal_${this.day.num}`, JSON.stringify(this.journal));
 
           const uid = pb.authStore.model.id;
+          const lsKey = `rn_completed_${uid}`;
           try {
             let completedSteps = [];
             let currentRec = null;
@@ -355,13 +357,13 @@
               this.pbProgressId = newRec.id;
             }
 
-            localStorage.setItem('rn_completed', currentStep);
+            localStorage.setItem(lsKey, currentStep);
             this.syncStatus = 'ok';
 
           } catch(e) {
             console.warn('Sync PocketBase fallita:', e.message);
-            const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-            if (this.day.num > prev) localStorage.setItem('rn_completed', this.day.num);
+            const prev = parseInt(localStorage.getItem(lsKey) || '0');
+            if (this.day.num > prev) localStorage.setItem(lsKey, this.day.num);
             this.syncStatus = 'offline';
           }
 
@@ -371,6 +373,7 @@
 
         async undoDay() {
           const uid = pb.authStore.model.id;
+          const lsKey = `rn_completed_${uid}`;
           try {
             if (this.pbProgressId) {
               const rec = await pb.collection('progress').getOne(this.pbProgressId);
@@ -380,14 +383,14 @@
                 completed_steps: completedSteps,
                 current_step: currentStep,
               });
-              localStorage.setItem('rn_completed', currentStep);
+              localStorage.setItem(lsKey, currentStep);
             } else {
-              const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-              if (prev >= this.day.num) localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
+              const prev = parseInt(localStorage.getItem(lsKey) || '0');
+              if (prev >= this.day.num) localStorage.setItem(lsKey, Math.max(0, this.day.num - 1));
             }
           } catch(e) {
-            const prev = parseInt(localStorage.getItem('rn_completed') || '0');
-            if (prev >= this.day.num) localStorage.setItem('rn_completed', Math.max(0, this.day.num - 1));
+            const prev = parseInt(localStorage.getItem(lsKey) || '0');
+            if (prev >= this.day.num) localStorage.setItem(lsKey, Math.max(0, this.day.num - 1));
           }
           this.isSaved = false;
           this.syncStatus = null;
