@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nuova password | IpnosiApplicata</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" type="image/png" href="/assets/logoIpnoApp.png"/>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.21.3/dist/pocketbase.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:#101416; color:#F5F7FA;
+    font-family:'Inter',sans-serif;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(73,199,165,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(58,99,255,0.05) 0%, transparent 50%);
+  }
+  .card{
+    width:100%; max-width:420px;
+    background:rgba(29,32,34,0.7); backdrop-filter:blur(24px);
+    border:1px solid rgba(245,247,250,0.08); border-radius:24px; padding:40px 32px;
+  }
+  .logo{
+    width:56px; height:56px; margin:0 auto 24px; display:flex; align-items:center; justify-content:center;
+    background:rgba(73,199,165,0.12); border:1px solid rgba(73,199,165,0.25); border-radius:16px;
+  }
+  h1{font-family:'Manrope',sans-serif; font-size:24px; font-weight:700; text-align:center; margin:0 0 8px;}
+  .sub{color:#bccac3; font-size:14px; text-align:center; margin:0 0 28px; line-height:1.5;}
+  label{display:block; font-size:11px; font-weight:600; color:#bccac3; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;}
+  .field{position:relative; margin-bottom:18px;}
+  input{
+    width:100%; padding:14px 44px 14px 16px; background:#101416; color:#F5F7FA;
+    border:1px solid rgba(61,73,68,0.6); border-radius:12px; font-size:15px; font-family:'Inter',sans-serif;
+  }
+  input:focus{outline:none; border-color:#49C7A5;}
+  input:-webkit-autofill{
+    -webkit-box-shadow:0 0 0 1000px #101416 inset !important;
+    -webkit-text-fill-color:#F5F7FA !important; caret-color:#F5F7FA;
+  }
+  .toggle{
+    position:absolute; right:12px; top:38px; background:none; border:0;
+    color:#86948e; cursor:pointer; padding:4px; display:flex;
+  }
+  button.main{
+    width:100%; padding:16px; background:#49C7A5; color:#101416; border:0; border-radius:12px;
+    font-family:'Manrope',sans-serif; font-weight:700; font-size:15px; cursor:pointer; transition:filter .2s;
+  }
+  button.main:hover:not(:disabled){filter:brightness(1.1);}
+  button.main:disabled{opacity:.55; cursor:default;}
+  .msg{font-size:13px; line-height:1.55; margin:16px 0 0; text-align:center;}
+  .hint{font-size:12px; color:#86948e; margin:-8px 0 18px;}
+  .foot{text-align:center; margin-top:24px;}
+  .foot a{color:#49C7A5; font-size:13px; text-decoration:none;}
+  .material-symbols-outlined{font-family:'Material Symbols Outlined'; font-size:20px;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <span class="material-symbols-outlined" style="color:#49C7A5; font-size:28px">lock_reset</span>
+  </div>
+
+  <div id="form-area">
+    <h1>Scegli una nuova password</h1>
+    <p class="sub">Inserisci la password che userai per accedere alla piattaforma.</p>
+
+    <div class="field">
+      <label for="pw1">Nuova password</label>
+      <input type="password" id="pw1" placeholder="Almeno 8 caratteri" autocomplete="new-password"/>
+      <button type="button" class="toggle" onclick="toggle('pw1', this)">
+        <span class="material-symbols-outlined">visibility</span>
+      </button>
+    </div>
+    <p class="hint">Minimo 8 caratteri. Evita password già usate altrove.</p>
+
+    <div class="field">
+      <label for="pw2">Conferma password</label>
+      <input type="password" id="pw2" placeholder="Ripeti la password" autocomplete="new-password"/>
+      <button type="button" class="toggle" onclick="toggle('pw2', this)">
+        <span class="material-symbols-outlined">visibility</span>
+      </button>
+    </div>
+
+    <button class="main" id="btn" onclick="salva()">Salva la nuova password</button>
+    <p class="msg" id="msg"></p>
+  </div>
+
+  <div id="ok-area" class="hidden" style="text-align:center;">
+    <h1>Password aggiornata</h1>
+    <p class="sub">Ora puoi accedere alla piattaforma con la nuova password.</p>
+    <a href="/login/"><button class="main">Vai al login</button></a>
+  </div>
+
+  <div class="foot">
+    <a href="/login/">← Torna al login</a>
+  </div>
+</div>
+
+<script>
+  const pb = new PocketBase('https://api.ipnosiapplicata.it');
+
+  // il token può arrivare come ?token=... oppure in fondo al percorso
+  function leggiToken() {
+    const qs = new URLSearchParams(window.location.search).get('token');
+    if (qs) return qs;
+    const pezzi = window.location.pathname.split('/').filter(Boolean);
+    const ultimo = pezzi[pezzi.length - 1];
+    if (ultimo && ultimo.length > 20 && ultimo !== 'reset-password') return ultimo;
+    const hash = window.location.hash.split('/').pop();
+    if (hash && hash.length > 20) return hash;
+    return null;
+  }
+
+  const token = leggiToken();
+
+  if (!token) {
+    document.getElementById('form-area').innerHTML =
+      '<h1>Link non valido</h1>' +
+      '<p class="sub">Il link sembra incompleto. Richiedi un nuovo reset dalla pagina di login.</p>';
+  }
+
+  function toggle(id, btn) {
+    const campo = document.getElementById(id);
+    const icona = btn.querySelector('span');
+    if (campo.type === 'password') { campo.type = 'text'; icona.textContent = 'visibility_off'; }
+    else { campo.type = 'password'; icona.textContent = 'visibility'; }
+  }
+
+  async function salva() {
+    const pw1 = document.getElementById('pw1').value;
+    const pw2 = document.getElementById('pw2').value;
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('btn');
+
+    msg.style.color = '#ffb4ab';
+
+    if (pw1.length < 8) { msg.textContent = 'La password deve avere almeno 8 caratteri.'; return; }
+    if (pw1 !== pw2)    { msg.textContent = 'Le due password non coincidono.'; return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Salvataggio...';
+    msg.textContent = '';
+
+    try {
+      await pb.collection('users').confirmPasswordReset(token, pw1, pw2);
+      document.getElementById('form-area').classList.add('hidden');
+      document.getElementById('ok-area').classList.remove('hidden');
+    } catch (e) {
+      console.warn('reset:', e);
+      msg.textContent = 'Link scaduto o non valido. Richiedi un nuovo reset dalla pagina di login.';
+      btn.disabled = false;
+      btn.textContent = 'Salva la nuova password';
+    }
+  }
+</script>
+
+</body>
+</html>
