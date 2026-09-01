@@ -428,19 +428,28 @@
         async loadAll() {
           var uid = this.user.id;
           var filterUser = "user='" + uid + "'";
+          // 1) fonte principale: il campo sul record utente
+          if (this.user.quiz_profile) {
+            var letterU = String(this.user.quiz_profile).trim().toUpperCase();
+            this.quizProfileLetter = letterU;
+            this.quizProfile = PROFILES[letterU] || null;
+          }
 
-          try {
-            var quizRes = await pb.collection('quiz_responses').getList(1, 50, { filter: filterUser });
-            if (quizRes && quizRes.items && quizRes.items.length > 0) {
-              var items = quizRes.items.slice().sort(function(a, b) { return new Date(b.created) - new Date(a.created); });
-              var record = items[0];
-              if (record.profile_result) {
-                var letter = record.profile_result.trim().toUpperCase();
-                this.quizProfileLetter = letter;
-                this.quizProfile = PROFILES[letter] || null;
+          // 2) ripiego: cerca nelle risposte quiz solo se non l'abbiamo già trovato
+          if (!this.quizProfile) {
+            try {
+              var quizRes = await pb.collection('quiz_responses').getList(1, 50, { filter: filterUser });
+              if (quizRes && quizRes.items && quizRes.items.length > 0) {
+                var items = quizRes.items.slice().sort(function(a, b) { return new Date(b.created) - new Date(a.created); });
+                var record = items[0];
+                if (record.profile_result) {
+                  var letter = record.profile_result.trim().toUpperCase();
+                  this.quizProfileLetter = letter;
+                  this.quizProfile = PROFILES[letter] || null;
+                }
               }
-            }
-          } catch(e) { console.warn('[quiz_responses] errore:', e.message); }
+            } catch(e) { console.warn('[quiz_responses] errore:', e.message); }
+          }
 
           try {
             var nowIso = new Date().toISOString().replace('T', ' ').slice(0, 19);
