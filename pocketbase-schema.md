@@ -21,6 +21,7 @@ Ogni campo, tipo, relazione e regola di accesso è documentato qui.
 8. [exercises](#8-exercises)
 9. [audio_tracks](#9-audio_tracks)
 10. [journey](#10-journey)
+11. [centro_responses](#11-centro_responses)
 
 ---
 
@@ -311,6 +312,30 @@ Scritto automaticamente dal sistema (mai dall'utente).
 - **Read:** utente owner + admin
 - **Update:** solo admin
 - **Delete:** solo admin
+
+---
+
+## 11. centro_responses
+
+**Da creare** — non ancora presente in produzione. Registra la scelta al bivio del funnel "Torna al Centro" (cristianlecca.it/centro/) e lo stato di invio del bonus personalizzato collegato. Creato da N8N (workflow `centro-bivio-risposta`) alla submission del form bivio su `/centro/ascolta/`.
+
+| Campo | Tipo | Obbligatorio | Note |
+|-------|------|:---:|------|
+| `id` | ID auto | ✅ | |
+| `user` | Relation → users | ✅ | |
+| `stato_scelto` | Select | ✅ | `non-dormo-bene` / `sono-sovraccarico` / `voglio-iniziare-meglio` |
+| `bonus_inviato` | Bool | ✅ | Default: `false`. Passa a `true` quando N8N invia il bonus (logica "giorno dopo, ora giusta") |
+| `created` | DateTime | ✅ | Auto |
+| `updated` | DateTime | ✅ | Auto |
+
+### Regole di accesso
+- **Create:** solo API key (N8N, alla submission del bivio)
+- **Read:** utente stesso + admin
+- **Update:** solo admin + API key (N8N aggiorna `bonus_inviato` all'invio effettivo)
+- **Delete:** solo admin
+
+### Consumo lato frontend
+Usato da `/dashboard/il-mio-bonus/` per mostrare il bonus assegnato: la pagina legge `stato_scelto` per selezionare il contenuto (titolo, testo, audio) da una mappa statica lato frontend — stesso pattern di `PROFILES` in `/dashboard/profilo-quiz/` — e `bonus_inviato` per decidere se mostrare il player audio o il messaggio "Il tuo bonus arriva presto". Se l'utente non ha ancora un record in questa collection, la pagina mostra uno stato vuoto con link a `cristianlecca.it/centro/ascolta/`.
 
 ---
 
