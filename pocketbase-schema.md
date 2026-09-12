@@ -4,7 +4,7 @@ Fonte di verità per tutte le collection del database.
 Ogni campo, tipo, relazione e regola di accesso è documentato qui.  
 **Aggiornare questo file prima di modificare lo schema in produzione.**
 
-**Ultimo aggiornamento:** 30 maggio 2026  
+**Ultimo aggiornamento:** 12 settembre 2026  
 **PocketBase URL (produzione):** https://api.ipnosiapplicata.it
 
 ---
@@ -317,16 +317,21 @@ Scritto automaticamente dal sistema (mai dall'utente).
 
 ## 11. centro_responses
 
-**Da creare** — non ancora presente in produzione. Registra la scelta al bivio del funnel "Torna al Centro" (cristianlecca.it/centro/) e lo stato di invio del bonus personalizzato collegato. Creato da N8N (workflow `centro-bivio-risposta`) alla submission del form bivio su `/centro/ascolta/`.
+Già presente in produzione. Registra la scelta al bivio del funnel "Torna al Centro" (cristianlecca.it/centro/) e lo stato di invio del bonus personalizzato collegato. Creato da N8N (workflow "Centro – Risposta Bivio", endpoint webhook `centro-bivio-risposta`) alla submission del form bivio su `/centro/ascolta/`; aggiornato dal workflow "Centro – Invio Bonus" quando il bonus viene effettivamente inviato.
 
 | Campo | Tipo | Obbligatorio | Note |
 |-------|------|:---:|------|
-| `id` | ID auto | ✅ | |
-| `user` | Relation → users | ✅ | |
-| `stato_scelto` | Select | ✅ | `non-dormo-bene` / `sono-sovraccarico` / `voglio-iniziare-meglio` |
-| `bonus_inviato` | Bool | ✅ | Default: `false`. Passa a `true` quando N8N invia il bonus (logica "giorno dopo, ora giusta") |
+| `id` | ID auto | ✅ | PocketBase nativo |
+| `user` | Relation → users (`_pb_users_auth_`) | ✅ | Non multiplo. Unico (max 1 record per utente) |
+| `email` | Email | ✅ | Denormalizzata rispetto a `user` — permette a "Centro – Risposta Bivio" di scrivere/cercare il record senza dover prima risolvere la relation |
+| `stato_scelto` | Select | ✅ | Non multiplo. Valori: `non-dormo-bene` / `sono-sovraccarico` / `voglio-iniziare-meglio` |
+| `risposto_at` | Date | ✅ | Data della risposta al bivio. Usato da "Centro – Invio Bonus" per selezionare i candidati del giorno (`stato_scelto=X && bonus_inviato=false && risposto_at<oggi_inizio`) |
+| `bonus_inviato` | Bool | — | Default: `false`. Passa a `true` quando "Centro – Invio Bonus" invia effettivamente il bonus |
 | `created` | DateTime | ✅ | Auto |
 | `updated` | DateTime | ✅ | Auto |
+
+### Indice unico
+`user` → unico (un solo record per utente)
 
 ### Regole di accesso
 - **Create:** solo API key (N8N, alla submission del bivio)
@@ -335,7 +340,7 @@ Scritto automaticamente dal sistema (mai dall'utente).
 - **Delete:** solo admin
 
 ### Consumo lato frontend
-Usato da `/dashboard/il-mio-bonus/` per mostrare il bonus assegnato: la pagina legge `stato_scelto` per selezionare il contenuto (titolo, testo, audio) da una mappa statica lato frontend — stesso pattern di `PROFILES` in `/dashboard/profilo-quiz/` — e `bonus_inviato` per decidere se mostrare il player audio o il messaggio "Il tuo bonus arriva presto". Se l'utente non ha ancora un record in questa collection, la pagina mostra uno stato vuoto con link a `cristianlecca.it/centro/ascolta/`.
+Usato da `/dashboard/il-mio-bonus/` per mostrare il bonus assegnato: la pagina legge `stato_scelto` per selezionare il contenuto (titolo, testo, audio) da una mappa statica lato frontend — stesso pattern di `PROFILES` in `/dashboard/profilo-quiz/` — e `bonus_inviato` per decidere se mostrare il player audio o il messaggio "Il tuo bonus arriva presto". Se l'utente non ha ancora un record in questa collection, la pagina mostra uno stato vuoto con link a `cristianlecca.it/centro/ascolta/`. `email` e `risposto_at` sono usati solo lato N8N, non dal frontend.
 
 ---
 
