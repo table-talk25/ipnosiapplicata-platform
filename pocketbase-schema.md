@@ -4,7 +4,7 @@ Fonte di verità per tutte le collection del database.
 Ogni campo, tipo, relazione e regola di accesso è documentato qui.  
 **Aggiornare questo file prima di modificare lo schema in produzione.**
 
-**Ultimo aggiornamento:** 12 settembre 2026  
+**Ultimo aggiornamento:** 24 settembre 2026  
 **PocketBase URL (produzione):** https://api.ipnosiapplicata.it
 
 ---
@@ -22,6 +22,7 @@ Ogni campo, tipo, relazione e regola di accesso è documentato qui.
 9. [audio_tracks](#9-audio_tracks)
 10. [journey](#10-journey)
 11. [centro_responses](#11-centro_responses)
+12. [centro_extra_audio](#12-centro_extra_audio)
 
 ---
 
@@ -341,6 +342,37 @@ Già presente in produzione. Registra la scelta al bivio del funnel "Torna al Ce
 
 ### Consumo lato frontend
 Usato da `/dashboard/il-mio-bonus/` per mostrare il bonus assegnato: la pagina legge `stato_scelto` per selezionare il contenuto (titolo, testo, audio) da una mappa statica lato frontend — stesso pattern di `PROFILES` in `/dashboard/profilo-quiz/` — e `bonus_inviato` per decidere se mostrare il player audio o il messaggio "Il tuo bonus arriva presto". Se l'utente non ha ancora un record in questa collection, la pagina mostra uno stato vuoto con link a `cristianlecca.it/centro/ascolta/`. `email` e `risposto_at` sono usati solo lato N8N, non dal frontend.
+
+---
+
+## 12. centro_extra_audio
+
+Già presente in produzione. Un record per ogni bonus extra acquistato (€4,90) da chi torna sul bivio di `/centro/ascolta/` e sceglie uno stato diverso da quello già ricevuto gratis. Scritto dal workflow N8N "Centro – Pagamento Bonus Extra" (webhook POST `centro-bonus-extra-pagato`, collegato come endpoint del Payment Link Stripe sull'evento `checkout.session.completed`), che legge `client_reference_id` nel formato `userId|stato`, logga qui, invia l'audio via Brevo e notifica su Telegram.
+
+> Tipi e obbligatorietà sotto sono dedotti dai nomi dei campi: confermarli sul pannello PocketBase e correggere questa tabella se diversi.
+
+| Campo | Tipo | Obbligatorio | Note |
+|-------|------|:---:|------|
+| `id` | ID auto | ✅ | PocketBase nativo |
+| `user` | Relation → users (`_pb_users_auth_`) | ✅ | Parte `userId` di `client_reference_id` |
+| `email` | Email | ✅ | Denormalizzata come in `centro_responses` |
+| `stato` | Select | ✅ | Parte `stato` di `client_reference_id`. Valori: `non-dormo-bene` / `sono-sovraccarico` / `voglio-iniziare-meglio` |
+| `prezzo` | Number | ✅ | Importo pagato (unità da confermare: euro o centesimi — `purchases.amount` usa i centesimi) |
+| `stripe_session_id` | Text | ✅ | ID della Checkout Session Stripe |
+| `status` | Text / Select | ✅ | Stato dell'elaborazione (valori da documentare) |
+| `paid_at` | Date | ✅ | Momento del pagamento |
+
+### Indice unico (consigliato)
+`stripe_session_id` → unico. Stripe può ripetere lo stesso webhook: con l'indice, un secondo tentativo di scrittura per la stessa sessione fallisce invece di generare un secondo invio dell'audio.
+
+### Regole di accesso (proposte, da allineare con la collection reale)
+- **Create:** solo API key (N8N, alla conferma del pagamento)
+- **Read:** utente stesso + admin
+- **Update:** solo admin + API key
+- **Delete:** solo admin
+
+### Nota sicurezza aperta
+Il webhook `centro-bonus-extra-pagato` non verifica ancora la firma Stripe: chiunque conosca l'URL può simulare un pagamento. Da chiudere con un segreto condiviso prima di volumi reali, stesso schema del webhook Stripe di "Acquisti IpnosiApplicata v4" se già presente.
 
 ---
 

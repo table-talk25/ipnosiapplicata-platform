@@ -206,7 +206,6 @@
                 </div>
                 <div class="flex-1 flex flex-col justify-center">
                   <template x-if="bonusRecord.bonus_inviato">
-                    <!-- TODO: sostituire bonusContent.audio con l'URL definitivo dell'audio di Cristian -->
                     <audio controls :src="bonusContent.audio"></audio>
                   </template>
                   <template x-if="!bonusRecord.bonus_inviato">
@@ -296,17 +295,17 @@
       'non-dormo-bene': {
         title: '[Nome Audio]',
         text: 'Un aiuto per la sera, quando la mente non si spegne. Ascoltalo quando ti serve, non solo stasera.',
-        audio: '' // TODO: sostituire con l'URL dell'audio definitivo di Cristian
+        audio: 'https://cristianlecca.it/centro/audio/cristian-lecca-non-dormo-bene.mp3'
       },
       'sono-sovraccarico': {
         title: '[Nome Audio]',
         text: 'Un momento per chiudere le schede aperte in testa. Bastano pochi minuti, anche a metà giornata.',
-        audio: '' // TODO: sostituire con l'URL dell'audio definitivo di Cristian
+        audio: 'https://cristianlecca.it/centro/audio/cristian-lecca-sono-sovraccarico.mp3'
       },
       'voglio-iniziare-meglio': {
         title: '[Nome Audio]',
         text: 'Un modo diverso di iniziare la giornata. I primi minuti contano più di quanto pensi.',
-        audio: '' // TODO: sostituire con l'URL dell'audio definitivo di Cristian
+        audio: 'https://cristianlecca.it/centro/audio/cristian-lecca-voglio-iniziare-meglio.mp3'
       }
     };
 
