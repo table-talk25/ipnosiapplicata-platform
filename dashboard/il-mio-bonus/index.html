@@ -326,11 +326,18 @@
       var url;
       try { url = new URL(src); } catch (err) { return ''; }
       if (url.protocol !== 'https:' || url.hostname !== 'w.soundcloud.com' || url.pathname !== '/player/' || !url.searchParams.get('url')) return '';
+      url.searchParams.set('color', '#49C7A5');
       url.searchParams.set('auto_play', 'false');
       url.searchParams.set('hide_related', 'true');
       url.searchParams.set('show_comments', 'false');
+      url.searchParams.set('show_user', 'false');
       url.searchParams.set('show_reposts', 'false');
       url.searchParams.set('show_teaser', 'false');
+      url.searchParams.set('show_artwork', 'false');
+      url.searchParams.set('show_playcount', 'false');
+      url.searchParams.set('buying', 'false');
+      url.searchParams.set('sharing', 'false');
+      url.searchParams.set('download', 'false');
       return url.toString();
     }
 
