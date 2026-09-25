@@ -75,6 +75,67 @@
     #nav-avatar-img { width:36px; height:36px; border-radius:50%; border:2px solid rgba(73,199,165,0.3); object-fit:cover; display:block; }
     .audio-card { background:rgba(29,32,34,0.65); backdrop-filter:blur(12px); border:1px solid rgba(61,73,68,0.4); border-radius:20px; padding:28px; }
     .audio-glow { box-shadow:0 0 40px -8px rgba(73,199,165,0.15); }
+    /* Custom player — stesso componente delle pagine profilo */
+    .custom-player {
+      background: #1d2022;
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      user-select: none;
+    }
+    .custom-player .play-btn {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .custom-player .play-btn:hover { filter: brightness(1.15); transform: scale(1.05); }
+    .custom-player .play-btn:active { transform: scale(0.96); }
+    .custom-player .play-btn .material-symbols-outlined {
+      font-size: 1.5rem;
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .player-teal .play-btn { background: #49C7A5; color: #101416; }
+    .custom-player .progress-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .custom-player .progress-bar {
+      position: relative;
+      height: 6px;
+      background: rgba(245,247,250,0.12);
+      border-radius: 99px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+    .custom-player .progress-fill {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    .player-teal .progress-fill { background: #49C7A5; }
+    .custom-player .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: #F5F7FA;
+      letter-spacing: 0.03em;
+    }
+    .player-teal .time-row .accent { color: #49C7A5; }
   </style>
 </head>
 
@@ -204,7 +265,21 @@
                   </div>
                 </div>
                 <div class="flex-1 flex flex-col justify-center">
-                  <template x-if="bonusRecord.bonus_inviato && audioState === 'ready'">
+                  <template x-if="bonusRecord.bonus_inviato && audioState === 'ready' && audioFile">
+                    <div class="custom-player player-teal" x-data="bonusPlayer(audioFile)">
+                      <button class="play-btn" type="button" aria-label="Play / Pausa" @click="toggle()">
+                        <span class="material-symbols-outlined" x-text="playing ? 'pause' : 'play_arrow'"></span>
+                      </button>
+                      <div class="progress-wrap">
+                        <div class="progress-bar" @click="seek($event)"><div class="progress-fill" :style="'width:' + pct + '%'"></div></div>
+                        <div class="time-row">
+                          <span class="accent" x-text="fmt(current)"></span>
+                          <span x-text="fmt(duration)"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <template x-if="bonusRecord.bonus_inviato && audioState === 'ready' && audioSrc">
                     <iframe :src="audioSrc" :title="'Audio: ' + bonusTitle" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" style="border:0; border-radius:12px; display:block;"></iframe>
                   </template>
                   <template x-if="bonusRecord.bonus_inviato && audioState === 'loading'">
@@ -317,6 +392,40 @@
 
     // n8n puo' restituire l'URL del player o lo snippet <iframe> intero: si accetta solo
     // un src del player SoundCloud, mai HTML ricevuto.
+    function fileAudioUrl(raw) {
+      var url;
+      try { url = new URL(String(raw || '').trim()); } catch (err) { return ''; }
+      return url.protocol === 'https:' ? url.toString() : '';
+    }
+
+    // Stesso player delle pagine profilo del quiz. L'elemento Audio resta fuori dallo stato
+    // reattivo di Alpine: il proxy reattivo non va bene per un HTMLMediaElement.
+    function bonusPlayer(src) {
+      var audio = new Audio(src);
+      return {
+        playing: false,
+        current: 0,
+        duration: NaN,
+        get pct() { return this.duration ? (this.current / this.duration) * 100 : 0; },
+        init() {
+          audio.addEventListener('loadedmetadata', () => { this.duration = audio.duration; });
+          audio.addEventListener('timeupdate', () => { this.current = audio.currentTime; });
+          audio.addEventListener('play', () => { this.playing = true; });
+          audio.addEventListener('pause', () => { this.playing = false; });
+          audio.addEventListener('ended', () => { this.current = 0; });
+        },
+        toggle() { if (audio.paused) audio.play(); else audio.pause(); },
+        seek(e) {
+          var rect = e.currentTarget.getBoundingClientRect();
+          if (audio.duration) audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+        },
+        fmt(sec) {
+          if (isNaN(sec)) return '--:--';
+          return Math.floor(sec / 60) + ':' + String(Math.floor(sec % 60)).padStart(2, '0');
+        }
+      };
+    }
+
     function soundcloudPlayerSrc(raw) {
       var src = String(raw || '').trim();
       if (src.charAt(0) === '<') {
@@ -348,6 +457,7 @@
         bonusRecord: null,
         bonusContent: null,
         bonusTitle: 'Il tuo bonus',
+        audioFile: '',
         audioSrc: '',
         audioState: 'loading',
         hasRecord: false,
@@ -406,9 +516,13 @@
           try {
             const res = await fetch(BONUS_AUDIO_ENDPOINT + '?t=' + encodeURIComponent(recordId));
             const data = res.ok ? await res.json() : null;
-            const src = data && data.valid === true ? soundcloudPlayerSrc(data.soundcloud_embed) : '';
-            if (!src) { this.audioState = 'error'; return; }
+            const valid = !!data && data.valid === true;
+            // Con audio_url (file mp3) si usa il player del sito; senza, l'embed SoundCloud.
+            const file = valid ? fileAudioUrl(data.audio_url) : '';
+            const src = valid && !file ? soundcloudPlayerSrc(data.soundcloud_embed) : '';
+            if (!file && !src) { this.audioState = 'error'; return; }
             if (data.titolo) this.bonusTitle = String(data.titolo);
+            this.audioFile = file;
             this.audioSrc = src;
             this.audioState = 'ready';
           } catch (e) {
