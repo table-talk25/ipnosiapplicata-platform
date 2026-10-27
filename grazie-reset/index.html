@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html class="dark" lang="it">
 <head>
+<!-- Consenso cookie (Consent Mode v2): primo script; carica gtag.js solo con il consenso statistico -->
+<script src="/assets/consent.js"></script>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-MHK1RYYDXY"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -36,8 +37,6 @@ fbq('track', 'Purchase', {
   content_type: 'product'
 });
 </script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1960582901451670&ev=PageView&noscript=1"/></noscript>
 <!-- End Meta Pixel -->
 
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -219,6 +218,7 @@ src="https://www.facebook.com/tr?id=1960582901451670&ev=PageView&noscript=1"/></
     <div class="flex gap-6 text-sm">
       <a class="text-on-surface-variant hover:text-primary transition-colors" href="/privacy/">Privacy</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors" href="/cookie/">Cookie</a>
+      <a class="text-on-surface-variant hover:text-primary transition-colors" href="#gestisci-cookie" role="button" data-cl-consent-open>Gestisci cookie</a>
       <a class="text-on-surface-variant hover:text-primary transition-colors" href="/">Torna al sito</a>
     </div>
   </div>
