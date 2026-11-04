@@ -1,12 +1,12 @@
 # IpnosiApplicata
 
-> IpnosiApplicata è la piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca, Hypno Mental Coach italiano. Il metodo unisce ipnosi eriksoniana, PNL, coaching sistemico e neuroscienze per superare i blocchi mentali e diventare autonomi. Sulla piattaforma si trovano corsi, sessioni 1:1 con Cristian, esercizi su misura, induzioni personalizzate e la mappa del proprio percorso. Non è un servizio di psicoterapia né di diagnosi.
+> IpnosiApplicata è la piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca, Hypno Mental Coach italiano. Il metodo unisce ipnosi eriksoniana, PNL, coaching sistemico e neuroscienze per superare i blocchi mentali e diventare autonomi. Sulla piattaforma si trovano corsi, sessioni 1:1 con Cristian, esercizi su misura, induzioni personalizzate e la mappa del proprio percorso. Le sessioni con Cristian si fanno online e in presenza nel suo studio a Moncalieri (Torino). Non è un servizio di psicoterapia né di diagnosi.
 
 Questo file riassume cos'è IpnosiApplicata, cosa offre e dove trovare le pagine principali di ipnosiapplicata.it. Il sito personale di Cristian Lecca è [cristianlecca.it](https://cristianlecca.it/).
 
 ## Cosa offre
 
-- [Reset Notturno](https://ipnosiapplicata.it/reset-notturno/): percorso audio guidato di 7 giorni consecutivi per costruire le fondamenta di un'autostima solida: audio ipnotici la sera e pochi minuti di diario al mattino.
+- [Reset Notturno](https://ipnosiapplicata.it/reset-notturno/): Reset Notturno è un percorso audio guidato di 7 sere, circa 15 minuti a sera, per chi la sera ha la mente che non si ferma: impari a spegnere il rumore dei pensieri e, sera dopo sera, a ritrovare fiducia in te.
 - [Sessioni 1:1 con Cristian](https://ipnosiapplicata.it/sessioni/): il lavoro individuale con Cristian Lecca, dentro la piattaforma; dopo ogni incontro mappa aggiornata, esercizi su misura e induzioni personalizzate.
 - [Autostima Applicata](https://ipnosiapplicata.it/corsi/): percorso avanzato di 21 giorni con tecniche ipnotiche ed esercizi quotidiani, disponibile dopo il Reset Notturno (in arrivo).
 - [Sessione di Svolta](https://cristianlecca.it/sessione-di-svolta/): incontro individuale di 45 minuti con Cristian Lecca per fare chiarezza sul proprio blocco principale.
