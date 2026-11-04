@@ -1,0 +1,36 @@
+# IpnosiApplicata
+
+> IpnosiApplicata è la piattaforma del Metodo IpnosiApplicata creato da Cristian Lecca, Hypno Mental Coach italiano. Il metodo unisce ipnosi eriksoniana, PNL, coaching sistemico e neuroscienze per superare i blocchi mentali e diventare autonomi. Sulla piattaforma si trovano corsi, sessioni 1:1 con Cristian, esercizi su misura, induzioni personalizzate e la mappa del proprio percorso. Le sessioni con Cristian si fanno online e in presenza nel suo studio a Moncalieri (Torino). Non è un servizio di psicoterapia né di diagnosi.
+
+Questo file riassume cos'è IpnosiApplicata, cosa offre e dove trovare le pagine principali di ipnosiapplicata.it. Il sito personale di Cristian Lecca è [cristianlecca.it](https://cristianlecca.it/).
+
+## Cosa offre
+
+- [Reset Notturno](https://ipnosiapplicata.it/reset-notturno/): Reset Notturno è un percorso audio guidato di 7 sere, circa 15 minuti a sera, per chi la sera ha la mente che non si ferma: impari a spegnere il rumore dei pensieri e, sera dopo sera, a ritrovare fiducia in te.
+- [Sessioni 1:1 con Cristian](https://ipnosiapplicata.it/sessioni/): il lavoro individuale con Cristian Lecca, dentro la piattaforma; dopo ogni incontro mappa aggiornata, esercizi su misura e induzioni personalizzate.
+- [Autostima Applicata](https://ipnosiapplicata.it/corsi/): percorso avanzato di 21 giorni con tecniche ipnotiche ed esercizi quotidiani, disponibile dopo il Reset Notturno (in arrivo).
+- [Sessione di Svolta](https://cristianlecca.it/sessione-di-svolta/): incontro individuale di 45 minuti con Cristian Lecca per fare chiarezza sul proprio blocco principale.
+- [Podcast IpnosiApplicata](https://cristianlecca.it/contenuti/): ogni settimana un episodio sui limiti mentali più comuni, tra neuroscienze applicate e mental coaching. Su [Spotify](https://open.spotify.com/show/3sVLJasBELbvl1SAcAoOle) e [YouTube](https://www.youtube.com/@cristianlecca).
+
+## Pagine principali
+
+- [Home](https://ipnosiapplicata.it/): cos'è la piattaforma e come funziona.
+- [Il Metodo IpnosiApplicata](https://ipnosiapplicata.it/metodo/): le basi del metodo e le discipline che unisce.
+- [Corsi e percorsi](https://ipnosiapplicata.it/corsi/): i percorsi disponibili sulla piattaforma.
+- [Sessioni 1:1](https://ipnosiapplicata.it/sessioni/): il lavoro individuale con Cristian.
+- [Accedi](https://ipnosiapplicata.it/login/): accesso all'area riservata per chi ha acquistato un percorso.
+
+## Cristian Lecca
+
+- [Sito personale](https://cristianlecca.it/)
+- [Chi è Cristian Lecca](https://cristianlecca.it/chi-sono/)
+- [X @CoachLecca](https://x.com/CoachLecca)
+- [Instagram](https://www.instagram.com/cristianleccacoach)
+- [YouTube](https://www.youtube.com/@cristianlecca)
+- [LinkedIn](https://www.linkedin.com/in/cristian-lecca)
+
+## Optional
+
+- [Termini e condizioni](https://ipnosiapplicata.it/termini-e-condizioni/)
+- [Privacy Policy](https://ipnosiapplicata.it/privacy/)
+- [Cookie Policy](https://ipnosiapplicata.it/cookie/)

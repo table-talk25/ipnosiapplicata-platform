@@ -1,7 +1,8 @@
+# Scansione permessa a tutti i robot, compresi quelli dei motori di ricerca e degli
+# assistenti AI. Le pagine dell'area riservata (/dashboard/, /mappa/, /percorso/,
+# diario del Reset Notturno) restano fuori dai risultati con <meta name="robots"
+# content="noindex">: per leggerlo i motori devono poterle scansionare.
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /mappa/
-Disallow: /percorso/
 
 Sitemap: https://ipnosiapplicata.it/sitemap.xml
